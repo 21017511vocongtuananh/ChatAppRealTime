@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface UserRepo extends MongoRepository<User, String> {
 	Optional<User> findByPhoneNumber(String phoneNumber);
 	boolean existsByPhoneNumber(String phoneNumber);
+	boolean existsByEmail(String email);
 }

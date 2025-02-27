@@ -3,8 +3,8 @@ package com.Chat.Chat.service.Impl;
 import com.Chat.Chat.dto.reponse.AuthResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.*;
-import com.Chat.Chat.exception.InvalidCredentialsException;
-import com.Chat.Chat.exception.NotFoundException;
+import com.Chat.Chat.exception.ErrorCode;
+import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.UserMapper;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.UserRepo;
@@ -27,7 +27,10 @@ public class AuthenticationImpl implements AuthenticationService {
 	@Override
 	public UserResponse registerUser(UserRequest request) {
 		if(userRepo.existsByPhoneNumber(request.getPhoneNumber())){
-			throw new InvalidCredentialsException("Số điện thoại " + request.getPhoneNumber() + " đã tồn tại");
+			throw new ErrorException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
+		}
+		if(userRepo.existsByEmail(request.getEmail())){
+			throw new ErrorException(ErrorCode.EMAIL_ALREADY_EXISTS);
 		}
 		User user = userMapper.toUser(request);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -38,10 +41,10 @@ public class AuthenticationImpl implements AuthenticationService {
 
 	@Override
 	public AuthResponse loginUser(AuthRequest authRequest) {
-		User user = userRepo.findByPhoneNumber(authRequest.getPhoneNumber()).orElseThrow(() -> new NotFoundException("PhoneNumber not found"));
+		User user = userRepo.findByPhoneNumber(authRequest.getPhoneNumber()).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
 		if(!passwordEncoder.matches(authRequest.getPassword(),user.getPassword()))
 		{
-			throw new InvalidCredentialsException("Password does not match");
+			throw new ErrorException(ErrorCode.BAD_REQUEST);
 		}
 		String token = jwtUtils.generateToken(user);
 		UserResponse userResponse = UserResponse.builder()
@@ -59,7 +62,7 @@ public class AuthenticationImpl implements AuthenticationService {
 
 	@Override
 	public AuthResponse resetPassword(AuthRequest request) {
-		User user = userRepo.findByPhoneNumber(request.getPhoneNumber()).orElseThrow(() -> new NotFoundException("Not found phone number"));
+		User user = userRepo.findByPhoneNumber(request.getPhoneNumber()).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		UserResponse userResponse = userMapper.toUserResponse(user);
 		return AuthResponse.builder()

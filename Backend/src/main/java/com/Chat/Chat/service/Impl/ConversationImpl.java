@@ -1,5 +1,7 @@
 package com.Chat.Chat.service.Impl;
 
+import com.Chat.Chat.dto.reponse.ConversationResponse;
+import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
 import com.Chat.Chat.service.ConversationService;
 import com.Chat.Chat.service.UserService;
@@ -32,11 +34,11 @@ public class ConversationImpl implements ConversationService {
 //	}
 
 //	@Override
-//	public Response getConversations() {
+//	public ConversationResponse getConversations() {
 //		User currentUser = userService.getLoginUser();
 //		if(currentUser == null)
 //		{
-//			return Response.builder()
+//			return Ap.builder()
 //					.status(401)
 //					.message("Unauthorized: User not logged in")
 //					.build();

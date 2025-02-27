@@ -17,31 +17,21 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ApiResource> handleAllException(Exception ex, WebRequest request){
-		ApiResource errorResponse = ApiResource.builder()
-				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.message(ex.getMessage())
+	public ResponseEntity<ApiResource<Object>> handleAllException(Exception ex, WebRequest request) {
+		ApiResource<Object> errorResponse = ApiResource.builder()
+				.code(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
+				.message(ErrorCode.UNCATEGORIZED_EXCEPTION.getDefaultMessage())
 				.build();
-		return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
-	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<ApiResource> handleNotFoundException(NotFoundException ex, WebRequest request){
-		ApiResource errorResponse = ApiResource.builder()
-				.status(HttpStatus.NOT_FOUND)
-				.message(ex.getMessage())
+	@ExceptionHandler(ErrorException.class)
+	public ResponseEntity<ApiResource<Object>> handleErrorException(ErrorException ex, WebRequest request) {
+		ApiResource<Object> errorResponse = ApiResource.builder()
+				.code(ex.getErrorCode().getCode())
+				.message(ex.getDetail())
 				.build();
-		return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+		return ResponseEntity.status(ex.getStatus()).body(errorResponse);
 	}
-	@ExceptionHandler(InvalidCredentialsException.class)
-	public ResponseEntity<ApiResource> handleInvalidCredentialsException(InvalidCredentialsException ex, WebRequest request){
-		ApiResource errorResponse = ApiResource.builder()
-				.status(HttpStatus.BAD_REQUEST)
-				.message(ex.getMessage())
-				.build();
-		return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
-	}
-
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Object> handleValidException(MethodArgumentNotValidException exception) {
 		Map<String, String> errors = new HashMap<>();

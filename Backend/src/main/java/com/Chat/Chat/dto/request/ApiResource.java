@@ -8,28 +8,27 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class ApiResource<T> {
-	private boolean success;
+	private int code = 200;
 	private String message;
 	private T data;
-	private HttpStatus status;
 	private LocalDateTime timestamp;
 	private ErrorResource error;
 
 	@Data
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class ErrorResource {
-		private String code;
+		private int code;
 		private String message;
 		private String detail;
 
 		public ErrorResource(String message) {
 			this.message = message;
 		}
-		public ErrorResource(String code, String message) {
+		public ErrorResource(int code, String message) {
 			this.code = code;
 			this.message = message;
 		}
-		public ErrorResource(String code, String message, String detail) {
+		public ErrorResource(int code, String message, String detail) {
 			this.code = code;
 			this.message = message;
 			this.detail = detail;
@@ -51,8 +50,8 @@ public class ApiResource<T> {
 			resource = new ApiResource<>();
 		}
 
-		public Builder<T> success(boolean success) {
-			resource.success = success;
+		public Builder<T> code(int code) {
+			resource.code = code;
 			return this;
 		}
 
@@ -65,12 +64,6 @@ public class ApiResource<T> {
 			resource.data = data;
 			return this;
 		}
-
-		public Builder<T> status(HttpStatus status) {
-			resource.status = status;
-			return this;
-		}
-
 		public Builder<T> error(ErrorResource error) {
 			resource.error = error;
 			return this;
@@ -82,26 +75,9 @@ public class ApiResource<T> {
 
 	public static <T> ApiResource<T> ok(T data, String message) {
 		return ApiResource.<T>builder()
-				.success(true)
+				.code(200)
 				.data(data)
 				.message(message)
-				.status(HttpStatus.OK)
-				.build();
-	}
-
-	public static <T> ApiResource<T> message(String message, HttpStatus status) {
-		return ApiResource.<T>builder()
-				.success(true)
-				.message(message)
-				.status(status)
-				.build();
-	}
-
-	public static <T> ApiResource<T> error(String code, String message, HttpStatus status) {
-		return ApiResource.<T>builder()
-				.success(false)
-				.error(new ErrorResource(code, message))
-				.status(status)
 				.build();
 	}
 }

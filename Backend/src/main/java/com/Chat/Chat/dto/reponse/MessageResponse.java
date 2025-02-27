@@ -1,9 +1,10 @@
-package com.Chat.Chat.dto.request;
+package com.Chat.Chat.dto.reponse;
 
+import com.Chat.Chat.dto.request.ConversationDto;
 import com.Chat.Chat.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,11 +12,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class MessageResponse {
 	private String body;
 	private String image;
 	private LocalDateTime createdAt;

@@ -2,7 +2,8 @@ package com.Chat.Chat.service.Impl;
 
 
 import com.Chat.Chat.dto.reponse.UserResponse;
-import com.Chat.Chat.exception.NotFoundException;
+import com.Chat.Chat.exception.ErrorCode;
+import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.UserMapper;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.UserRepo;
@@ -12,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 		String  phoneNumber = authentication.getName();
 		log.info("User phoneNumber is: " + phoneNumber);
 		return userRepo.findByPhoneNumber(phoneNumber)
-				.orElseThrow(()-> new UsernameNotFoundException("User Not found"));
+				.orElseThrow(()-> new ErrorException(ErrorCode.USER_NOT_FOUND));
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
 	public UserResponse getByPhoneNumBer() {
 		User loggedInUser = getLoginUser();
 		User user = userRepo.findByPhoneNumber(loggedInUser.getPhoneNumber())
-				.orElseThrow(() -> new NotFoundException("Phone number not found"));
+				.orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
 		UserResponse userResponse = userMapper.toUserResponse(user);
 		return userResponse;
 	}
