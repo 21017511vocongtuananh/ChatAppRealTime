@@ -28,9 +28,8 @@ public class JwtUtils {
 	@PostConstruct
 	private void init(){
 		byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
-		this.key = new SecretKeySpec(keyBytes,"HmacSHA256");
+		this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
 	}
-
 	public String generateToken(User user){
 		String userId = user.getId().toString();
 		String username = user.getPhoneNumber();
@@ -39,7 +38,7 @@ public class JwtUtils {
 
 	public String generateToken(String userId,String username){
 		return Jwts.builder()
-				.claim("userId",userId)
+				.claim("id",userId)
 				.subject(username)
 				.issuedAt(new Date(System.currentTimeMillis()))
 				.expiration(new Date(System.currentTimeMillis() + jwtExpiration))

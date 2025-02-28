@@ -33,7 +33,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
 			if (StringUtils.hasText(username) && jwtUtils.isTokenValid(token,userDetails)){
-				log.info("TOKEN IS VALID: {}", username);
 				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities()
 				);

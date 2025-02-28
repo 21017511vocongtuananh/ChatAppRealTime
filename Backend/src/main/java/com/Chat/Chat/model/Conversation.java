@@ -4,12 +4,14 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
-@Document(collection = "conversations")
+@Document(collection = "conversation")
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,12 +19,23 @@ import java.util.List;
 public class Conversation {
 	@Id
 	private String id;
+
 	private String name;
+
+	@Field("isGroup")
 	private Boolean isGroup;
+
+	@Field("createdAt")
 	private LocalDateTime createdAt = LocalDateTime.now();
+
+	@Field("lastMessageAt")
 	private LocalDateTime lastMessageAt = LocalDateTime.now();
-	@DBRef
-	private List<Message> messages;
-	@DBRef
-	private List<User> users;
+
+	@Field("messagesIds")
+	@Builder.Default
+	private List<String> messagesIds = new ArrayList<>();
+
+	@Field("usersIds")
+	@Builder.Default
+	private List<String> usersIds = new ArrayList<>();
 }

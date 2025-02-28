@@ -10,7 +10,7 @@ const ConversationLayout = ({ children }) => {
     const fetchUser = async () => {
       try {
         const response = await ApiService.getConversation();
-        setConversation(response.conversationList || []);
+        setConversation(response.data);
       } catch (error) {
         console.error('Lỗi khi lấy thông tin conversation:', error);
       }

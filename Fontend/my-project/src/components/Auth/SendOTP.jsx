@@ -24,7 +24,7 @@ const SendOTP = () => {
     setIsLoading(true);
     try {
       const response = await ApiService.sendOTP(email);
-      if (response && response.success) {
+      if (response.code === 200) {
         message.success('Gửi OTP thành công!');
         setConfirmation(true);
       } else {

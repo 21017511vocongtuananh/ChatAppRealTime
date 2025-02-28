@@ -5,11 +5,12 @@ import Avatar from '@/components/Avatar';
 import ApiService from '../../services/apis';
 import useOtherUser from '../../hooks/useOtherUser';
 import { format, parseISO } from 'date-fns';
+import usePhoneNumber from '../../hooks/usePhoneNumber';
 
 const ConversationBox = ({ data, selected }) => {
   const otherUser = useOtherUser(data);
   const navigate = useNavigate();
-  const [phone, setPhone] = useState();
+  const { phone } = usePhoneNumber();
 
   // Chuyển trang khi click vào ConversationBox
   const handleClick = useCallback(() => {
@@ -23,19 +24,6 @@ const ConversationBox = ({ data, selected }) => {
   }, [data.messages]);
 
   // Lấy số điện thoại của user đăng nhập
-  useEffect(() => {
-    const fetchPhoneNumber = async () => {
-      try {
-        const response = await ApiService.getPhoneLogin();
-        setPhone(response.user.phoneNumber || '');
-      } catch (error) {
-        console.error('Error fetching phone number:', error);
-      }
-    };
-
-    fetchPhoneNumber();
-  }, []);
-
   const userNumPhone = useMemo(() => {
     return phone;
   }, [phone]);
