@@ -5,6 +5,7 @@ import com.Chat.Chat.dto.request.ApiResource;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +30,10 @@ public class UserController {
 		return ApiResource.ok(userService.getByPhoneNumBer(),"SUCCESS");
 	}
 
-//	✅ Thêm API cập nhật thông tin hồ sơ người dùng
-//	@PutMapping("/{id}")
-//	public ResponseEntity<User> updateUserProfile(@PathVariable String id, @RequestBody User updatedUser) {
-//		User updated = userService.updateUser(id, updatedUser);
-//		return ResponseEntity.ok(updated);
+//	@PostMapping("/api/profile")
+//	public ResponseEntity<User> saveProfile(@RequestBody User user) {
+//		User savedUser = userRepository.save(user);
+//		return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
 //	}
+
 }

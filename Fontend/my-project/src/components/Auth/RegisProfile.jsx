@@ -1,33 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { DatePicker } from "antd";
+import { DatePicker, message } from "antd";
 
 const RegisProfile = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        fullName: "",
+        name: "",
+        phoneNumber: "",
+        image: "https://example.com/default-avatar.jpg", // Ảnh mặc định
         gender: "male",
-        birthDate: ""
+        dateOfBirth: ""
     });
+
+    useEffect(() => {
+        const storedEmail = localStorage.getItem("email");
+        const storedPassword = localStorage.getItem("password");
+
+        if (storedEmail && storedPassword) {
+            setFormData(prevData => ({
+                ...prevData,
+                email: storedEmail,
+                password: storedPassword
+            }));
+        }
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleDateChange = (date, dateString) => {
-        setFormData({ ...formData, birthDate: dateString });
+        setFormData({ ...formData, dateOfBirth: dateString });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(
-                process.env.REACT_APP_BACKEND_URL + "/api/profile",
-                formData
-            );
-            alert("Profile saved successfully!");
+            const apiUrl = import.meta.env.VITE_BACKEND_URL + "/api/auth/register";
+            console.log("🔹 Sending request to:", apiUrl);
+            console.log("🔹 Data being sent:", formData);
+
+            const response = await axios.post(apiUrl, formData, {
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (response.status === 201 || response.status === 200) {
+                message.success("Hồ sơ đã được lưu thành công!");
+                navigate("/");
+            }
         } catch (error) {
-            console.error("Error saving profile", error);
-            alert("Failed to save profile.");
+            console.error("❌ Error saving profile:", error.response?.data || error.message);
+            message.error("Lưu hồ sơ thất bại. Vui lòng thử lại!");
         }
     };
 
@@ -41,9 +65,18 @@ const RegisProfile = () => {
                 <h2 className="text-xl font-semibold mb-4">Nhập Thông Tin Cá Nhân</h2>
                 <input
                     type="text"
-                    name="fullName"
+                    name="name"
                     placeholder="Họ và tên"
-                    value={formData.fullName}
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full p-2 mb-2 border rounded"
+                    required
+                />
+                <input
+                    type="text"
+                    name="phoneNumber"
+                    placeholder="Số điện thoại"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
                     className="w-full p-2 mb-2 border rounded"
                     required
