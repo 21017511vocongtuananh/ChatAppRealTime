@@ -4,13 +4,15 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Document(collection = "users")
+@Document(collection = "user")
 @Data
 @Builder
 @AllArgsConstructor
@@ -26,15 +28,17 @@ public class User {
 	private String image;
 	//private String gender;
 	private LocalDate dateOfBirth;
+	@Field("createdAt")
 	private LocalDateTime createdAt = LocalDateTime.now();
+
+	@Field("updatedAt")
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
-	@DBRef
-	private List<Conversation> conversations;
+	@Field("conversationIds")
+	@Builder.Default
+	private List<String> conversationIds = new ArrayList<>();
 
-	@DBRef
-	private List<Message> seenMessages;
-
-	@DBRef
-	private List<Message> messages;
+	@Field("seenMessageIds")
+	@Builder.Default
+	private List<String> seenMessageIds = new ArrayList<>();
 }

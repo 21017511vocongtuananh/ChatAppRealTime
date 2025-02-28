@@ -20,8 +20,8 @@ public class ConversationResponse {
 	private String id;
 	private String name;
 	private Boolean isGroup;
-	private LocalDateTime createdAt = LocalDateTime.now();
-	private LocalDateTime lastMessageAt = LocalDateTime.now();
-	private List<Message> messages;
+	private LocalDateTime createdAt;
+	private LocalDateTime lastMessageAt;
 	private List<UserResponse> users;
+	private List<MessageResponse> messages;
 }

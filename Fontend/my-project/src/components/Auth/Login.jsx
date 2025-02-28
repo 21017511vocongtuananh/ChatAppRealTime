@@ -24,7 +24,7 @@ const Login = () => {
 
     try {
       const data = await ApiService.loginApi(formData);
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('token', data.data.token);
       navigate('/user');
     } catch (errorMessage) {
       setError(errorMessage);

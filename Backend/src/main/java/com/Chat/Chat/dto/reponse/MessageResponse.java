@@ -17,10 +17,10 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageResponse {
+	private String id;
 	private String body;
 	private String image;
 	private LocalDateTime createdAt;
-	private ConversationDto conversation;
-	private User sender;
-	private List<User> seenUsers;
+	private List<UserResponse> seen;
+	private UserResponse sender;
 }

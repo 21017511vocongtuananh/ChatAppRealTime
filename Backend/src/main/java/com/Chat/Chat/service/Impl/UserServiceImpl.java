@@ -11,6 +11,7 @@ import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,16 +31,20 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getLoginUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String  phoneNumber = authentication.getName();
-		log.info("User phoneNumber is: " + phoneNumber);
+
+		if (authentication == null || !authentication.isAuthenticated() ||
+				authentication instanceof AnonymousAuthenticationToken) {
+			throw new ErrorException(ErrorCode.UNAUTHORIZED, "Unauthorized: User not logged in");
+		}
+		String phoneNumber = authentication.getName();
 		return userRepo.findByPhoneNumber(phoneNumber)
-				.orElseThrow(()-> new ErrorException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new ErrorException(ErrorCode.USER_NOT_FOUND, "User not found"));
 	}
+
 
 	@Override
 	public List<UserResponse> getAllUser() {
 		User loggedInUser = getLoginUser();
-		log.info("Logged-in user: " + loggedInUser.getPhoneNumber());
 		List<UserResponse> userResponses = userRepo.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
 				.stream()
 				.filter(user -> !user.getPhoneNumber().equals(loggedInUser.getPhoneNumber())) // Loại bỏ user login

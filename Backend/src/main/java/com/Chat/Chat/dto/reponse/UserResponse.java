@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
+	private String id;
 	private String name;
 	private String phoneNumber;
 	private String email;

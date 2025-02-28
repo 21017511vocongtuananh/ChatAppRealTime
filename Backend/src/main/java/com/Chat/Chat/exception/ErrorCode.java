@@ -8,6 +8,7 @@ public enum ErrorCode {
 	UNAUTHORIZED(401, "User is not authenticated", HttpStatus.UNAUTHORIZED),
 	PHONE_NOT_FOUND(404, "PhoneNumber not found", HttpStatus.NOT_FOUND),
 	USER_NOT_FOUND(404, "User not found", HttpStatus.NOT_FOUND),
+	NOT_FOUND(404,"not found",HttpStatus.NOT_FOUND),
 	PHONE_NUMBER_ALREADY_EXISTS(400, "PhoneNumber already exists", HttpStatus.BAD_REQUEST),
 	EMAIL_ALREADY_EXISTS(400, "Email already exists", HttpStatus.BAD_REQUEST),
 	BAD_REQUEST(400, "Invalid username or password", HttpStatus.BAD_REQUEST),

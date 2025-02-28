@@ -8,12 +8,9 @@ import ConversationBox from './ConversationBox';
 
 const ConversationList = ({ initialItems }) => {
   const [items, setItems] = useState([]);
-
   useEffect(() => {
     setItems(initialItems);
   }, [initialItems]);
-
-  const navigate = useNavigate();
 
   const { conversationId, isOpen } = useConversation();
 

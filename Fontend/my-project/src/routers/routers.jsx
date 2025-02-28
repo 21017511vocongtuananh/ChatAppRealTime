@@ -3,21 +3,23 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { HiChat } from 'react-icons/hi';
 import { HiArrowLeftOnRectangle, HiUsers } from 'react-icons/hi2';
 import useConversation from '../hooks/useConversation.jsx';
-import withAuth from '../hoc/withAuth';
+import withAuth from '../hoc/withAuth.jsx';
 import Conversations from '../components/Convertion/Conversation.jsx';
-const RegisProfile = lazy(() => import('../components/Auth/RegisProfile.jsx'));
-
+import ConversationLayout from '../components/Convertion/ConversationLayout.jsx';
 
 // Load các component động
-const User = lazy(() => import('../components/users/User'));
+const User = lazy(() => import('../components/users/User.jsx'));
 const Login = lazy(() => import('../components/Auth/Login.jsx'));
-const Register = lazy(() => import('../components/Register'));
+const Register = lazy(() => import('../components/Register.jsx'));
 const SendOTP = lazy(() => import('../components/Auth/SendOTP.jsx'));
 const ResetPassword = lazy(() =>
   import('../components/Auth/ResetPassword.jsx')
 );
 const RegisPassword = lazy(() =>
   import('../components/Auth/RegisPassword.jsx')
+);
+const ConversationId = lazy(() =>
+  import('../components/Convertion/ConversationId.jsx')
 );
 const useRoutes = () => {
   const location = useLocation();
@@ -62,10 +64,24 @@ const routers = [
   { path: '/auth/register', component: Register },
   { path: '/auth/sendOTP', component: SendOTP },
   { path: '/user', component: withAuth(User) },
-  { path: '/conversations', component: withAuth(Conversations) },
+  {
+    path: '/conversations',
+    component: withAuth(() => (
+      <ConversationLayout>
+        <Conversations />
+      </ConversationLayout>
+    ))
+  },
+  {
+    path: '/conversations/:id',
+    component: withAuth(() => (
+      <ConversationLayout>
+        <ConversationId />
+      </ConversationLayout>
+    ))
+  },
   { path: '/reset-password', component: ResetPassword },
-  { path: '/set-password', component: RegisPassword },
-  { path: '/regis-profile', component: RegisProfile }
+  { path: '/set-password', component: RegisPassword }
 ];
 
 export { useRoutes, routers };

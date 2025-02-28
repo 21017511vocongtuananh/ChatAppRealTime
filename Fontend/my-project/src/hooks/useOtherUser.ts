@@ -1,27 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
 import ApiService from '../services/apis';
+import usePhoneNumber from './usePhoneNumber';
 
 const useOtherUser = (conversation) => {
-  const [phone, setPhone] = useState('');
+  const { phone } = usePhoneNumber();
 
-  // Lấy số điện thoại từ API khi component mount
-  useEffect(() => {
-    const fetchPhoneNumber = async () => {
-      try {
-        const response = await ApiService.getPhoneLogin();
-        setPhone(response?.user?.phoneNumber || '');
-      } catch (error) {
-        console.error('Error fetching phone number:', error);
-      }
-    };
-
-    fetchPhoneNumber();
-  }, []);
-
-  // Xác định người dùng khác trong cuộc hội thoại
   const otherUsers = useMemo(() => {
     const otherUsers = conversation.users.filter(
-      (user) => user.phoneNumber !== phone
+      (users) => users.phoneNumber !== phone
     ); // Lấy tất cả người khác
     return otherUsers[0];
   }, [phone, conversation.users]);

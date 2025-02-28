@@ -4,12 +4,14 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Document(collection = "messages")
+@Document(collection = "message")
 @Data
 @Builder
 @AllArgsConstructor
@@ -20,15 +22,19 @@ public class Message {
 	private String id;
 
 	private String body;
+
 	private String image;
+
+	@Field("createdAt")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
-	@DBRef
-	private Conversation conversation;
+	@Field("seenIds")
+	@Builder.Default
+	private List<String> seenIds = new ArrayList<>();
 
-	@DBRef
-	private User sender;
+	@Field("conversationId")
+	private String conversationId;
 
-	@DBRef
-	private List<User> seenUsers;
+	@Field("senderId")
+	private String senderId;
 }
