@@ -11,4 +11,5 @@ public interface UserService {
 	User getLoginUser();
 	List<UserResponse> getAllUser();
 	UserResponse getByPhoneNumBer();
+//	User updateUser(id, updatedUser);
 }

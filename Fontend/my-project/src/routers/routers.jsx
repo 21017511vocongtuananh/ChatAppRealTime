@@ -7,10 +7,12 @@ import withAuth from '../hoc/withAuth.jsx';
 import Conversations from '../components/Convertion/Conversation.jsx';
 import ConversationLayout from '../components/Convertion/ConversationLayout.jsx';
 
+
 // Load các component động
 const User = lazy(() => import('../components/users/User.jsx'));
 const Login = lazy(() => import('../components/Auth/Login.jsx'));
 const Register = lazy(() => import('../components/Register.jsx'));
+const RegisProfile = lazy(() => import('../components/Auth/RegisProfile.jsx'));
 const SendOTP = lazy(() => import('../components/Auth/SendOTP.jsx'));
 const ResetPassword = lazy(() =>
   import('../components/Auth/ResetPassword.jsx')
@@ -81,7 +83,8 @@ const routers = [
     ))
   },
   { path: '/reset-password', component: ResetPassword },
-  { path: '/set-password', component: RegisPassword }
+  { path: '/set-password', component: RegisPassword },
+  { path: '/regis-profile', component: RegisProfile }
 ];
 
 export { useRoutes, routers };

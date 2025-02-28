@@ -20,7 +20,7 @@ const SendOTP = () => {
       message.error('Vui lòng nhập email!');
       return;
     }
-
+    localStorage.setItem("email", email); // ✅ Lưu email vào localStorage
     setIsLoading(true);
     try {
       const response = await ApiService.sendOTP(email);
