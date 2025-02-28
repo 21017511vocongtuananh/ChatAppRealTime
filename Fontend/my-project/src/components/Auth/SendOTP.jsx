@@ -22,20 +22,20 @@ const SendOTP = () => {
     }
 
     setIsLoading(true);
-    try {
-      const response = await ApiService.sendOTP(email);
-      if (response && response.success) {
-        message.success('Gửi OTP thành công!');
-        setConfirmation(true);
-      } else {
-        message.error(response?.message || 'Gửi OTP thất bại!');
-      }
-    } catch (error) {
-      message.error(error.message || 'Lỗi khi gửi OTP!');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        try {
+          const response = await ApiService.sendOTP(email);
+          if (response.code === 200) {
+            message.success('Gửi OTP thành công!');
+            setConfirmation(true);
+          } else {
+            message.error(response?.message || 'Gửi OTP thất bại!');
+          }
+        } catch (error) {
+          message.error(error.message || 'Lỗi khi gửi OTP!');
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
   // Hàm xác thực OTP
   const handleVerifyOTP = () => {

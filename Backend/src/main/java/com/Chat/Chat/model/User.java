@@ -24,6 +24,7 @@ public class User {
 	private String email;
 	private String password;
 	private String image;
+	//private String gender;
 	private LocalDate dateOfBirth;
 	private LocalDateTime createdAt = LocalDateTime.now();
 	private LocalDateTime updatedAt = LocalDateTime.now();

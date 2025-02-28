@@ -1,13 +1,15 @@
 package com.Chat.Chat.controller;
 
-
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ApiResource;
+import com.Chat.Chat.model.User;
 import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/users")
@@ -27,4 +29,10 @@ public class UserController {
 		return ApiResource.ok(userService.getByPhoneNumBer(),"SUCCESS");
 	}
 
+//	✅ Thêm API cập nhật thông tin hồ sơ người dùng
+//	@PutMapping("/{id}")
+//	public ResponseEntity<User> updateUserProfile(@PathVariable String id, @RequestBody User updatedUser) {
+//		User updated = userService.updateUser(id, updatedUser);
+//		return ResponseEntity.ok(updated);
+//	}
 }

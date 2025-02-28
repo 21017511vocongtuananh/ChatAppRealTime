@@ -20,7 +20,8 @@ const RegisPassword = () => {
       message.error('Mật khẩu không khớp!');
       return;
     }
-    navigate(`/auth/complete-profile?phone=${phone}`);
+    // Điều hướng sang trang RegisProfile sau khi xác nhận mật khẩu thành công
+    navigate('/regis-profile');
   };
 
   return (

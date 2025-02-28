@@ -5,6 +5,8 @@ import { HiArrowLeftOnRectangle, HiUsers } from 'react-icons/hi2';
 import useConversation from '../hooks/useConversation.jsx';
 import withAuth from '../hoc/withAuth';
 import Conversations from '../components/Convertion/Conversation.jsx';
+const RegisProfile = lazy(() => import('../components/Auth/RegisProfile.jsx'));
+
 
 // Load các component động
 const User = lazy(() => import('../components/users/User'));
@@ -62,7 +64,8 @@ const routers = [
   { path: '/user', component: withAuth(User) },
   { path: '/conversations', component: withAuth(Conversations) },
   { path: '/reset-password', component: ResetPassword },
-  { path: '/set-password', component: RegisPassword }
+  { path: '/set-password', component: RegisPassword },
+  { path: '/regis-profile', component: RegisProfile }
 ];
 
 export { useRoutes, routers };
