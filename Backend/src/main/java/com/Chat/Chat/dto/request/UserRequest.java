@@ -7,25 +7,26 @@ import java.time.LocalDate;
 
 @Data
 public class UserRequest {
-	@NotBlank(message = "Name is required")
+	@NotBlank(message = "Tên không được để trống")
 	private String name;
 
-	@NotBlank(message = "Phone number is required")
-	@Size(min = 10, max = 10, message = "Phone number must be exactly 10 digits")
-	@Pattern(regexp = "^[0-9]+$", message = "Phone number must contain only digits")
+	@NotBlank(message = "Số điện thoại không được để trống")
+	@Size(min = 10, max = 10, message = "Số điện thoại phải có đúng 10 chữ số")
+	@Pattern(regexp = "^[0-9]+$", message = "Số điện thoại chỉ được chứa chữ số")
 	private String phoneNumber;
 
-	@NotBlank(message = "Email is required")
-	@Email(message = "Email must be a valid email address")
-	@Size(max = 255, message = "Email must not exceed 255 characters")
+	@NotBlank(message = "Email không được để trống")
+	@Email(message = "Email phải là một địa chỉ hợp lệ")
+	@Size(max = 255, message = "Email không được vượt quá 255 ký tự")
 	private String email;
 
-	@NotBlank(message = "Password is required")
+	@NotBlank(message = "Mật khẩu không được để trống")
 	private String password;
 
-	@NotBlank(message = "Image URL is required")
+	@NotBlank(message = "URL hình ảnh không được để trống")
 	private String image;
 
-	@NotNull(message = "Date of birth is required")
+	@NotNull(message = "Ngày sinh không được để trống")
 	private LocalDate dateOfBirth;
+
 }

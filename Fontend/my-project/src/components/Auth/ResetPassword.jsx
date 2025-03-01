@@ -10,32 +10,20 @@ import {
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  let phone = queryParams.get('phone');
-
-  if (phone) {
-    phone = phone.replace(/\D/g, ''); // Loại bỏ tất cả các ký tự không phải là số
-    if (phone.startsWith('84')) {
-      phone = '0' + phone.slice(2); // Thay thế '84' bằng '0'
-    }
-  }
-
+  const [email, setEmail] = useState(localStorage.getItem('email'));
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false); // Trạng thái hiển thị mật khẩu
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleReset = async () => {
     if (password !== confirmPassword) {
       message.error('Mật khẩu không khớp!');
       return;
     }
-
     const resetPasswordDetails = {
-      phoneNumber: phone,
+      email: email,
       password: password
     };
-
     try {
       await ApiService.resetPassword(resetPasswordDetails);
       navigate('/');

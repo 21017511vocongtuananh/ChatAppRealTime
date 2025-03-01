@@ -42,17 +42,24 @@ export default class ApiService {
     }
   }
 
-  static async sendOTP(email) {
+  static async sendOTP(email, mode) {
     try {
       const response = await axios.post(
-        `${this.BASE_URL}/otp/send?email=${email}`
+        `${this.BASE_URL}/otp/send?mode=${mode}`,
+        {
+          email
+        }
       );
-
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Lỗi gửi OTP!';
-      message.error(errorMessage);
-      throw error;
+      const errorData = error.response.data;
+      if (errorData?.errors) {
+        Object.values(errorData.errors).forEach((err) => {
+          message.error(err);
+        });
+      } else {
+        message.error(errorData.message);
+      }
     }
   }
 

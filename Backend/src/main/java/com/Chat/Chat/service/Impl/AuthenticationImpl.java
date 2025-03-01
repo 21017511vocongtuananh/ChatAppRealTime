@@ -1,6 +1,7 @@
 package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.AuthResponse;
+import com.Chat.Chat.dto.reponse.ResetPasswordResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.*;
 import com.Chat.Chat.exception.ErrorCode;
@@ -39,6 +40,7 @@ public class AuthenticationImpl implements AuthenticationService {
 	}
 
 
+
 	@Override
 	public AuthResponse loginUser(AuthRequest authRequest) {
 		User user = userRepo.findByPhoneNumber(authRequest.getPhoneNumber()).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
@@ -61,12 +63,12 @@ public class AuthenticationImpl implements AuthenticationService {
 	}
 
 	@Override
-	public AuthResponse resetPassword(AuthRequest request) {
-		User user = userRepo.findByPhoneNumber(request.getPhoneNumber()).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
+	public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
+		User user = userRepo.findByEmail(request.getEmail()).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Email not found"));
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		UserResponse userResponse = userMapper.toUserResponse(user);
-		return AuthResponse.builder()
-				.user(userResponse)
+		userRepo.save(user);
+		return ResetPasswordResponse.builder()
+				.email(user.getEmail())
 				.build();
 	}
 }

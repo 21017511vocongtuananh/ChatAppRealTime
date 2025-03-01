@@ -2,6 +2,7 @@ package com.Chat.Chat.controller;
 
 
 import com.Chat.Chat.dto.reponse.AuthResponse;
+import com.Chat.Chat.dto.reponse.ResetPasswordResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.*;
 import com.Chat.Chat.service.AuthenticationService;
@@ -32,7 +33,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/resetPassword")
-	public ApiResource<AuthResponse> resetPassword(@Valid @RequestBody AuthRequest request) {
+	public ApiResource<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 		return ApiResource.ok(authenticationService.resetPassword(request),"Reset password thanh cong");
 	}
 

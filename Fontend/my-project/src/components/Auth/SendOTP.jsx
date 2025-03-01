@@ -7,8 +7,8 @@ const SendOTP = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const mode = queryParams.get('mode'); // Lấy mode từ query params
-
+  const mode = queryParams.get('mode');
+  const [serverOtp, setServerOtp] = useState('');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [confirmation, setConfirmation] = useState(false);
@@ -16,22 +16,15 @@ const SendOTP = () => {
 
   // Hàm gửi OTP
   const handleSendOTP = async () => {
-    if (!email) {
-      message.error('Vui lòng nhập email!');
-      return;
-    }
-    localStorage.setItem("email", email); // ✅ Lưu email vào localStorage
+    localStorage.setItem('email', email);
     setIsLoading(true);
     try {
-      const response = await ApiService.sendOTP(email);
-      if (response.code === 200) {
-        message.success('Gửi OTP thành công!');
+      const response = await ApiService.sendOTP(email, mode);
+      if (response?.code === 200) {
+        message.success(response.message);
+        setServerOtp(response.data);
         setConfirmation(true);
-      } else {
-        message.error(response?.message || 'Gửi OTP thất bại!');
       }
-    } catch (error) {
-      message.error(error.message || 'Lỗi khi gửi OTP!');
     } finally {
       setIsLoading(false);
     }
@@ -43,11 +36,15 @@ const SendOTP = () => {
       message.error('Vui lòng nhập mã OTP!');
       return;
     }
-    message.success('Xác thực OTP thành công!');
-    if (mode === 'register') {
-      navigate('/set-password');
-    } else if (mode === 'reset') {
-      navigate('/reset-password');
+    if (otp === serverOtp) {
+      message.success('Xác thực OTP thành công!');
+      if (mode === 'register') {
+        navigate('/set-password');
+      } else if (mode === 'reset') {
+        navigate('/reset-password');
+      }
+    } else {
+      message.error('Mã OTP không đúng!');
     }
   };
 

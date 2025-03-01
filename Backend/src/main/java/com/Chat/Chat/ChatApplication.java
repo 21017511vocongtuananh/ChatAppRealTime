@@ -42,7 +42,7 @@ public class ChatApplication implements CommandLineRunner {
 			user1.setName("tuananh3");
 			user1.setPhoneNumber("0347804278");
 			user1.setEmail("anhchiyeuminhem2k2@gmail.com");
-			user1.setPassword("$2a$10$LJ5bG4W12wDLQs/rOHqh..7LXp5GE7GNXTCVbqIo5QFgeh8A0tLCm");
+			user1.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
 			user1.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1739335351/Screensh…");
 			user1.setDateOfBirth(LocalDate.of(2003,04,03));
 			user1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
@@ -55,7 +55,7 @@ public class ChatApplication implements CommandLineRunner {
 			user2.setName("minhthanh");
 			user2.setPhoneNumber("012345678");
 			user2.setEmail("huy2222@gmail.com");
-			user2.setPassword("123");
+			user2.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
 			user2.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1739335351/Screensh…");
 			user2.setDateOfBirth(LocalDate.of(2003,04,03));
 			user2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));

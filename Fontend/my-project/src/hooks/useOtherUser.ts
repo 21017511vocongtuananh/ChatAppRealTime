@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import ApiService from '../services/apis';
 import usePhoneNumber from './usePhoneNumber';
 
 const useOtherUser = (conversation) => {

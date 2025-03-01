@@ -26,11 +26,6 @@ public class ConversationImpl implements ConversationService {
 
 	@Override
 	public ConversationResponse getConversationId(String id) {
-		User currentUser = userService.getLoginUser();
-		if(currentUser == null)
-		{
-			throw new ErrorException(ErrorCode.UNAUTHORIZED,"Unauthorized: User not logged in");
-		}
 		Conversation conversation = conversationRepo.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"conversation id not found"));
 		ConversationResponse conversationResponse = conversationMapper.toConversationResponseUser(conversation);
 		return conversationResponse;

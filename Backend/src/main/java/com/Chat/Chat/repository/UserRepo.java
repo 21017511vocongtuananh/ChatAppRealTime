@@ -10,6 +10,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepo extends MongoRepository<User, String> {
 	Optional<User> findByPhoneNumber(String phoneNumber);
+	Optional<User> findByEmail(String email);
 	boolean existsByPhoneNumber(String phoneNumber);
 	boolean existsByEmail(String email);
 }

@@ -10,7 +10,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND(404, "User not found", HttpStatus.NOT_FOUND),
 	NOT_FOUND(404,"not found",HttpStatus.NOT_FOUND),
 	PHONE_NUMBER_ALREADY_EXISTS(400, "PhoneNumber already exists", HttpStatus.BAD_REQUEST),
-	EMAIL_ALREADY_EXISTS(400, "Email already exists", HttpStatus.BAD_REQUEST),
+	EMAIL_ALREADY_EXISTS(409, "Email already exists", HttpStatus.CONFLICT),
 	BAD_REQUEST(400, "Invalid username or password", HttpStatus.BAD_REQUEST),
 	INTERNAL_SERVER_ERROR(500, "Something went wrong on the server", HttpStatus.INTERNAL_SERVER_ERROR),
 	VALIDATION_ERROR(422, "Validation failed", HttpStatus.UNPROCESSABLE_ENTITY),

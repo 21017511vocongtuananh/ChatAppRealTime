@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 public class AuthRequest {
-	@NotBlank(message = "phoneNumber is required")
+	@NotBlank(message = "Số điện thoại không được để trống")
 	private String phoneNumber;
-	@NotBlank(message = "Password is required")
+	@NotBlank(message = "Mật khẩu không được để trống")
 	private String password;
+
 }
