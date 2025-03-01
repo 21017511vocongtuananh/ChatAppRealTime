@@ -12,6 +12,8 @@ export default class ApiService {
     };
   }
 
+  //AUTH
+
   static async loginApi(loginDetails) {
     try {
       const response = await axios.post(
@@ -54,6 +56,8 @@ export default class ApiService {
     }
   }
 
+  // USER
+
   static async getAllUser() {
     try {
       const response = await axios.get(`${this.BASE_URL}/users/get-all`, {
@@ -61,18 +65,7 @@ export default class ApiService {
       });
       return response.data;
     } catch (error) {
-      console.error('Lỗi khi lấy thông tin all user:', error);
-    }
-  }
-
-  static async getConversation() {
-    try {
-      const response = await axios.get(`${this.BASE_URL}/conversation`, {
-        headers: this.getHeader()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Lỗi khi lấy thông tin conversation:', error);
+      message.error('Lỗi khi lấy thông tin all user:', error);
     }
   }
 
@@ -83,7 +76,44 @@ export default class ApiService {
       });
       return response.data;
     } catch (error) {
-      console.error('Lỗi khi lấy thông tin phone user:', error);
+      message.error('Lỗi khi lấy thông tin phone user:', error);
+    }
+  }
+
+  // CONVERSSTION
+
+  static async getConversation() {
+    try {
+      const response = await axios.get(`${this.BASE_URL}/conversation`, {
+        headers: this.getHeader()
+      });
+      return response.data;
+    } catch (error) {
+      message.error('Lỗi khi lấy thông tin conversation:', error);
+    }
+  }
+  static async getConversationId(conversationId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/conversation/${conversationId}`
+      );
+      return response.data;
+    } catch (error) {
+      message.error(error.response?.data);
+      throw error;
+    }
+  }
+
+  // MESSAGE
+  static async getMessages(conversationId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/messages/${conversationId}`
+      );
+      return response.data;
+    } catch (error) {
+      message.error(error.response?.data);
+      throw error;
     }
   }
 

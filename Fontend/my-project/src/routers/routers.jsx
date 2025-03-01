@@ -4,7 +4,6 @@ import { HiChat } from 'react-icons/hi';
 import { HiArrowLeftOnRectangle, HiUsers } from 'react-icons/hi2';
 import useConversation from '../hooks/useConversation.jsx';
 import withAuth from '../hoc/withAuth.jsx';
-import Conversations from '../components/Convertion/Conversation.jsx';
 import ConversationLayout from '../components/Convertion/ConversationLayout.jsx';
 
 // Load các component động
@@ -20,6 +19,9 @@ const RegisPassword = lazy(() =>
 );
 const ConversationId = lazy(() =>
   import('../components/Convertion/ConversationId.jsx')
+);
+const Conversation = lazy(() =>
+  import('../components/Convertion/Conversation.jsx')
 );
 const useRoutes = () => {
   const location = useLocation();
@@ -66,14 +68,10 @@ const routers = [
   { path: '/user', component: withAuth(User) },
   {
     path: '/conversations',
-    component: withAuth(() => (
-      <ConversationLayout>
-        <Conversations />
-      </ConversationLayout>
-    ))
+    component: Conversation
   },
   {
-    path: '/conversations/:id',
+    path: '/conversations/:conversationId',
     component: withAuth(() => (
       <ConversationLayout>
         <ConversationId />

@@ -9,11 +9,9 @@ const DesktopSidebar = ({ currentUser }) => {
   return (
     <div
       className='
-    fixed inset-y-0 left-0 z-40
-    w-16 lg:w-20
-    overflow-y-auto bg-[#005AE0] border-r
-    flex flex-col justify-between py-4
-  '
+    fixed inset-y-0 left-0 z-40 w-20 px-6 overflow-y-auto 
+    bg-[#005AE0] border-r border-r-[1px] pb-4 flex flex-col justify-between
+    lg:w-20 lg:flex'
     >
       <nav className='mt-4 flex flex-col justify-between'>
         <ul role='list' className='flex flex-col items-center space-y-1'>

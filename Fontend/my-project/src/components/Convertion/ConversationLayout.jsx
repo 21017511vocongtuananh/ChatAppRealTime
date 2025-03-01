@@ -15,9 +15,9 @@ const ConversationLayout = ({ children }) => {
         console.error('Lỗi khi lấy thông tin conversation:', error);
       }
     };
-
+;
     fetchUser();
-  }, []);
+  }, [])
 
   return (
     <Sidebar>
