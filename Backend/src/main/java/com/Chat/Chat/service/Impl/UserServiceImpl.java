@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +62,20 @@ public class UserServiceImpl implements UserService {
 		UserResponse userResponse = userMapper.toUserResponse(user);
 		return userResponse;
 	}
+//	public User updateUser(String id, User updatedUser) {
+//		Optional<User> existingUser = userRepo.findById(id);
+//		if (existingUser.isPresent()) {
+//			User user = existingUser.get();
+//			user.setName(updatedUser.getName());
+//			user.setGender(updatedUser.getGender());
+//			user.setDateOfBirth(updatedUser.getDateOfBirth());
+//			user.setImage(updatedUser.getImage());
+//			return userRepo.save(user);
+//		} else {
+//			throw new RuntimeException("User not found");
+//		}
+//	}
+
 
 
 
