@@ -54,7 +54,7 @@ public class ConversationImpl implements ConversationService {
 		{
 			throw new ErrorException(ErrorCode.UNAUTHORIZED,"Unauthorized: User not logged in");
 		}
-		List<ConversationResponse> conversationResponses  = conversationRepo.findByUsersIdsContainingOrderByLastMessageAtDesc(currentUser.getId())
+		List<ConversationResponse> conversationResponses  = conversationRepo.findByGroupMembersUserIdOrderByLastMessageAtDesc(currentUser.getId())
 				.stream()
 				.map(conversationMapper::toConversationResponse)
 				.collect(Collectors.toList());

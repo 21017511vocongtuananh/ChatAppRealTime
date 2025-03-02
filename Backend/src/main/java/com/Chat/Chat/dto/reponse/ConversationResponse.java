@@ -1,5 +1,6 @@
 package com.Chat.Chat.dto.reponse;
 
+import com.Chat.Chat.model.GroupMember;
 import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,4 +25,5 @@ public class ConversationResponse {
 	private LocalDateTime lastMessageAt;
 	private List<UserResponse> users;
 	private List<MessageResponse> messages;
+	private List<GroupMember> groupMembers;
 }

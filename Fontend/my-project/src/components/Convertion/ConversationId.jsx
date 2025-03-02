@@ -39,7 +39,7 @@ const ConversationId = () => {
   }
 
   return (
-    <div className='lg:pl-80 h-full'>
+    <div className='sm:pl-10 md:pl-20 lg:pl-80 h-full'>
       <div className='h-full flex flex-col'>
         <Header conversation={conversation} />
         <Body />

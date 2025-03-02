@@ -17,11 +17,11 @@ const ConversationList = ({ initialItems }) => {
   return (
     <aside
       className={clsx(
-        'fixed inset-y-0 pb-2 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200',
+        'fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r  border-gray-200 hidden w-full left-0',
         isOpen ? 'hidden' : 'block w-full left-0'
       )}
     >
-      <div className='px-5'>
+      <div className='px-2'>
         <div className='flex items-center justify-between mb-4 pt-4 space-x-4'>
           <div className='flex items-center flex-1 bg-gray-100 p-2 rounded-md'>
             <FaSearch className='text-gray-400 ml-2' />
@@ -57,6 +57,8 @@ const ConversationList = ({ initialItems }) => {
             <div className='cursor-pointer hover:text-blue-600 pb-2'>⋯</div>
           </div>
         </div>
+      </div>
+      <div>
         {items.map((item) => (
           <ConversationBox
             key={item.id}

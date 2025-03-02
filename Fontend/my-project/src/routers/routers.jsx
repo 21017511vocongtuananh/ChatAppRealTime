@@ -6,7 +6,6 @@ import useConversation from '../hooks/useConversation.jsx';
 import withAuth from '../hoc/withAuth.jsx';
 import ConversationLayout from '../components/Convertion/ConversationLayout.jsx';
 
-
 // Load các component động
 const User = lazy(() => import('../components/users/User.jsx'));
 const Login = lazy(() => import('../components/Auth/Login.jsx'));
@@ -25,6 +24,7 @@ const ConversationId = lazy(() =>
 const Conversation = lazy(() =>
   import('../components/Convertion/Conversation.jsx')
 );
+
 const useRoutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,11 +67,11 @@ const routers = [
   { path: '/', component: Login },
   { path: '/auth/register', component: Register },
   { path: '/auth/sendOTP', component: SendOTP },
-  { path: '/user', component: withAuth(User) },
   {
     path: '/conversations',
     component: Conversation
   },
+  { path: '/user', component: withAuth(User) },
   {
     path: '/conversations/:conversationId',
     component: withAuth(() => (
