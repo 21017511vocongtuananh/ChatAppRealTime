@@ -8,10 +8,12 @@ const RegisProfile = () => {
     const [formData, setFormData] = useState({
         name: "",
         phoneNumber: "",
-        image: "https://example.com/default-avatar.jpg", // Ảnh mặc định
+        image: null, // Sẽ lưu file ảnh
         gender: "male",
         dateOfBirth: ""
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [preview, setPreview] = useState(null);
 
     useEffect(() => {
         const storedEmail = localStorage.getItem("email");
@@ -34,15 +36,38 @@ const RegisProfile = () => {
         setFormData({ ...formData, dateOfBirth: dateString });
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedFile(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const apiUrl = import.meta.env.VITE_BACKEND_URL + "/api/auth/register";
-            console.log("🔹 Sending request to:", apiUrl);
-            console.log("🔹 Data being sent:", formData);
+            const formDataToSend = new FormData();
 
-            const response = await axios.post(apiUrl, formData, {
-                headers: { "Content-Type": "application/json" }
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("phoneNumber", formData.phoneNumber);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("password", formData.password);
+            formDataToSend.append("dateOfBirth", formData.dateOfBirth);
+            formDataToSend.append("gender", formData.gender);
+
+            if (selectedFile) {
+                formDataToSend.append("image", selectedFile);
+            }
+
+            console.log("🔹 API URL:", apiUrl);
+            const response = await axios.post(apiUrl, formDataToSend, {
+                headers: { "Content-Type": "multipart/form-data" }
             });
 
             if (response.status === 201 || response.status === 200) {
@@ -55,13 +80,23 @@ const RegisProfile = () => {
         }
     };
 
+
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-blue-100">
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-96 text-center">
-                <img
-                    src="https://phanmemmkt.vn/wp-content/uploads/2024/09/avt-Facebook-hai-huoc-2.jpg"
-                    alt="Avatar" />
-
+                <div className="mb-4">
+                    {preview ? (
+                        <img src={preview} alt="Preview" className="w-24 h-24 mx-auto rounded-full" />
+                    ) : (
+                        <div className="w-24 h-24 mx-auto bg-gray-300 rounded-full flex items-center justify-center text-gray-500">
+                            No Image
+                        </div>
+                    )}
+                    <label className="block mt-2 cursor-pointer bg-gray-200 p-2 rounded text-sm">Chọn ảnh
+                        <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                    </label>
+                </div>
                 <h2 className="text-xl font-semibold mb-4">Nhập Thông Tin Cá Nhân</h2>
                 <input
                     type="text"

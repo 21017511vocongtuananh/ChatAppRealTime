@@ -1,5 +1,6 @@
 package com.Chat.Chat.dto.request;
 
+import com.Chat.Chat.dto.reponse.UserResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,16 @@ public class ApiResource<T> {
 	private T data;
 	private LocalDateTime timestamp;
 	private ErrorResource error;
+
+	public static <T> ApiResource<T> error(String message) {
+		ApiResource<T> response = new ApiResource<>();
+		response.setCode(500);
+		response.setMessage(message);
+		return response;
+	}
+
+
+
 
 	@Data
 	@JsonInclude(JsonInclude.Include.NON_NULL)

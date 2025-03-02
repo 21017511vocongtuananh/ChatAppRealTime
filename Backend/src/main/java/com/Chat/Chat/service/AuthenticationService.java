@@ -4,10 +4,14 @@ import com.Chat.Chat.dto.reponse.AuthResponse;
 import com.Chat.Chat.dto.reponse.ResetPasswordResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.*;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface AuthenticationService {
 
-	UserResponse registerUser(UserRequest request);
+
 	AuthResponse loginUser(AuthRequest authRequest);
+
 	ResetPasswordResponse resetPassword(ResetPasswordRequest request);
+
+	UserResponse registerUser(UserRequest request, MultipartFile imageFile);
 }

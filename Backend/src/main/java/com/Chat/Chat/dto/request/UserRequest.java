@@ -2,6 +2,7 @@ package com.Chat.Chat.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -23,10 +24,29 @@ public class UserRequest {
 	@NotBlank(message = "Mật khẩu không được để trống")
 	private String password;
 
-	@NotBlank(message = "URL hình ảnh không được để trống")
-	private String image;
-
 	@NotNull(message = "Ngày sinh không được để trống")
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate dateOfBirth;
 
+	@NotBlank(message = "Giới tính không được để trống")
+	private String gender;
+
+	// Constructor đã được sửa
+	public UserRequest(String name,
+					   String phoneNumber,
+					   String email,
+					   String password,
+					   LocalDate dateOfBirth,
+					   String gender) {
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.password = password;
+		this.dateOfBirth = dateOfBirth;
+		this.gender = gender;
+	}
+
+	// Thêm constructor mặc định
+	public UserRequest() {
+	}
 }
