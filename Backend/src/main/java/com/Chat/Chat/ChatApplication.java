@@ -98,7 +98,7 @@ public class ChatApplication implements CommandLineRunner {
 			// Thêm dữ liệu Conversation
 			Conversation convo1 = new Conversation();
 			convo1.setId("507f191e810c19729de860ea");
-			convo1.setName(null);
+			convo1.setName("1 gia dinh");
 			convo1.setIsGroup(false);
 			convo1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0));
 			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10));

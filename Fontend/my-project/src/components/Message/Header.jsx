@@ -1,8 +1,14 @@
 import { useMemo } from 'react';
 import useOtherUser from '../../hooks/useOtherUser';
 import { Link } from 'react-router-dom';
-import { HiChevronLeft, HiEllipsisHorizontal } from 'react-icons/hi2';
+import {
+  HiChevronLeft,
+  HiEllipsisHorizontal,
+  HiMiniListBullet,
+  HiMiniVideoCamera
+} from 'react-icons/hi2';
 import Avatar from '../Avatar';
+import { MdOutlineGroupAdd } from 'react-icons/md';
 
 const Header = ({ conversation }) => {
   const otherUser = useOtherUser(conversation.data || []);
@@ -19,9 +25,9 @@ const Header = ({ conversation }) => {
       <div className='flex gap-3 items-center'>
         <Link
           className='lg:hidden block text-sky-500 hover:text-sky-600 transition cursor-pointer'
-          to='/conversation'
+          to='/conversations'
         >
-          <HiChevronLeft size={32} />
+          <HiChevronLeft size={25} />
         </Link>
         <Avatar user={otherUser} />
         <div className='flex flex-col'>
@@ -36,16 +42,48 @@ const Header = ({ conversation }) => {
           </div>
         </div>
       </div>
-      <HiEllipsisHorizontal
-        size={32}
-        onClick={() => {}}
-        className='
-      text-sky-500
+      <div className='flex gap-2'>
+        <HiEllipsisHorizontal
+          size={40}
+          onClick={() => {}}
+          className='
       cursor-pointer
-      hover:text-sky-600
-      transition
+      rounded-md
+      hover:bg-gray-300
+      p-2
       '
-      />
+        />
+        <MdOutlineGroupAdd
+          size={40}
+          onClick={() => {}}
+          className='
+      cursor-pointer
+      rounded-md
+     hover:bg-gray-300
+     p-2
+      '
+        />
+        <HiMiniVideoCamera
+          size={40}
+          onClick={() => {}}
+          className='
+      cursor-pointer
+      rounded-md
+     hover:bg-gray-300
+     p-2
+      '
+        />
+        <HiMiniListBullet
+          size={40}
+          onClick={() => {}}
+          className='
+      cursor-pointer
+      rounded-md
+     hover:bg-gray-300
+     p-2
+      '
+        />
+      </div>
     </div>
   );
 };

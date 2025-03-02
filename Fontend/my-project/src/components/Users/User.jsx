@@ -4,7 +4,7 @@ import UserLayout from './UserLayout';
 const Users = () => {
   return (
     <UserLayout>
-      <div className='lg:block h-full lg:pl-80'>
+      <div className='lg:pl-80 h-full lg:block'>
         <EmptyState />
       </div>
     </UserLayout>

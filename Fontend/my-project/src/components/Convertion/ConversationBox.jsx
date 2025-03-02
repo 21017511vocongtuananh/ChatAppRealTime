@@ -54,8 +54,8 @@ const ConversationBox = ({ data, selected }) => {
     <div
       onClick={handleClick}
       className={clsx(
-        'w-full relative flex items-center space-x-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer',
-        selected ? 'bg-neutral-100' : 'bg-white'
+        'w-full relative flex items-center space-x-3 hover:bg-neutral-100 transition cursor-pointer p-2',
+        selected ? 'bg-[#DBEBFF]' : 'bg-white'
       )}
     >
       <Avatar user={otherUser} />
@@ -74,7 +74,7 @@ const ConversationBox = ({ data, selected }) => {
           <p
             className={clsx(
               'truncate text-sm',
-              hasSeen ? 'text-gray-500' : 'text-black font-medium'
+              hasSeen ? 'text-black font-medium' : 'text-gray-700'
             )}
           >
             {lastMessageText}

@@ -26,7 +26,6 @@ public class User {
 	private String email;
 	private String password;
 	private String image;
-	//private String gender;
 	private LocalDate dateOfBirth;
 	@Field("createdAt")
 	private LocalDateTime createdAt = LocalDateTime.now();

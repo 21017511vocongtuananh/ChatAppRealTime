@@ -7,7 +7,7 @@ const UserList = ({ items = [] }) => {
   return (
     <aside
       className='
-          fixed
+     fixed
     inset-y-0
     pb-20
     lg:pb-0
@@ -17,7 +17,8 @@ const UserList = ({ items = [] }) => {
     overflow-y-auto
     border-r
     border-gray-200
-    block
+    hidden
+    w-full
     left-0'
     >
       <div className='px-5'>
