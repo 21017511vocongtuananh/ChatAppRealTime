@@ -9,8 +9,13 @@ import com.Chat.Chat.service.AuthenticationService;
 import com.Chat.Chat.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("api/auth")
@@ -20,10 +25,19 @@ public class AuthController {
 	private final AuthenticationService authenticationService;
 
 
-	@PostMapping("/register")
-	public ApiResource<UserResponse> registerUser(@Valid @RequestBody UserRequest request){
-		return ApiResource.ok(authenticationService.registerUser(request),"SUCCESS");
+	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ApiResource<UserResponse> registerUser(
+			@ModelAttribute @Valid UserRequest userRequest, // ✅ Nhận data từ form-data
+			@RequestParam(value = "image", required = false) MultipartFile imageFile
+	) {
+		try {
+			return ApiResource.ok(authenticationService.registerUser(userRequest, imageFile), "SUCCESS");
+		} catch (Exception e) {
+			return ApiResource.error("Lỗi đăng ký: " + e.getMessage());
+		}
 	}
+
+
 
 	@PostMapping("/login")
 	public ApiResource<AuthResponse> loginUser(@Valid @RequestBody AuthRequest authRequest)

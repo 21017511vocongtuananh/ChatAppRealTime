@@ -7,16 +7,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
-	public User toUser(UserRequest request)
-	{
-		User user = new User();
-		user.setName(request.getName());
-		user.setPassword(request.getPassword());
-		user.setPhoneNumber(request.getPhoneNumber());
-		user.setEmail(request.getEmail());
-		user.setImage(request.getImage());
-		user.setDateOfBirth(request.getDateOfBirth());
-		return user;
+	public User toUser(UserRequest request) {
+		return User.builder()
+				.name(request.getName())
+				.phoneNumber(request.getPhoneNumber())
+				.email(request.getEmail())
+				.password(request.getPassword())
+				.dateOfBirth(request.getDateOfBirth())
+				.build();
 	}
 
 	public UserResponse toUserResponse(User user)

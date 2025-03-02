@@ -22,7 +22,7 @@ const SendOTP = () => {
       const response = await ApiService.sendOTP(email, mode);
       if (response?.code === 200) {
         message.success(response.message);
-        setServerOtp(response.data);
+        setServerOtp(response.data.otp);
         setConfirmation(true);
       }
     } finally {

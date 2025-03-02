@@ -11,10 +11,14 @@ import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.UserRepo;
 import com.Chat.Chat.security.JwtUtils;
 import com.Chat.Chat.service.AuthenticationService;
+import com.Chat.Chat.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -24,21 +28,32 @@ public class AuthenticationImpl implements AuthenticationService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtils jwtUtils;
 	private final UserMapper userMapper;
+	private final FileStorageService fileStorageService; // ✅ Thêm FileStorageService
 
 	@Override
-	public UserResponse registerUser(UserRequest request) {
-		if(userRepo.existsByPhoneNumber(request.getPhoneNumber())){
+	public UserResponse registerUser(UserRequest request, MultipartFile imageFile) {
+		// Validate trùng lặp số điện thoại/email
+		if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
 			throw new ErrorException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
 		}
-		if(userRepo.existsByEmail(request.getEmail())){
+		if (userRepo.existsByEmail(request.getEmail())) {
 			throw new ErrorException(ErrorCode.EMAIL_ALREADY_EXISTS);
 		}
+
+		// Xử lý ảnh
+		String imageUrl = null;
+		if (imageFile != null && !imageFile.isEmpty()) {
+			imageUrl = fileStorageService.uploadFile(imageFile); // ✅ Gọi service upload ảnh
+		}
+
+		// Tạo user và lưu vào DB
 		User user = userMapper.toUser(request);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		user = userRepo.save(user);
+		user.setImage(imageUrl); // Lưu URL ảnh vào user
+		userRepo.save(user);
+
 		return userMapper.toUserResponse(user);
 	}
-
 
 
 	@Override
@@ -71,4 +86,5 @@ public class AuthenticationImpl implements AuthenticationService {
 				.email(user.getEmail())
 				.build();
 	}
+
 }
