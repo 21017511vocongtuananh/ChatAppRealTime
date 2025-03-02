@@ -1,7 +1,5 @@
 package com.Chat.Chat.dto.reponse;
 
-import com.Chat.Chat.dto.request.ConversationDto;
-import com.Chat.Chat.model.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

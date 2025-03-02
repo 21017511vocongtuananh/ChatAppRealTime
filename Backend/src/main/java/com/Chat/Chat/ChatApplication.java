@@ -1,6 +1,8 @@
 package com.Chat.Chat;
 
+import com.Chat.Chat.enums.Role;
 import com.Chat.Chat.model.Conversation;
+import com.Chat.Chat.model.GroupMember;
 import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
@@ -13,7 +15,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -43,11 +44,11 @@ public class ChatApplication implements CommandLineRunner {
 			user1.setPhoneNumber("0347804278");
 			user1.setEmail("anhchiyeuminhem2k2@gmail.com");
 			user1.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
-			user1.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1739335351/Screensh…");
-			user1.setDateOfBirth(LocalDate.of(2003,04,03));
+			user1.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1732065025/samples/smile.jpg");
+			user1.setDateOfBirth(LocalDate.of(2003, 4, 3));
 			user1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user1.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
-			user1.setConversationIds(Collections.emptyList());
+			user1.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
 			user1.setSeenMessageIds(Collections.emptyList());
 
 			User user2 = new User();
@@ -56,14 +57,27 @@ public class ChatApplication implements CommandLineRunner {
 			user2.setPhoneNumber("012345678");
 			user2.setEmail("huy2222@gmail.com");
 			user2.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
-			user2.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1739335351/Screensh…");
-			user2.setDateOfBirth(LocalDate.of(2003,04,03));
+			user2.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1739335351/Screenshot_2025-02-12_114000_eqxpfv.png");
+			user2.setDateOfBirth(LocalDate.of(2003, 4, 3));
 			user2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user2.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
-			user2.setConversationIds(Collections.emptyList());
+			user2.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
 			user2.setSeenMessageIds(Collections.emptyList());
 
-			userRepo.saveAll(Arrays.asList(user1, user2));
+			User user3 = new User();
+			user3.setId("67c0b55afe7b947481a9c690");
+			user3.setName("hoanglong");
+			user3.setPhoneNumber("0987654321");
+			user3.setEmail("long123@gmail.com");
+			user3.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
+			user3.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1732616273/2fcd8ec1-4fa0-4b50-a559-7012234ba504_aothundainu.jpg");
+			user3.setDateOfBirth(LocalDate.of(2002, 5, 15));
+			user3.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 38, 0, 0));
+			user3.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 38, 0, 0));
+			user3.setConversationIds(Collections.singletonList("507f191e810c19729de860eb"));
+			user3.setSeenMessageIds(Collections.emptyList());
+
+			userRepo.saveAll(Arrays.asList(user1, user2, user3));
 
 			// Thêm dữ liệu Message
 			Message message1 = new Message();
@@ -81,42 +95,49 @@ public class ChatApplication implements CommandLineRunner {
 			message2.setImage(null);
 			message2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 10));
 			message2.setSeenIds(Arrays.asList("67c086a68c03631f6367499e", "67c0b55afe7b947481a9c68f"));
-			message2.setConversationId("67c086a68c03631f6367499e");
-			message2.setSenderId("507f1f77bcf86cd799439012");
+			message2.setConversationId("507f191e810c19729de860ea");
+			message2.setSenderId("67c0b55afe7b947481a9c68f");
 
 			Message message3 = new Message();
 			message3.setId("507f191e810c19729de860ee");
 			message3.setBody(null);
 			message3.setImage("https://example.com/images/group-photo.jpg");
 			message3.setCreatedAt(LocalDateTime.of(2025, 2, 27, 11, 5));
-			message3.setSeenIds(Collections.emptyList());
+			message3.setSeenIds(Collections.singletonList("67c086a68c03631f6367499e"));
 			message3.setConversationId("507f191e810c19729de860eb");
-			message3.setSenderId("507f1f77bcf86cd799439011");
+			message3.setSenderId("67c086a68c03631f6367499e");
 
 			messageRepo.saveAll(Arrays.asList(message1, message2, message3));
 
-			// Thêm dữ liệu Conversation
+			// Thêm dữ liệu Conversation với GroupMember
 			Conversation convo1 = new Conversation();
 			convo1.setId("507f191e810c19729de860ea");
 			convo1.setName("1 gia dinh");
-			convo1.setIsGroup(false);
+			convo1.setIsGroup(false); // Chat 1-1
 			convo1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0));
 			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10));
 			convo1.setMessagesIds(Arrays.asList("507f191e810c19729de860ec", "507f191e810c19729de860ed"));
-			convo1.setUsersIds(Arrays.asList("67c086a68c03631f6367499e", "67c0b55afe7b947481a9c68f"));
+			convo1.setGroupMembers(Arrays.asList(
+					new GroupMember("67c086a68c03631f6367499e", Role.USER),
+					new GroupMember("67c0b55afe7b947481a9c68f", Role.USER)
+			));
 
 			Conversation convo2 = new Conversation();
 			convo2.setId("507f191e810c19729de860eb");
 			convo2.setName("Nhóm bạn bè");
-			convo2.setIsGroup(true);
+			convo2.setIsGroup(true); // Nhóm
 			convo2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 11, 0));
 			convo2.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 11, 5));
 			convo2.setMessagesIds(Collections.singletonList("507f191e810c19729de860ee"));
-			convo2.setUsersIds(Collections.singletonList("67c086a68c03631f6367499e"));
+			convo2.setGroupMembers(Arrays.asList(
+					new GroupMember("67c086a68c03631f6367499e", Role.ADMIN), // user1 là ADMIN
+					new GroupMember("67c0b55afe7b947481a9c68f", Role.USER),  // user2 là USER
+					new GroupMember("67c0b55afe7b947481a9c690", Role.USER)   // user3 là USER
+			));
 
 			conversationRepo.saveAll(Arrays.asList(convo1, convo2));
 
-			System.out.println("Initialized sample data for MongoDB");
+			System.out.println("Initialized sample data for MongoDB with 3 users and GroupMember");
 		}
 	}
 }

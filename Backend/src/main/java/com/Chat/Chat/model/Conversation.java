@@ -35,7 +35,7 @@ public class Conversation {
 	@Builder.Default
 	private List<String> messagesIds = new ArrayList<>();
 
-	@Field("usersIds")
+	@Field("groupMembers")
 	@Builder.Default
-	private List<String> usersIds = new ArrayList<>();
+	private List<GroupMember> groupMembers = new ArrayList<>();
 }
