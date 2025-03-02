@@ -1,5 +1,6 @@
 package com.Chat.Chat.service.Impl;
 
+import com.Chat.Chat.service.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,9 +10,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class FileStorageServiceImpl implements StorageService {
+public class FileStorageServiceImpl implements FileStorageService {
     private final String UPLOAD_DIR = "uploads/";
-    private static final Logger log = LoggerFactory.getLogger(StorageServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(FileStorageServiceImpl.class);
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     @Override
