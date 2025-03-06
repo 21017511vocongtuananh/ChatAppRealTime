@@ -28,30 +28,22 @@ public class AuthenticationImpl implements AuthenticationService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtils jwtUtils;
 	private final UserMapper userMapper;
-	private final FileStorageService fileStorageService; // ✅ Thêm FileStorageService
+	private final S3Service s3Service;
 
 	@Override
 	public UserResponse registerUser(UserRequest request, MultipartFile imageFile) {
-		// Validate trùng lặp số điện thoại/email
 		if (userRepo.existsByPhoneNumber(request.getPhoneNumber())) {
 			throw new ErrorException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
 		}
 		if (userRepo.existsByEmail(request.getEmail())) {
 			throw new ErrorException(ErrorCode.EMAIL_ALREADY_EXISTS);
 		}
-
 		// Xử lý ảnh
-		String imageUrl = null;
-		if (imageFile != null && !imageFile.isEmpty()) {
-			imageUrl = fileStorageService.uploadFile(imageFile); // ✅ Gọi service upload ảnh
-		}
-
-		// Tạo user và lưu vào DB
+		String imageUrl = s3Service.saveImageToS3(imageFile);
 		User user = userMapper.toUser(request);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		user.setImage(imageUrl); // Lưu URL ảnh vào user
+		user.setImage(imageUrl);
 		userRepo.save(user);
-
 		return userMapper.toUserResponse(user);
 	}
 
