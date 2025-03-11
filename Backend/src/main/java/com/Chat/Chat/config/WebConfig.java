@@ -1,4 +1,4 @@
-package com.Chat.Chat.security;
+package com.Chat.Chat.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +13,10 @@ public class WebConfig {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/api/**")
-						.allowedOrigins("http://localhost:3000") // Cho phép ReactJS gọi API
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Các phương thức được phép
-						.allowedHeaders("*") // Cho phép tất cả headers
-						.allowCredentials(true); // Cho phép gửi cookie nếu có
+						.allowedOrigins("http://localhost:3000")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
+						.allowCredentials(true);
 			}
 		};
 	}

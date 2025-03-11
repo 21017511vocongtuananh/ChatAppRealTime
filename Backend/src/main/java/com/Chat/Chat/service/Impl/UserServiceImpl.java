@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getLoginUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
 		if (authentication == null || !authentication.isAuthenticated() ||
 				authentication instanceof AnonymousAuthenticationToken) {
 			throw new ErrorException(ErrorCode.UNAUTHORIZED, "Unauthorized: User not logged in");

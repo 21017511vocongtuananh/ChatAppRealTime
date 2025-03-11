@@ -51,6 +51,7 @@ public class MessageMapper {
 				.seen(users)
 				.sender(sender)
 				.createdAt(message.getCreatedAt())
+				.conversationId(message.getConversationId())
 				.build();
 
 	}

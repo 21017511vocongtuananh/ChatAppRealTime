@@ -20,26 +20,26 @@ import java.util.function.Function;
 public class JwtUtils {
 
 	@Value("${jwt.secret}")
-	private String jwtSecret;
+	private String secreteJwtString;
 	@Value("${jwt.expiration}")
 	private long jwtExpiration;
 	private SecretKey key;
 
 	@PostConstruct
 	private void init(){
-		byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+		byte[] keyBytes = secreteJwtString.getBytes(StandardCharsets.UTF_8);
 		this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
 	}
 	public String generateToken(User user){
-		String userId = user.getId().toString();
+		String userId = user.getId();
 		String username = user.getPhoneNumber();
 		return generateToken(userId,username);
 	}
 
 	public String generateToken(String userId,String username){
 		return Jwts.builder()
-				.claim("id",userId)
 				.subject(username)
+				.claim("id",userId)
 				.issuedAt(new Date(System.currentTimeMillis()))
 				.expiration(new Date(System.currentTimeMillis() + jwtExpiration))
 				.signWith(key)

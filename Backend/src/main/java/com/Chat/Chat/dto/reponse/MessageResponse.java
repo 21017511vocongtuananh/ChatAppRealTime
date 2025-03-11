@@ -21,4 +21,5 @@ public class MessageResponse {
 	private LocalDateTime createdAt;
 	private List<UserResponse> seen;
 	private UserResponse sender;
+	private String conversationId;
 }

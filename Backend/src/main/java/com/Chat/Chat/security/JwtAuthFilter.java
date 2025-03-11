@@ -33,6 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
 			if (StringUtils.hasText(username) && jwtUtils.isTokenValid(token,userDetails)){
+				log.info("VALID JWT FOR {}", username);
 				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities()
 				);
@@ -46,7 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private String getTokenFromRequest(HttpServletRequest request)
 	{
 		String token = request.getHeader("Authorization");
-		if(StringUtils.hasText(token) && StringUtils.startsWithIgnoreCase(token,"Bearer")){
+		if(StringUtils.hasText(token) && StringUtils.startsWithIgnoreCase(token,"Bearer ")){
 			return token.substring(7);
 		}
 		return null;

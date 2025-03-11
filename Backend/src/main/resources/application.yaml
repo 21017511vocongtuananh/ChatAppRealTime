@@ -21,8 +21,8 @@ server:
   port: ${SERVER_PORT:8080}
 
 jwt:
-  secret: bbIwKRHYne9ctLFkv9CEi8QQWM1BtuuG5a+F+2GS6xg=
-  expiration: 604800000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
 aws:
   s3:
     access-key-id: ${AWS_S3_ACCESS_KEY_ID}
