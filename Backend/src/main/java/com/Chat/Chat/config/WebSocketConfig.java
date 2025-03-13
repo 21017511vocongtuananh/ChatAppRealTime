@@ -4,7 +4,6 @@ import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.UserRepo;
-import com.Chat.Chat.security.CustomUserDetailsService;
 import com.Chat.Chat.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

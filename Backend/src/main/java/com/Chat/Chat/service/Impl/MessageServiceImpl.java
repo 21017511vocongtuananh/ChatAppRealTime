@@ -10,18 +10,16 @@ import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
 import com.Chat.Chat.repository.MessageRepo;
-import com.Chat.Chat.service.ConversationService;
 import com.Chat.Chat.service.MessageService;
-import com.Chat.Chat.service.UserService;
+import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +29,6 @@ public class MessageServiceImpl implements MessageService {
 
 	private final MessageRepo messageRepo;
 	private final MessageMapper messageMapper;
-	private final UserService userService;
 	private final ConversationRepo conversationRepo;
 	@Override
 	public MessageResponse createMessage(String conversationId, MessageRequest request, User currentUser) {
@@ -65,6 +62,15 @@ public class MessageServiceImpl implements MessageService {
 		return messages.stream()
 				.map(messageMapper::toMessageResponse)
 				.collect(Collectors.toList());
+	}
+
+	public MultipartFile convertBase64ToMultipartFile(String base64) throws IOException {
+		String[] parts = base64.split(",");
+		if (parts.length < 2) {
+			throw new IllegalArgumentException("Invalid Base64 format");
+		}
+		byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
+		return new MockMultipartFile("image", "image.jpg", "image/jpeg", decodedBytes);
 	}
 
 }

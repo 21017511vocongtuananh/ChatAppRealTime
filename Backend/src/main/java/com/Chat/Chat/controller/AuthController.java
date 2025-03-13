@@ -21,13 +21,12 @@ import java.time.LocalDate;
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-	private final UserService userService;
 	private final AuthenticationService authenticationService;
 
 
 	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ApiResource<UserResponse> registerUser(
-			@ModelAttribute @Valid UserRequest userRequest, // ✅ Nhận data từ form-data
+			@ModelAttribute @Valid UserRequest userRequest,
 			@RequestParam(value = "image", required = false) MultipartFile imageFile
 	) {
 		try {
