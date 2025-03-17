@@ -29,26 +29,24 @@ const ConversationBox = ({ data, selected }) => {
   }, [phone]);
 
   const hasSeen = useMemo(() => {
-    if (!lastMessage || !userNumPhone) {
-      return false;
-    }
-    return (
-      lastMessage.seenUsers?.some(
-        (user) => user.phoneNumber === userNumPhone
-      ) || false
-    );
+    if (!lastMessage?.seen || !userNumPhone) return false;
+    return lastMessage.seen.some((user) => user.phoneNumber === userNumPhone);
   }, [userNumPhone, lastMessage]);
 
   // Nội dung hiển thị của tin nhắn cuối
   const lastMessageText = useMemo(() => {
-    if (lastMessage?.image) {
-      return 'Sent an image';
+    if (!lastMessage) return 'Bắt đầu cuộc trò chuyện';
+
+    const isOwnMessage = lastMessage.sender?.phoneNumber === userNumPhone;
+    const senderName = isOwnMessage ? 'Bạn' : lastMessage.sender?.name || '';
+    if (lastMessage.image) {
+      return `${senderName} : đã gữi ảnh`;
     }
-    if (lastMessage?.body) {
-      return lastMessage.body;
+    if (lastMessage.body) {
+      return `${senderName} : ${lastMessage.body}`;
     }
-    return 'Start a conversations';
-  }, [lastMessage]);
+    return 'Bắt đầu cuộc trò chuyện';
+  }, [lastMessage, userNumPhone]);
 
   return (
     <div
@@ -74,7 +72,7 @@ const ConversationBox = ({ data, selected }) => {
           <p
             className={clsx(
               'truncate text-sm',
-              hasSeen ? 'text-black font-medium' : 'text-gray-700'
+              hasSeen ? 'text-black' : 'text-black font-medium'
             )}
           >
             {lastMessageText}

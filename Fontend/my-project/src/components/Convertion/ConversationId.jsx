@@ -20,11 +20,12 @@ const ConversationId = () => {
         );
         setConversation(conversationResponse);
         const messageResponse = await ApiService.getMessages(conversationId);
-        setMessages(messageResponse);
+        setMessages(messageResponse.data || []);
       } catch (error) {
         message.error('Lỗi khi lấy dữ liệu:', error);
       }
     };
+
     fetchData();
   }, [conversationId]);
 
@@ -42,8 +43,8 @@ const ConversationId = () => {
     <div className='sm:pl-10 md:pl-20 lg:pl-80 h-full'>
       <div className='h-full flex flex-col'>
         <Header conversation={conversation} />
-        <Body />
-        <Form />
+        <Body messages={messages} />
+        <Form messages={messages} setMessages={setMessages} />
       </div>
     </div>
   );

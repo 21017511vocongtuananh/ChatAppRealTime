@@ -114,12 +114,25 @@ export default class ApiService {
   // MESSAGE
   static async getMessages(conversationId) {
     try {
-      const response = await axios.post(
+      const response = await axios.get(
         `${this.BASE_URL}/messages/${conversationId}`
       );
       return response.data;
     } catch (error) {
       message.error(error.response?.data);
+      throw error;
+    }
+  }
+  static async updateMessage(conversationId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/messages/${conversationId}/seen`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error.response);
       throw error;
     }
   }

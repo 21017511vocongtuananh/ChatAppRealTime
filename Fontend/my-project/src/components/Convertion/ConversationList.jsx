@@ -8,8 +8,9 @@ import ConversationBox from './ConversationBox';
 
 const ConversationList = ({ initialItems }) => {
   const [items, setItems] = useState([]);
+
   useEffect(() => {
-    setItems(initialItems);
+    setItems([...initialItems]); // Tạo bản sao để React nhận diện sự thay đổi
   }, [initialItems]);
 
   const { conversationId, isOpen } = useConversation();
