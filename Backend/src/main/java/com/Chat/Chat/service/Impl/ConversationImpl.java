@@ -34,22 +34,6 @@ public class ConversationImpl implements ConversationService {
 	}
 
 
-//	@Override
-//	public Response createConversation(ConversationDto conversationDto) {
-//		Conversation conversation = Conversation.builder()
-//				.name(conversationDto.getName())
-//				.isGroup(conversationDto.getIsGroup())
-//				.messages(entityMapper.mapMessageDtoBasic(conversationDto.getMessages()))
-//				.build();
-//		Conversation conversation1 = conversationRepo.save(conversation);
-//		ConversationDto conversationDto1 = entityMapper.mapConversationDtoBasic(conversation1);
-//		return Response.builder()
-//				.status(200)
-//				.message("conversation successfully add")
-//				.conversation(conversationDto1)
-//				.build();
-//	}
-
 	@Override
 	public List<ConversationResponse> getConversations() {
 		User currentUser = userService.getLoginUser();

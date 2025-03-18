@@ -18,6 +18,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -36,9 +37,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-	   registry.addEndpoint("ws")
-			   .setAllowedOriginPatterns("*")
+	   registry.addEndpoint("/ws")
+			   .setAllowedOrigins("http://localhost:3000")
 			   .withSockJS();
+	}
+
+	@Override
+	public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+		registry.setMessageSizeLimit(128 * 1024 * 1024);
+		registry.setSendBufferSizeLimit(128 * 1024 * 1024);
+		registry.setSendTimeLimit(60 * 1000);
+		WebSocketMessageBrokerConfigurer.super.configureWebSocketTransport(registry);
 	}
 
 	@Override
@@ -72,4 +81,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			}
 		});
 	}
+
 	}

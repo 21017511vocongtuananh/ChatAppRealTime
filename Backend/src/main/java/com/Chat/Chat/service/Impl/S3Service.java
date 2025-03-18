@@ -26,7 +26,20 @@ public class S3Service {
 
 	public String saveImageToS3(MultipartFile photo) {
 		try {
-			String s3FileName = photo.getOriginalFilename();
+			String contentType = photo.getContentType();
+			String fileExtension = ".jpg";
+			if (contentType != null) {
+				if (contentType.startsWith("video/")) {
+					fileExtension = ".mp4";
+				} else if (contentType.startsWith("image/png")) {
+					fileExtension = ".png";
+				} else if (contentType.startsWith("image/jpeg")) {
+					fileExtension = ".jpg";
+				} else if (contentType.startsWith("application/pdf")) {
+					fileExtension = ".pdf";
+				}
+			}
+			String s3FileName = System.currentTimeMillis() + fileExtension;
 			AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(awsS3AccessKey, awsS3SecretKey);
 			StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(awsCredentials);
 			S3Client s3Client = S3Client.builder()
@@ -36,7 +49,7 @@ public class S3Service {
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 					.bucket(bucketName)
 					.key(s3FileName)
-					.contentType("image/jpeg")
+					.contentType(contentType)
 					.build();
 			s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(photo.getInputStream(), photo.getSize()));
 			return "https://" + bucketName + ".s3.us-east-1.amazonaws.com/" + s3FileName;

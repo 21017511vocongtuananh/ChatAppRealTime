@@ -16,6 +16,10 @@ spring:
           auth: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}
           starttls:
             enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_MULTIPART_MAX_FILE_SIZE}
+      max-request-size: ${SPRING_MULTIPART_MAX_REQUEST_SIZE}
 
 server:
   port: ${SERVER_PORT:8080}

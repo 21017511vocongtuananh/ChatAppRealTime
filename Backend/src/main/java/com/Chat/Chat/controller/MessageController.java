@@ -66,5 +66,13 @@ public class MessageController {
 		messagingTemplate.convertAndSend("/topic/conversation/" + conversationId, savedMessage);
 	}
 
+	@PostMapping("/{conversationId}/seen")
+	public ApiResource<MessageResponse> updateMessageSeen(
+			@PathVariable String conversationId) {
+		MessageResponse response = messageService.updateMessage(conversationId);
+		messagingTemplate.convertAndSend("/topic/conversation/" + conversationId, response);
+		return ApiResource.ok(response,"SUCCESS");
+	}
+
 
 }
