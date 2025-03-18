@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class FileStorageServiceImpl implements FileStorageService {
+public class FileStorageImpl implements FileStorageService {
     private final String UPLOAD_DIR = "uploads/";
-    private static final Logger log = LoggerFactory.getLogger(FileStorageServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(FileStorageImpl.class);
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     @Override

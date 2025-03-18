@@ -15,6 +15,8 @@ public interface UserService {
 	List<UserResponse> getAllUser();
 	UserResponse getByPhoneNumBer();
 
+
+
 }
 
 //	User updateUser(id, updatedUser);

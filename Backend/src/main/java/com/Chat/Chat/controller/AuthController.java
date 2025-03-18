@@ -6,6 +6,7 @@ import com.Chat.Chat.dto.reponse.ResetPasswordResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.*;
 import com.Chat.Chat.service.AuthenticationService;
+import com.Chat.Chat.service.BlacklistService;
 import com.Chat.Chat.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AuthController {
 	private final AuthenticationService authenticationService;
+	private final BlacklistService blacklistService;
 
 
 	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -50,5 +52,10 @@ public class AuthController {
 		return ApiResource.ok(authenticationService.resetPassword(request),"Reset password thanh cong");
 	}
 
+	@PostMapping("/blacklisted_tokens")
+	public ApiResource<?> addTokenToBlacklist(@Valid @RequestBody BlacklistTokenRequest request){
+		Object result =  blacklistService.create(request);
+		return ApiResource.ok(result,"SUCCESS");
+	}
 
 }

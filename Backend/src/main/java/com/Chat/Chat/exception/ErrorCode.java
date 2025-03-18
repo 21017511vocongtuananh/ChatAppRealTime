@@ -15,7 +15,8 @@ public enum ErrorCode {
 	INTERNAL_SERVER_ERROR(500, "Something went wrong on the server", HttpStatus.INTERNAL_SERVER_ERROR),
 	VALIDATION_ERROR(422, "Validation failed", HttpStatus.UNPROCESSABLE_ENTITY),
 	UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
-	INVALID_CREDENTIALS(401, "Invalid credentials provided", HttpStatus.BAD_REQUEST);
+	INVALID_CREDENTIALS(401, "Invalid credentials provided", HttpStatus.BAD_REQUEST),
+	ALREADY_EXISTS(409,"already exists",HttpStatus.CONFLICT);
 
 	private final int code;
 	private final String defaultMessage;
