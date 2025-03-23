@@ -15,16 +15,6 @@ public class ApiResource<T> {
 	private LocalDateTime timestamp;
 	private ErrorResource error;
 
-	public static <T> ApiResource<T> error(String message) {
-		ApiResource<T> response = new ApiResource<>();
-		response.setCode(500);
-		response.setMessage(message);
-		return response;
-	}
-
-
-
-
 	@Data
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class ErrorResource {
@@ -90,5 +80,11 @@ public class ApiResource<T> {
 				.data(data)
 				.message(message)
 				.build();
+	}
+	public static <T> ApiResource<T> error(String message) {
+		ApiResource<T> response = new ApiResource<>();
+		response.setCode(500);
+		response.setMessage(message);
+		return response;
 	}
 }

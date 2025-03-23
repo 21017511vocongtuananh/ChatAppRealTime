@@ -1,6 +1,7 @@
 package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.AuthResponse;
+import com.Chat.Chat.dto.reponse.RefreshTokenResponse;
 import com.Chat.Chat.dto.reponse.ResetPasswordResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.*;
@@ -9,16 +10,22 @@ import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.UserMapper;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.UserRepo;
+import com.Chat.Chat.security.CustomUserDetailsService;
 import com.Chat.Chat.security.JwtUtils;
 import com.Chat.Chat.service.AuthenticationService;
+import com.Chat.Chat.service.BlacklistService;
 import com.Chat.Chat.service.FileStorageService;
+import com.Chat.Chat.service.RefreshTokenService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -29,6 +36,11 @@ public class AuthenticationImpl implements AuthenticationService {
 	private final JwtUtils jwtUtils;
 	private final UserMapper userMapper;
 	private final S3Service s3Service;
+	private final BlacklistService blacklistService;
+	private final RefreshTokenService refreshTokenService;
+	private final CustomUserDetailsService customUserDetailsService;
+	private final String REFRESH_TOKEN = "refresh_token:";
+	private final String BLACKLISTED_TOKEN = "blacklisted_token:";
 
 	@Override
 	public UserResponse registerUser(UserRequest request, MultipartFile imageFile) {
@@ -47,6 +59,13 @@ public class AuthenticationImpl implements AuthenticationService {
 		return userMapper.toUserResponse(user);
 	}
 
+	@Override
+	public Object logOut(String bearerToken) {
+			String token = bearerToken.substring(7);
+			BlacklistTokenRequest request = new BlacklistTokenRequest();
+			request.setToken(token);
+			return blacklistService.create(request);
+	}
 
 	@Override
 	public AuthResponse loginUser(AuthRequest authRequest) {
@@ -56,6 +75,8 @@ public class AuthenticationImpl implements AuthenticationService {
 			throw new ErrorException(ErrorCode.BAD_REQUEST);
 		}
 		String token = jwtUtils.generateToken(user);
+		String refreshToken = jwtUtils.generateRefreshToken(user.getId(),user.getPhoneNumber());
+		saveTokenToRedis(user,refreshToken);
 		UserResponse userResponse = UserResponse.builder()
 				.name(user.getName())
 				.phoneNumber(user.getPhoneNumber())
@@ -65,6 +86,7 @@ public class AuthenticationImpl implements AuthenticationService {
 				.build();
 		return AuthResponse.builder()
 				.token(token)
+				.refreshToken(refreshToken)
 				.user(userResponse)
 				.build();
 	}
@@ -78,5 +100,52 @@ public class AuthenticationImpl implements AuthenticationService {
 				.email(user.getEmail())
 				.build();
 	}
+
+	@Override
+	public RefreshTokenResponse refreshToken(String tokenRefresh) {
+		String phoneNumber = jwtUtils.getUsernameFromToken(tokenRefresh);
+		User user = userRepo.findByPhoneNumber(phoneNumber)
+				.orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
+		UserDetails userDetails = customUserDetailsService.loadUserByUsername(phoneNumber);
+		String refresh_token = refreshTokenService.getToken(REFRESH_TOKEN + user.getId());
+		if(refresh_token == null || !jwtUtils.isTokenValid(refresh_token,userDetails)) {
+			throw new ErrorException(ErrorCode.INVALID_TOKEN);
+		}
+		String new_access_token = jwtUtils.generateToken(user);
+		return RefreshTokenResponse.builder()
+				.token(new_access_token)
+				.refreshToken(refresh_token)
+				.name(user.getName())
+				.phoneNumber(user.getPhoneNumber())
+				.build();
+	}
+
+
+	@Override
+	public void saveTokenToRedis(User user, String refresh_token) {
+		Long expirationTime = jwtUtils.extractExpDate(refresh_token).getTime();
+		Long now = System.currentTimeMillis();
+		Long ttl = expirationTime - now;
+		if (ttl > 0) {
+			refreshTokenService.saveToken(REFRESH_TOKEN + user.getId(), refresh_token, ttl);
+		}
+	}
+
+	@Override
+	public void invalidate_token(String refresh_token) {
+		Long expirationTime = jwtUtils.extractExpDate(refresh_token).getTime();
+		Long now = System.currentTimeMillis();
+		Long ttl = expirationTime - now;
+		if (ttl > 0) {
+			refreshTokenService.saveToken(BLACKLISTED_TOKEN + refresh_token, refresh_token, ttl);
+		}
+	}
+	@Override
+	public boolean isTokenBlacklisted(String refresh_token) {
+		String key = BLACKLISTED_TOKEN + refresh_token;
+		return refreshTokenService.getToken(key) == null;
+	}
+
+
 
 }

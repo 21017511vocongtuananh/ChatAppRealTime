@@ -1,6 +1,7 @@
 package com.Chat.Chat.service.Impl;
 
 
+import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
@@ -61,6 +62,15 @@ public class UserImpl implements UserService {
 		return userResponse;
 	}
 
+//	@Override
+//	public FriendShipResponse addFriend(String userId) {
+//		User currenUser = getLoginUser();
+//		if(currenUser == null)
+//		{
+//			throw new ErrorException(ErrorCode.)
+//		}
+//	}
+
 
 //	public User updateUser(String id, User updatedUser) {
 //		Optional<User> existingUser = userRepo.findById(id);
@@ -75,6 +85,7 @@ public class UserImpl implements UserService {
 //			throw new RuntimeException("User not found");
 //		}
 //	}
+
 
 
 

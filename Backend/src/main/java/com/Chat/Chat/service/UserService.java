@@ -1,6 +1,7 @@
 package com.Chat.Chat.service;
 
 
+import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ApiResource;
 import com.Chat.Chat.model.User;
@@ -15,7 +16,7 @@ public interface UserService {
 	List<UserResponse> getAllUser();
 	UserResponse getByPhoneNumBer();
 
-
+//	FriendShipResponse addFriend(String userId);
 
 }
 

@@ -30,9 +30,11 @@ public class ChatApplication implements CommandLineRunner {
 	@Autowired
 	private UserRepo userRepo;
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(ChatApplication.class, args);
 	}
+
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -136,8 +138,8 @@ public class ChatApplication implements CommandLineRunner {
 			));
 
 			conversationRepo.saveAll(Arrays.asList(convo1, convo2));
-
 			System.out.println("Initialized sample data for MongoDB with 3 users and GroupMember");
+
 		}
-	}
-}
+
+	}}

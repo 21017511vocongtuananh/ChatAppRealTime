@@ -25,31 +25,24 @@ public class BlacklistImpl implements BlacklistService {
 
 	@Override
 	public Object create(BlacklistTokenRequest request) {
-		try {
 			if (blacklistedTokenRepository.existsByToken(request.getToken())) {
 				throw new ErrorException(ErrorCode.ALREADY_EXISTS, "Token này đã có trong danh sách blacklist");
 			}
-
 			Claims claims = jwtUtils.extractAllClaims(request.getToken());
-			System.out.println("All Claims: " + claims);
-
 			Object rawUserId = claims.get("id");
 			String userId = (rawUserId != null) ? rawUserId.toString() : null;
 
 			Date expiration = claims.getExpiration();
 			if (expiration == null) {
-				throw new RuntimeException("Token không có thời gian hết hạn.");
+				throw new ErrorException(ErrorCode.BAD_REQUEST, "Token không có thời gian hết hạn.");
 			}
 
 			BlacklistedToken blacklistedToken = new BlacklistedToken();
 			blacklistedToken.setToken(request.getToken());
 			blacklistedToken.setUserId(userId);
 			blacklistedToken.setExpiryDate(expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-
 			return blacklistedTokenRepository.save(blacklistedToken);
-		} catch (Exception e) {
-			throw new RuntimeException("Lỗi xử lý token: " + e.getMessage());
-		}
+
 	}
 
 }

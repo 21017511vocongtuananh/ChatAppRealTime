@@ -1,5 +1,6 @@
 package com.Chat.Chat.security;
 
+import com.Chat.Chat.dto.request.ErrorResource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,15 +27,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		try {
 			String token = getTokenFromRequest(request);
-			if (token != null)
-			{
+			if (jwtUtils.isBlacklistToken(token)) {
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Xác thực không thành công", "Token đã bị vô hiệu hóa.");
+				return;
+			}
+			if (jwtUtils.isTokenExpired(token)) {
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Xác thực không thành công", "Token đã bị hết hạn.");
+				return;
+			}
+			if (token != null) {
 				String username = jwtUtils.getUsernameFromToken(token);
 				UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
-				if (StringUtils.hasText(username) && jwtUtils.isTokenValid(token,userDetails)){
-					log.info("VALID JWT FOR {}", username);
+				if (StringUtils.hasText(username) && jwtUtils.isTokenValid(token, userDetails)) {
 					UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 							userDetails, null, userDetails.getAuthorities()
 					);
@@ -42,9 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				}
 			}
-		}catch (Exception e){
-			log.error("Lỗi khi xác thực JWT: {}", e.getMessage());
-		}
+
 		filterChain.doFilter(request,response);
 	}
 
@@ -55,6 +58,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			return token.substring(7);
 		}
 		return null;
+	}
+	private void sendErrorResponse(HttpServletResponse response, int status, String error, String message) throws IOException {
+		response.setStatus(status);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(String.format("{\"error\": \"%s\", \"message\": \"%s\"}", error, message));
 	}
 
 }

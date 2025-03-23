@@ -16,7 +16,8 @@ public enum ErrorCode {
 	VALIDATION_ERROR(422, "Validation failed", HttpStatus.UNPROCESSABLE_ENTITY),
 	UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
 	INVALID_CREDENTIALS(401, "Invalid credentials provided", HttpStatus.BAD_REQUEST),
-	ALREADY_EXISTS(409,"already exists",HttpStatus.CONFLICT);
+	ALREADY_EXISTS(409,"already exists",HttpStatus.CONFLICT),
+	INVALID_TOKEN(401, "Invalid or expired token", HttpStatus.UNAUTHORIZED);
 
 	private final int code;
 	private final String defaultMessage;

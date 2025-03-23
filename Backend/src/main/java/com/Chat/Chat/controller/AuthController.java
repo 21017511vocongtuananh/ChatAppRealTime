@@ -1,16 +1,17 @@
 package com.Chat.Chat.controller;
 
 
-import com.Chat.Chat.dto.reponse.AuthResponse;
-import com.Chat.Chat.dto.reponse.ResetPasswordResponse;
-import com.Chat.Chat.dto.reponse.UserResponse;
+import com.Chat.Chat.dto.reponse.*;
 import com.Chat.Chat.dto.request.*;
 import com.Chat.Chat.service.AuthenticationService;
 import com.Chat.Chat.service.BlacklistService;
+import com.Chat.Chat.service.RefreshTokenService;
 import com.Chat.Chat.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 public class AuthController {
 	private final AuthenticationService authenticationService;
 	private final BlacklistService blacklistService;
+
 
 
 	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -53,9 +55,28 @@ public class AuthController {
 	}
 
 	@PostMapping("/blacklisted_tokens")
-	public ApiResource<?> addTokenToBlacklist(@Valid @RequestBody BlacklistTokenRequest request){
+	public ApiResource<Object> addTokenToBlacklist(@Valid @RequestBody BlacklistTokenRequest request){
 		Object result =  blacklistService.create(request);
-		return ApiResource.ok(result,"SUCCESS");
+		return ApiResource.ok(result,"Đưa thành công token vào BlacklistToken");
 	}
 
+	@GetMapping("/loggout")
+	public ApiResource<Object> loggout(@RequestHeader("Authorization") String bearerToken){
+		try {
+			return ApiResource.ok(authenticationService.logOut(bearerToken),"Them Token Vao BlackList Thanh Cong");
+		}catch (Exception e){
+			return ApiResource.error("Network Error!");
+		}
+	}
+
+	@PostMapping("/refresh")
+	public ApiResource<RefreshTokenResponse> refreshToken(HttpServletRequest request){
+		String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if(authHeader == null || !authHeader.contains("Bearer ")){
+			return ApiResource.error("please login again");
+		}
+		String access_token = authHeader.substring(7);
+		RefreshTokenResponse refresh = authenticationService.refreshToken(access_token);
+		return ApiResource.ok(refresh,"SUCCESS");
+	}
 }

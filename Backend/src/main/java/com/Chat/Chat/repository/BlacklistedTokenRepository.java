@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface BlacklistedTokenRepository extends MongoRepository<BlacklistedToken, String> {
 	boolean existsByToken(String token);
-	Optional<User> findByPhoneNumber(String phoneNumber);
+//	Optional<User> findByPhoneNumber(String phoneNumber);
 }

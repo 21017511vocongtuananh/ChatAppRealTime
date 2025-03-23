@@ -5,6 +5,11 @@ spring:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URI}
       auto-index-creation: true
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
+      password: ${SPRING_REDIS_PASSWORD}
+      username: ${SPRING_REDIS_USERNAME}
   mail:
     host: ${SPRING_MAIL_HOST}
     port: ${SPRING_MAIL_PORT}
@@ -22,11 +27,13 @@ spring:
       max-request-size: ${SPRING_MULTIPART_MAX_REQUEST_SIZE}
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT}
 
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+  expirationRefreshToken: ${JWT_REFRESHMENTS}
+
 aws:
   s3:
     access-key-id: ${AWS_S3_ACCESS_KEY_ID}

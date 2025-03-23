@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
 				.build();
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
 	@ExceptionHandler(ErrorException.class)
 	public ResponseEntity<ApiResource<Object>> handleErrorException(ErrorException ex, WebRequest request) {
 		ApiResource<Object> errorResponse = ApiResource.builder()
