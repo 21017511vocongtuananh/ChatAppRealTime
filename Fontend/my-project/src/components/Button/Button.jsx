@@ -1,12 +1,28 @@
 import React from 'react';
 
-const CustomButton = ({ children, onClick, isLoading, disabled }) => {
+const CustomButton = ({
+  children,
+  onClick,
+  isLoading,
+  disabled,
+  color = 'blue',
+  size = 'medium'
+}) => {
+  const colorClasses = {
+    blue: 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500 disabled:bg-blue-300',
+    red: 'bg-red-500 hover:bg-red-600 focus:ring-red-500 disabled:bg-red-300',
+    gray: 'bg-gray-500 hover:bg-gray-600 focus:ring-gray-500 disabled:bg-gray-300 text-black'
+  };
+
+  const sizeClasses = {
+    small: 'mr-4',
+    medium: ''
+  };
   return (
     <button
       onClick={onClick}
-      className={`bg-blue-500 text-white font-bold py-2 px-4 rounded w-full 
-                  hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500
-                  disabled:bg-blue-300`}
+      className={`text-white font-bold py-2 px-4 rounded w-full 
+                  focus:outline-none focus:ring-2 ${colorClasses[color]} ${sizeClasses[size]}`}
       disabled={isLoading || disabled}
     >
       {isLoading ? 'Đang xử lý...' : children}

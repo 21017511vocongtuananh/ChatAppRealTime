@@ -64,7 +64,6 @@ export default class ApiService {
   }
 
   // USER
-
   static async getAllUser() {
     try {
       const response = await axios.get(`${this.BASE_URL}/users/get-all`, {
@@ -88,7 +87,6 @@ export default class ApiService {
   }
 
   // CONVERSSTION
-
   static async getConversation() {
     try {
       const response = await axios.get(`${this.BASE_URL}/conversation`, {
@@ -99,6 +97,7 @@ export default class ApiService {
       message.error('Lỗi khi lấy thông tin conversation:', error);
     }
   }
+
   static async getConversationId(conversationId) {
     try {
       const response = await axios.post(
@@ -106,8 +105,18 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      message.error(error.response?.data);
-      throw error;
+      console.log(error);
+    }
+  }
+
+  static async deleteConversation(conversationId) {
+    try {
+      const reponse = await axios.post(
+        `${this.BASE_URL}/conversation/delete/${conversationId}`
+      );
+      return reponse;
+    } catch (error) {
+      console.log(error);
     }
   }
 

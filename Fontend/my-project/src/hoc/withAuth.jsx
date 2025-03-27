@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ApiService from '../services/apis';
 
 const withAuth = (Component) => {
   const AuthenticatedComponent = (props) => {
     const navigate = useNavigate();
-    const isAuthenticated = !!localStorage.getItem('token');
+    const isAuthenticated = ApiService.isAuthenticated;
 
     useEffect(() => {
       if (!isAuthenticated) {

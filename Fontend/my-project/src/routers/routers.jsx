@@ -32,6 +32,7 @@ const useRoutes = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // Xóa token nếu có
+    localStorage.removeItem('refreshToken');
     navigate('/');
   };
 

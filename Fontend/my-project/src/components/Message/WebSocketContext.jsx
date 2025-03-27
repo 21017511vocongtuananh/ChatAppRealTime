@@ -1,7 +1,12 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-
 const WebSocketContext = createContext();
 
 const getHeader = () => ({
