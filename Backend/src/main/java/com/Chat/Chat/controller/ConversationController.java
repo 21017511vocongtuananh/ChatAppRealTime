@@ -26,4 +26,11 @@ public class ConversationController {
 		return ApiResource.ok(conversationService.getConversationId(conversationId),"SUCCESS");
 	}
 
+	@PostMapping("/delete/{conversationId}")
+	public ApiResource<String> deleteConversation(@PathVariable String conversationId)
+	{
+		conversationService.deleteConversation(conversationId);
+        return ApiResource.<String>builder().message("Conversation xoa thanh cong").build();
+	}
+
 }

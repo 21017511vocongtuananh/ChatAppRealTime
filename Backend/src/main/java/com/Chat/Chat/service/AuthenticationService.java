@@ -20,5 +20,5 @@ public interface AuthenticationService {
 	void saveTokenToRedis(User user,String refresh_token);
 	void invalidate_token(String refresh_token);
 	boolean isTokenBlacklisted(String refresh_token);
-	RefreshTokenResponse refreshToken(String token);
+	RefreshTokenResponse refreshToken(RefreshTokenRequest token);
 }

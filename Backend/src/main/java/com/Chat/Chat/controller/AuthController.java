@@ -70,13 +70,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/refresh")
-	public ApiResource<RefreshTokenResponse> refreshToken(HttpServletRequest request){
-		String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if(authHeader == null || !authHeader.contains("Bearer ")){
-			return ApiResource.error("please login again");
-		}
-		String access_token = authHeader.substring(7);
-		RefreshTokenResponse refresh = authenticationService.refreshToken(access_token);
-		return ApiResource.ok(refresh,"SUCCESS");
+	public ApiResource<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request){
+		RefreshTokenResponse refresh = authenticationService.refreshToken(request);
+		return ApiResource.ok(refresh, "SUCCESS");
 	}
+
 }

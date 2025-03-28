@@ -8,4 +8,5 @@ public interface ConversationService {
 //   Response createConversation(ConversationDto conversationDto);
    List<ConversationResponse> getConversations();
    ConversationResponse getConversationId(String id);
+   void deleteConversation(String id);
 }

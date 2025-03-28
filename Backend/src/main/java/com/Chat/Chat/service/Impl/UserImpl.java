@@ -62,6 +62,9 @@ public class UserImpl implements UserService {
 		return userResponse;
 	}
 
+
+
+
 //	@Override
 //	public FriendShipResponse addFriend(String userId) {
 //		User currenUser = getLoginUser();

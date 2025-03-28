@@ -31,6 +31,7 @@ public class ConversationMapper {
 						.name(user.getName())
 						.phoneNumber(user.getPhoneNumber())
 						.image(user.getImage())
+						.createdAt(user.getCreatedAt())
 						.build())
 				.orElse(null);
 	}

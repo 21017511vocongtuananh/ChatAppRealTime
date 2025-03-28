@@ -72,6 +72,8 @@ public class ApiResource<T> {
 		public ApiResource<T> build() {
 			return resource;
 		}
+
+
 	}
 
 	public static <T> ApiResource<T> ok(T data, String message) {

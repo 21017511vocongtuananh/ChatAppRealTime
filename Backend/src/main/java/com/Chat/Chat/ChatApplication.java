@@ -51,7 +51,7 @@ public class ChatApplication implements CommandLineRunner {
 			user1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user1.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user1.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
-//			user1.setSeenMessageIds(Collections.emptyList());
+			user1.setSeenMessageIds(Collections.emptyList());
 
 			User user2 = new User();
 			user2.setId("67c0b55afe7b947481a9c68f");
@@ -64,7 +64,7 @@ public class ChatApplication implements CommandLineRunner {
 			user2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user2.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user2.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
-//			user2.setSeenMessageIds(Collections.emptyList());
+			user2.setSeenMessageIds(Collections.emptyList());
 
 			User user3 = new User();
 			user3.setId("67c0b55afe7b947481a9c690");
@@ -77,7 +77,7 @@ public class ChatApplication implements CommandLineRunner {
 			user3.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 38, 0, 0));
 			user3.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 38, 0, 0));
 			user3.setConversationIds(Collections.singletonList("507f191e810c19729de860eb"));
-//			user3.setSeenMessageIds(Collections.emptyList());
+			user3.setSeenMessageIds(Collections.emptyList());
 
 			userRepo.saveAll(Arrays.asList(user1, user2, user3));
 

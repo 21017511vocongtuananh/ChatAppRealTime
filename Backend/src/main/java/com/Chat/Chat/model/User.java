@@ -38,7 +38,7 @@ public class User {
 	@Builder.Default
 	private List<String> conversationIds = new ArrayList<>();
 
-//	@Field("seenMessageIds")
-//	@Builder.Default
-//	private List<String> seenMessageIds = new ArrayList<>();
+	@Field("seenMessageIds")
+	@Builder.Default
+	private List<String> seenMessageIds = new ArrayList<>();
 }

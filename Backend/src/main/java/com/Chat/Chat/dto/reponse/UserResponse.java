@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -19,4 +22,5 @@ public class UserResponse {
 	private String email;
 	private String image;
 	private LocalDate dateOfBirth;
+	private LocalDateTime createdAt;
 }

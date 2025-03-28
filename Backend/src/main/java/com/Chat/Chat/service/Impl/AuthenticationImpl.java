@@ -55,6 +55,7 @@ public class AuthenticationImpl implements AuthenticationService {
 		User user = userMapper.toUser(request);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setImage(imageUrl);
+		user.setGender(request.getGender());
 		userRepo.save(user);
 		return userMapper.toUserResponse(user);
 	}
@@ -75,7 +76,7 @@ public class AuthenticationImpl implements AuthenticationService {
 			throw new ErrorException(ErrorCode.BAD_REQUEST);
 		}
 		String token = jwtUtils.generateToken(user);
-		String refreshToken = jwtUtils.generateRefreshToken(user.getId(),user.getPhoneNumber());
+		String refreshToken = jwtUtils.generateRefreshToken(user);
 		saveTokenToRedis(user,refreshToken);
 		UserResponse userResponse = UserResponse.builder()
 				.name(user.getName())
@@ -102,8 +103,8 @@ public class AuthenticationImpl implements AuthenticationService {
 	}
 
 	@Override
-	public RefreshTokenResponse refreshToken(String tokenRefresh) {
-		String phoneNumber = jwtUtils.getUsernameFromToken(tokenRefresh);
+	public RefreshTokenResponse refreshToken(RefreshTokenRequest tokenRefresh) {
+		String phoneNumber = jwtUtils.getUsernameFromToken(tokenRefresh.getRefreshToken());
 		User user = userRepo.findByPhoneNumber(phoneNumber)
 				.orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(phoneNumber);
