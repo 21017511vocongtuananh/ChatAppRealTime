@@ -8,13 +8,14 @@ import {
 } from 'react-icons/hi2';
 import Avatar from '../Avatar';
 import { MdOutlineGroupAdd } from 'react-icons/md';
+import AvatarGroup from '@components/AvatarGroup';
 
 const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
   const otherUser = useOtherUser(conversation.data || []);
 
   const statusText = useMemo(() => {
-    if (conversation?.isGroup) {
-      return `${conversation?.users?.length || 0} members`;
+    if (conversation?.data.isGroup) {
+      return `${conversation?.data?.users?.length || 0} thành viên`;
     }
     return `Active`;
   }, [conversation]);
@@ -32,7 +33,11 @@ const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
         >
           <HiChevronLeft size={25} />
         </Link>
-        <Avatar user={otherUser} />
+        {conversation?.data.isGroup ? (
+          <AvatarGroup users={conversation?.data?.users} />
+        ) : (
+          <Avatar user={otherUser} />
+        )}
         <div className='flex flex-col'>
           <div>{conversation.name || otherUser.name}</div>
           <div className='text-sm font-light text-neutral-500'>

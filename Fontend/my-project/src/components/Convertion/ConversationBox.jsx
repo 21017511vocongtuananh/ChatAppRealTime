@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import Avatar from '@/components/Avatar';
-import ApiService from '../../services/apis';
 import useOtherUser from '../../hooks/useOtherUser';
 import { format, parseISO } from 'date-fns';
 import usePhoneNumber from '../../hooks/usePhoneNumber';
+import AvatarGroup from '@components/AvatarGroup';
 
 const ConversationBox = ({ data, selected }) => {
   const otherUser = useOtherUser(data);
@@ -56,7 +56,12 @@ const ConversationBox = ({ data, selected }) => {
         selected ? 'bg-[#DBEBFF]' : 'bg-white'
       )}
     >
-      <Avatar user={otherUser} />
+      {data.isGroup ? (
+        <AvatarGroup users={data.users} />
+      ) : (
+        <Avatar user={otherUser} />
+      )}
+
       <div className='min-w-0 flex-1'>
         <div className='focus:outline-none'>
           <div className='flex justify-between items-center mb-1'>

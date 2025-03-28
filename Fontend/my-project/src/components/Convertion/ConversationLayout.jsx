@@ -7,6 +7,19 @@ import { useWebSocket } from '../Message/WebSocketContext';
 const ConversationLayout = ({ children }) => {
   const [conversation, setConversation] = useState([]);
   const { subscribe } = useWebSocket();
+  const [user, setUser] = useState([]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await ApiService.getAllUser();
+        setUser(response.data);
+      } catch (error) {
+        console.error('Lỗi khi lấy thông tin conversation:', error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -45,7 +58,7 @@ const ConversationLayout = ({ children }) => {
   return (
     <Sidebar>
       <div className='h-full'>
-        <ConversationList initialItems={conversation} />
+        <ConversationList users={user} initialItems={conversation} />
         {children}
       </div>
     </Sidebar>

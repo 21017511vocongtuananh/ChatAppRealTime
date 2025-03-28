@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { IoTrash } from 'react-icons/io5';
 import Avatar from '@components/Avatar';
 import ConfirmModal from '@components/ConfirmModal';
+import AvatarGroup from '@components/AvatarGroup';
 
 const ProfileDrawer = ({ isOpen, onClose, data }) => {
   const otherUser = useOtherUser(data.data || []);
@@ -19,7 +20,7 @@ const ProfileDrawer = ({ isOpen, onClose, data }) => {
 
   const statusText = useMemo(() => {
     if (data.data.isGroup) {
-      return `${data.data.users.length} members`;
+      return `${data.data.users.length} thành viên`;
     }
     return 'Active';
   }, [data]);
@@ -48,7 +49,11 @@ const ProfileDrawer = ({ isOpen, onClose, data }) => {
         <div className='relative mt-6 flex-1 px-4 sm:px-6'>
           <div className='flex flex-col items-center'>
             <div className='mb-4'>
-              <Avatar user={otherUser} />
+              {data.data.isGroup ? (
+                <AvatarGroup users={data.data.users} />
+              ) : (
+                <Avatar user={otherUser} />
+              )}
             </div>
             <div>{title}</div>
             <div className='text-sm text-gray-500'>{statusText}</div>
