@@ -1,6 +1,6 @@
 # ChatZalo Realtime
 
-ChatZalo Realtime là một ứng dụng nhắn tin thời gian thực được xây dựng bằng **Spring Boot** cho backend và **ReactJS** cho frontend, sử dụng **WebSocket** và **Socket.io** để đảm bảo trải nghiệm nhắn tin mượt mà.
+ChatZalo Realtime là một ứng dụng nhắn tin thời gian thực được xây dựng bằng **Spring Boot** cho backend và **ReactJS** cho frontend, sử dụng **WebSocket** với thư viện **Socket.io** để đảm bảo trải nghiệm nhắn tin mượt mà.
 
 ## 🚀 Công nghệ sử dụng
 
