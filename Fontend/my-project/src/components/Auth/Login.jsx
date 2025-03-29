@@ -25,6 +25,7 @@ const Login = () => {
     try {
       const data = await ApiService.loginApi(formData);
       localStorage.setItem('token', data.data.token);
+      localStorage.setItem('refreshToken', data.data.refreshToken);
       navigate('/conversations');
     } catch (errorMessage) {
       setError(errorMessage);

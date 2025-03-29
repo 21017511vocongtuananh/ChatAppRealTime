@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
+import axiosInstance from './axiosConfig';
 
 export default class ApiService {
   static BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -77,9 +78,9 @@ export default class ApiService {
 
   static async getPhoneLogin() {
     try {
-      const response = await axios.get(`${this.BASE_URL}/users/get-phone`, {
-        headers: this.getHeader()
-      });
+      const response = await axiosInstance.get(
+        `${this.BASE_URL}/users/get-phone`
+      );
       return response.data;
     } catch (error) {
       message.error('Lỗi khi lấy thông tin phone user:', error);
