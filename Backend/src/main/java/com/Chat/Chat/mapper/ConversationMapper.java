@@ -28,6 +28,7 @@ public class ConversationMapper {
 	public UserResponse toUserResponse(String userId){
 		return userRepo.findById(userId)
 				.map(user -> UserResponse.builder()
+						.id(user.getId())
 						.name(user.getName())
 						.phoneNumber(user.getPhoneNumber())
 						.image(user.getImage())

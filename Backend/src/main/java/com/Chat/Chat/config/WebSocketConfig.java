@@ -8,6 +8,7 @@ import com.Chat.Chat.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -27,6 +28,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private final JwtUtils jwtUtils;
 	private final UserRepo userRepo;
+	private final RedisTemplate<String, String > redisTemplate;
 
 
 	@Override

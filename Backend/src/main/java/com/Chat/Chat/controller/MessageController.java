@@ -64,6 +64,7 @@ public class MessageController {
 		}
 		MessageResponse savedMessage = messageService.createMessage(conversationId, request, currentUser);
 		messagingTemplate.convertAndSend("/topic/conversation/" + conversationId, savedMessage);
+		log.info("Message sent to topic: /topic/conversation/{}", conversationId);
 	}
 
 	@PostMapping("/{conversationId}/seen")

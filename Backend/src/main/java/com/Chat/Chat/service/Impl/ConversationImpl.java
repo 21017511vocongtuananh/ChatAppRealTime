@@ -42,6 +42,7 @@ public class ConversationImpl implements ConversationService {
 	@Override
 	public List<ConversationResponse> getConversations() {
 		User currentUser = userService.getLoginUser();
+		// lay tat ca
 		List<ConversationResponse> conversationResponses  = conversationRepo.findByGroupMembersUserIdOrderByLastMessageAtDesc(currentUser.getId())
 				.stream()
 				.map(conversationMapper::toConversationResponse)

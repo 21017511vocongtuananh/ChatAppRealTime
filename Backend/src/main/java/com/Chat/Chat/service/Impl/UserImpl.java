@@ -12,11 +12,13 @@ import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +28,8 @@ public class UserImpl implements UserService {
 
 	private final UserRepo userRepo;
 	private final UserMapper userMapper;
+	private final RedisTemplate<String, Object> redisTemplate;
+	private final String ONLINE_USER = "online_users";
 
 
 	@Override
@@ -61,9 +65,6 @@ public class UserImpl implements UserService {
 		UserResponse userResponse = userMapper.toUserResponse(user);
 		return userResponse;
 	}
-
-
-
 
 //	@Override
 //	public FriendShipResponse addFriend(String userId) {
