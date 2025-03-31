@@ -20,7 +20,7 @@ const RegisPassword = () => {
       message.error('Mật khẩu không khớp!');
       return;
     }
-    localStorage.setItem("password", password);
+    localStorage.setItem('password', password);
 
     // Điều hướng sang trang RegisProfile sau khi xác nhận mật khẩu thành công
     navigate('/regis-profile');
