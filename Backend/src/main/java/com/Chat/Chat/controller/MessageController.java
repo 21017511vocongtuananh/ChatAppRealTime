@@ -48,7 +48,8 @@ public class MessageController {
 	}
 
 	@MessageMapping("/chat/{conversationId}")
-	public void sendMessage(@Payload MessageRequest request,
+	@SendTo("/topic/conversation/{conversationId}")
+	public MessageResponse sendMessage(@Payload MessageRequest request,
 							@DestinationVariable String conversationId,
 							SimpMessageHeaderAccessor headerAccessor) {
 		log.info("Received message: {}", request.getMessage());
@@ -63,8 +64,7 @@ public class MessageController {
 			}
 		}
 		MessageResponse savedMessage = messageService.createMessage(conversationId, request, currentUser);
-		messagingTemplate.convertAndSend("/topic/conversation/" + conversationId, savedMessage);
-		log.info("Message sent to topic: /topic/conversation/{}", conversationId);
+		return savedMessage;
 	}
 
 	@PostMapping("/{conversationId}/seen")
