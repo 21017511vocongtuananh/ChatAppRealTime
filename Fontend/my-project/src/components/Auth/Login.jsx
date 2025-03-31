@@ -20,12 +20,23 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
 
+    const { phoneNumber, password } = formData;
+
+    if (!/^\d{9,11}$/.test(phoneNumber)) {
+      setError('Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng.');
+      return;
+    }
+
+    if (password.length < 5) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự.');
+      return;
+    }
+    setIsLoading(true);
     try {
       const data = await ApiService.loginApi(formData);
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('refreshToken', data.data.refreshToken);
+      sessionStorage.setItem('token', data.data.token);
+      sessionStorage.setItem('refreshToken', data.data.refreshToken);
       navigate('/conversations');
     } catch (errorMessage) {
       setError(errorMessage);

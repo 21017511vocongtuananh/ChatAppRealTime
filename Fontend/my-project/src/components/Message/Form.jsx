@@ -10,7 +10,6 @@ import {
   HiPaperClip
 } from 'react-icons/hi2';
 import MessageInput from './MessageInput';
-import { message as antdMessage } from 'antd';
 
 const Form = ({ messages, setMessages }) => {
   const { conversationId } = useParams();

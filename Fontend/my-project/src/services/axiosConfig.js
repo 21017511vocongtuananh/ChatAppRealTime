@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -36,11 +36,11 @@ axiosInstance.interceptors.response.use(
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = sessionStorage.getItem('refreshToken');
 
       if (!refreshToken) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         return Promise.reject(err);
       }
@@ -50,13 +50,13 @@ axiosInstance.interceptors.response.use(
         });
         if (response.status === 200) {
           const newToken = response.data.data.token;
-          localStorage.setItem('token', newToken);
+          sessionStorage.setItem('token', newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return axiosInstance(originalRequest);
         }
       } catch (error) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         return Promise.reject(error);
       }

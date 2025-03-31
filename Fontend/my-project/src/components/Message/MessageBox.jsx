@@ -6,7 +6,6 @@ import { Button, Image } from 'antd';
 
 const MessageBox = ({ data, isLast }) => {
   const { phone } = usePhoneNumber();
-
   const isOwn = phone === data.sender.phoneNumber;
   const isVideo = data.image?.endsWith('.mp4');
   const isFile = data.image?.endsWith('.pdf');
@@ -22,19 +21,38 @@ const MessageBox = ({ data, isLast }) => {
   );
   const avatar = clsx(isOwn && 'order-2');
   const body = clsx(
-    'flex flex-col gap-1 bg-gray-100 shadow-sm rounded-lg p-2 w-full max-w-[20%]',
+    'flex flex-col gap-1 bg-gray-100 shadow-sm rounded-lg p-2 w-fit min-w-[100px] max-w-[75%] break-words',
     isOwn && 'items-end',
     data.image && 'bg-white !shadow-none'
   );
   const message = clsx(
-    'text-sm w-fit overflow-hidden',
+    'text-sm w-fit overflow-hidden break-all',
     isOwn ? 'text-black' : 'bg-gray-100',
-    data.image ? 'rounded-md p-0' : 'rounded-full py-2'
+    data.image ? 'rounded-md p-0' : 'py-2'
   );
   const time = clsx(
     'text-sm flex items-center justify-between text-gray-400 w-full ',
     isOwn ? 'flex-row' : 'flex-row-reverse'
   );
+
+  const renderMessage = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlRegex).map((part, index) =>
+      urlRegex.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-blue-500 underline break-all'
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
+  };
 
   return (
     <div className={container}>
@@ -52,9 +70,9 @@ const MessageBox = ({ data, isLast }) => {
             isVideo ? (
               <video
                 controls
-                width='285'
-                height='300'
-                className='cursor-pointer transition transform border rounded-2xl'
+                width={285}
+                height={300}
+                className='object-cover cursor-pointer hover:scale-110 transition transform border rounded-2xl'
               >
                 <source src={data.image} type='video/mp4' />
               </video>
@@ -84,7 +102,7 @@ const MessageBox = ({ data, isLast }) => {
               />
             )
           ) : (
-            <div>{data.body}</div>
+            <div>{renderMessage(data.body)}</div>
           )}
         </div>
         <div className={time}>

@@ -15,7 +15,7 @@ const Body = ({ messages }) => {
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}
-          key={message.id}
+          key={`${message.id}-${i}`}
           data={message}
         />
       ))}

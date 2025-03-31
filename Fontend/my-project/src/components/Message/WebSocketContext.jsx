@@ -7,23 +7,19 @@ import React, {
 } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
+
 const WebSocketContext = createContext();
 
 const getHeader = () => ({
-  Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+  Authorization: `Bearer ${sessionStorage.getItem('token') || ''}`
 });
 
 export const WebSocketProvider = ({ children }) => {
   const stompClientRef = useRef(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/ws');
     const client = Stomp.over(socket);
-
-    if (!token) {
-      return;
-    }
     client.connect(
       getHeader(),
       () => {
@@ -37,7 +33,7 @@ export const WebSocketProvider = ({ children }) => {
         stompClientRef.current.disconnect();
       }
     };
-  }, [token]);
+  }, []);
 
   const subscribe = (topic, callback) => {
     if (!stompClientRef.current?.connected) return () => {};

@@ -6,7 +6,7 @@ export default class ApiService {
   static BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   static getHeader() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     return {
       Authorization: token ? `Bearer ${token}` : '',
       'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export default class ApiService {
       message.success('Đặt lại mật khẩu thành công!');
       return response.data;
     } catch (error) {
-      message.error(
+      console.error(
         'Đặt lại mật khẩu thất bại: ' +
           (error.response?.data?.message || 'Không xác định')
       );
@@ -59,7 +59,7 @@ export default class ApiService {
           message.error(err);
         });
       } else {
-        message.error(errorData.message);
+        console.error(errorData.message);
       }
     }
   }
@@ -72,7 +72,7 @@ export default class ApiService {
       });
       return response.data;
     } catch (error) {
-      message.error('Lỗi khi lấy thông tin all user:', error);
+      console.error('Lỗi khi lấy thông tin all user:', error);
     }
   }
 
@@ -83,7 +83,7 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      message.error('Lỗi khi lấy thông tin phone user:', error);
+      console.error('Lỗi khi lấy thông tin phone user:', error);
     }
   }
 
@@ -95,7 +95,7 @@ export default class ApiService {
       });
       return response.data;
     } catch (error) {
-      message.error('Lỗi khi lấy thông tin conversation:', error);
+      console.error('Lỗi khi lấy thông tin conversation:', error);
     }
   }
 
@@ -129,8 +129,7 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      message.error(error.response?.data);
-      throw error;
+      console.error(error.response?.data);
     }
   }
   static async updateMessage(conversationId) {
@@ -143,7 +142,6 @@ export default class ApiService {
       return response.data;
     } catch (error) {
       console.error('API Error:', error.response);
-      throw error;
     }
   }
 

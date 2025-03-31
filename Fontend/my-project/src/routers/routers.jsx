@@ -31,8 +31,8 @@ const useRoutes = () => {
   const { conversationId } = useConversation();
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Xóa token nếu có
-    localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('token'); // Xóa token nếu có
+    sessionStorage.removeItem('refreshToken');
     navigate('/');
   };
 

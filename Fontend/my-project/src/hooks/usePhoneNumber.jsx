@@ -15,7 +15,7 @@ const usePhoneNumber = () => {
         setData(response.data);
         setPhone(response?.data?.phoneNumber || '');
       } catch (err) {
-        message.error('Error fetching phone number:', err);
+        console.error('Error fetching phone number:', err);
         setError(err);
       } finally {
         setLoading(false);

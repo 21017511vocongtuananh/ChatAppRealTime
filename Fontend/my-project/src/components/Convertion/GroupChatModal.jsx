@@ -36,6 +36,7 @@ const GroupChatModal = ({ isOpen, onClose, users }) => {
                 font-semibold
                 leading-7
                 text-gray-900
+                
               '
               >
                 Tạo Nhóm
@@ -86,6 +87,7 @@ const GroupChatModal = ({ isOpen, onClose, users }) => {
               disabled={isLoading}
               onClick={onClose}
               type='button'
+              color='red'
               secondary
             >
               Hủy

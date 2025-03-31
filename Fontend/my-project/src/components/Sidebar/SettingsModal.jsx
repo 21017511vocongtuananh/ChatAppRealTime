@@ -8,7 +8,7 @@ import React from 'react';
 
 const SettingsModal = ({ currentUser, isOpen, onClose }) => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const {
     register,
     handleSubmit,
@@ -26,7 +26,8 @@ const SettingsModal = ({ currentUser, isOpen, onClose }) => {
 
   return (
     <div>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* Modal hiển thị thông tin */}
+      <Modal isOpen={isOpen && !isEditing} onClose={onClose}>
         <div className='relative w-full h-40 bg-black'>
           <img
             src='https://res.cloudinary.com/doypwarq0/image/upload/v1732065025/samples/balloons.jpg'
@@ -49,7 +50,7 @@ const SettingsModal = ({ currentUser, isOpen, onClose }) => {
           </h2>
         </div>
 
-        <div className='p-6'>
+        <div className='p-2'>
           <h3 className='text-lg font-semibold'>Thông tin cá nhân</h3>
           <div className='mt-4 space-y-2'>
             <p>
@@ -66,9 +67,38 @@ const SettingsModal = ({ currentUser, isOpen, onClose }) => {
             type='primary'
             block
             className='mt-4 flex items-center justify-center'
+            onClick={() => setIsEditing(true)}
           >
             <EditOutlined className='mr-2' /> Cập nhật
           </Button>
+        </div>
+      </Modal>
+
+      {/* Modal chỉnh sửa */}
+      <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
+        <div className='p-4'>
+          <h2 className='text-lg font-semibold mb-4'>Chỉnh sửa thông tin</h2>
+          <form>
+            <label className='block mb-2'>Tên:</label>
+            <input
+              {...register('name')}
+              className='w-full border px-2 py-1 rounded'
+            />
+            <label className='block mt-4 mb-2'>Ảnh:</label>
+            <input
+              type='file'
+              {...register('image')}
+              className='w-full border px-2 py-1 rounded'
+            />
+            <Button
+              type='primary'
+              block
+              className='mt-4'
+              onClick={() => setIsEditing(false)}
+            >
+              Lưu
+            </Button>
+          </form>
         </div>
       </Modal>
     </div>

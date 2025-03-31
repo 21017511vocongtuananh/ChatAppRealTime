@@ -1,7 +1,7 @@
 import { Image } from 'antd';
 
-const AvatarGroup = ({ users }) => {
-  const slicedUsers = users.slice(0, 3);
+const AvatarGroup = ({ users = [] }) => {
+  const slicedUsers = users.slice(0, 3) || [];
 
   const positionMap = {
     0: 'top-0 left-[12px]',
@@ -30,11 +30,7 @@ const AvatarGroup = ({ users }) => {
               ${positionMap[index] || ''}
             `}
         >
-          <Image
-            alt='Avatar'
-            fill
-            src={user?.image || '/images/placeholder.jpg'}
-          />
+          <Image alt='Avatar' src={user?.image || '/images/placeholder.jpg'} />
         </div>
       ))}
     </div>
