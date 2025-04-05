@@ -30,6 +30,7 @@ const Input = ({ label, id, type, required, register, errors, disabled }) => {
             rounded-md
             border-0
             py-1.5
+            pl-3
             text-gray-900
             shadow-sm
             ring-1

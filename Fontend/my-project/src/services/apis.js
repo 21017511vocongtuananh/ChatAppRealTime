@@ -129,6 +129,19 @@ export default class ApiService {
     }
   }
 
+  static async createConversation(data) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/conversation/create/conversation`,
+        data,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi tạo cuộc trò chuyện:', error);
+    }
+  }
+
   // MESSAGE
   static async getMessages(conversationId) {
     try {
@@ -147,7 +160,7 @@ export default class ApiService {
         {},
         { headers: this.getHeader() }
       );
-      return response.data;
+      return response.data || [];
     } catch (error) {
       console.error('API Error:', error.response);
     }

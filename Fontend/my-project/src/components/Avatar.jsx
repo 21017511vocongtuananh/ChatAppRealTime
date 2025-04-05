@@ -5,13 +5,11 @@ import usePhoneNumber from '../hooks/usePhoneNumber.js';
 import useActiveList from '../hooks/useActiveList';
 
 const Avatar = ({ user }) => {
-  const [isOnline, setIsOnline] = useState(false);
   const { members, fetchOnlineUsers } = useActiveList();
   const isActive = members.some(
     (member) => member.phoneNumber === user?.phoneNumber
   );
 
-  // Gọi API khi component mount
   useEffect(() => {
     fetchOnlineUsers();
   }, [fetchOnlineUsers]);

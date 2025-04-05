@@ -21,7 +21,10 @@ export const WebSocketProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    connect();
+    const token = sessionStorage.getItem('token');
+    if (token && !stompClientRef.current?.connected) {
+      connect(token);
+    }
   }, []);
 
   const subscribe = (topic, callback) => {

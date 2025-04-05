@@ -10,10 +10,10 @@ const MessageBox = ({ data, isLast }) => {
   const isVideo = data.image?.endsWith('.mp4');
   const isFile = data.image?.endsWith('.pdf');
 
-  const seenList = (data.seen || [])
-    .filter((user) => user.phone !== data.sender.phoneNumber)
-    .map((user) => user.name)
-    .join(', ');
+  // const seenList = (data.seen || [])
+  //   .filter((user) => user.phone !== data.sender.phoneNumber)
+  //   .map((user) => user.name)
+  //   .join(', ');
 
   const container = clsx(
     'flex gap-3 p-4',

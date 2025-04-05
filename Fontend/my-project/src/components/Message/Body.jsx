@@ -7,7 +7,7 @@ const Body = ({ messages }) => {
   const { conversationId } = useConversation();
 
   useEffect(() => {
-    ApiService.updateMessage(conversationId);
+    ApiService.updateMessage(conversationId) || [];
   }, [conversationId]);
 
   return (

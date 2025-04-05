@@ -12,7 +12,6 @@ const useActiveList = create((set) => ({
   fetchOnlineUsers: async () => {
     try {
       const response = await ApiService.getOnlineUser();
-
       set({ members: response.data });
     } catch (error) {
       console.error('Error fetching online users:', error);

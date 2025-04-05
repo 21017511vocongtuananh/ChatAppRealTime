@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { MdOutlineGroupAdd } from 'react-icons/md';
 import clsx from 'clsx';
 import { FaSearch, FaUserPlus } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import useConversation from '../../hooks/useConversation.js';
 import ConversationBox from './ConversationBox';
 import GroupChatModal from './GroupChatModal';
-import ApiService from '../../services/apis';
+
 
 const ConversationList = ({ initialItems, users }) => {
   const [items, setItems] = useState([]);
