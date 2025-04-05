@@ -4,9 +4,6 @@ import com.Chat.Chat.dto.reponse.ConversationResponse;
 import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.model.Conversation;
-import com.Chat.Chat.model.GroupMember;
-import com.Chat.Chat.model.Message;
-import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.MessageRepo;
 import com.Chat.Chat.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component

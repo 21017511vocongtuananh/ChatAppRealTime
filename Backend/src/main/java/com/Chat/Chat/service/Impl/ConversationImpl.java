@@ -1,6 +1,9 @@
 package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.ConversationResponse;
+import com.Chat.Chat.dto.request.ConversationRequest;
+import com.Chat.Chat.dto.request.UserRequest;
+import com.Chat.Chat.enums.Role;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.ConversationMapper;
@@ -36,6 +39,23 @@ public class ConversationImpl implements ConversationService {
 	@Override
 	public void deleteConversation(String id) {
 		conversationRepo.deleteById(id);
+	}
+
+	@Override
+	public ConversationResponse createConversation(ConversationRequest conversationRequest) {
+		User currentUser = userService.getLoginUser();
+		Conversation conversation = new Conversation();
+		conversation.setName(conversationRequest.getName());
+		conversation.setIsGroup(true);
+		List<Conversation.GroupMember> groupMembers = new ArrayList<>();
+		groupMembers.add(new Conversation.GroupMember(currentUser.getId(), Role.ADMIN));
+		for (UserRequest userRequest : conversationRequest.getUsers()) {
+			groupMembers.add(new Conversation.GroupMember(userRequest.getId(), Role.USER));
+		}
+		conversation.setGroupMembers(groupMembers);
+		conversationRepo.save(conversation);
+		ConversationResponse conversationResponse = conversationMapper.toConversationResponseUser(conversation);
+		return conversationResponse;
 	}
 
 

@@ -2,7 +2,9 @@ package com.Chat.Chat.controller;
 
 import com.Chat.Chat.dto.reponse.ConversationResponse;
 import com.Chat.Chat.dto.request.ApiResource;
+import com.Chat.Chat.dto.request.ConversationRequest;
 import com.Chat.Chat.service.ConversationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,12 @@ public class ConversationController {
 	{
 		conversationService.deleteConversation(conversationId);
         return ApiResource.<String>builder().message("Conversation xoa thanh cong").build();
+	}
+
+	@PostMapping("/create/conversation")
+	public ApiResource<ConversationResponse> createConversation(@Valid @RequestBody ConversationRequest request)
+	{
+		return ApiResource.ok(conversationService.createConversation(request),"SUCCESS");
 	}
 
 }

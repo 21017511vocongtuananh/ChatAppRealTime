@@ -1,5 +1,6 @@
 package com.Chat.Chat.model;
 
+import com.Chat.Chat.enums.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -38,4 +39,14 @@ public class Conversation {
 	@Field("groupMembers")
 	@Builder.Default
 	private List<GroupMember> groupMembers = new ArrayList<>();
+
+
+	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class GroupMember {
+		private String userId;
+		private Role role;
+	}
 }

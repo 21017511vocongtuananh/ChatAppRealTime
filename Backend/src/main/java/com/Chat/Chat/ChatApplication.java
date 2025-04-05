@@ -2,7 +2,6 @@ package com.Chat.Chat;
 
 import com.Chat.Chat.enums.Role;
 import com.Chat.Chat.model.Conversation;
-import com.Chat.Chat.model.GroupMember;
 import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
@@ -116,25 +115,26 @@ public class ChatApplication implements CommandLineRunner {
 			convo1.setId("507f191e810c19729de860ea");
 			convo1.setName("1 gia dinh");
 			convo1.setIsGroup(false); // Chat 1-1
-			convo1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0));
-			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10));
+			convo1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0)); // Thời gian tạo
+			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10)); // Thời gian tin nhắn cuối cùng
 			convo1.setMessagesIds(Arrays.asList("507f191e810c19729de860ec", "507f191e810c19729de860ed"));
 			convo1.setGroupMembers(Arrays.asList(
-					new GroupMember("67c086a68c03631f6367499e", Role.USER),
-					new GroupMember("67c0b55afe7b947481a9c68f", Role.USER)
+					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER),
+					new Conversation.GroupMember("67c0b55afe7b947481a9c68f", Role.USER)
 			));
 
+			// Tạo đối tượng Conversation Nhóm bạn bè
 			Conversation convo2 = new Conversation();
 			convo2.setId("507f191e810c19729de860eb");
 			convo2.setName("Nhóm bạn bè");
 			convo2.setIsGroup(true); // Nhóm
-			convo2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 11, 0));
-			convo2.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 11, 5));
+			convo2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 11, 0)); // Thời gian tạo
+			convo2.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 11, 5)); // Thời gian tin nhắn cuối cùng
 			convo2.setMessagesIds(Collections.singletonList("507f191e810c19729de860ee"));
 			convo2.setGroupMembers(Arrays.asList(
-					new GroupMember("67c086a68c03631f6367499e", Role.ADMIN), // user1 là ADMIN
-					new GroupMember("67c0b55afe7b947481a9c68f", Role.USER),  // user2 là USER
-					new GroupMember("67c0b55afe7b947481a9c690", Role.USER)   // user3 là USER
+					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.ADMIN), // user1 là ADMIN
+					new Conversation.GroupMember("67c0b55afe7b947481a9c68f", Role.USER),  // user2 là USER
+					new Conversation.GroupMember("67c0b55afe7b947481a9c690", Role.USER)   // user3 là USER
 			));
 
 			conversationRepo.saveAll(Arrays.asList(convo1, convo2));

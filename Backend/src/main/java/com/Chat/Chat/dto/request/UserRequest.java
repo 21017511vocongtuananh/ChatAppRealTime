@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class UserRequest {
+	private String id;
 	@NotBlank(message = "Tên không được để trống")
 	private String name;
 

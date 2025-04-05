@@ -55,18 +55,20 @@ public class MessageImpl implements MessageService {
 	public MessageResponse updateMessage(String conversationId) {
 		User login = userService.getLoginUser();
 		Conversation conversation = conversationRepo.findById(conversationId)
-				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Conversation not found"));
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Conversation not found"));
 		List<String> messageIds = conversation.getMessagesIds();
+		if (messageIds.isEmpty()) {
+			throw new ErrorException(ErrorCode.NOT_FOUND, "No messages found in this conversation.");
+		}
 		String lastMessageId = messageIds.get(messageIds.size() - 1);
-		Message lastMessage  = messageRepo.findById(lastMessageId)
-				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Message not found"));
+		Message lastMessage = messageRepo.findById(lastMessageId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Message not found"));
 		if (lastMessage.getSeenIds().contains(login.getId())) {
 			return messageMapper.toMessageResponse(lastMessage);
 		}
 		lastMessage.getSeenIds().add(login.getId());
 		messageRepo.save(lastMessage);
-		MessageResponse messageResponse = messageMapper.toMessageResponse(lastMessage);
-		return messageResponse;
+		return messageMapper.toMessageResponse(lastMessage);
 	}
 
 
@@ -76,10 +78,6 @@ public class MessageImpl implements MessageService {
 				conversationId,
 				Sort.by(Sort.Direction.ASC, "createdAt")
 		);
-		if(messages.isEmpty())
-		{
-			throw new ErrorException(ErrorCode.NOT_FOUND,"conversationId not found");
-		}
 		return messages.stream()
 				.map(messageMapper::toMessageResponse)
 				.collect(Collectors.toList());
