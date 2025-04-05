@@ -110,11 +110,18 @@ const GroupChatModal = ({ isOpen, onClose, users }) => {
               onClick={onClose}
               type='button'
               color='red'
+              width={200}
+              height={38}
               secondary
             >
               Hủy
             </CustomButton>
-            <CustomButton disabled={isLoading} type='submit'>
+            <CustomButton
+              disabled={isLoading}
+              type='submit'
+              width={200}
+              height={38}
+            >
               Tạo Nhóm
             </CustomButton>
           </div>

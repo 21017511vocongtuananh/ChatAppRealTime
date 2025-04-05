@@ -181,10 +181,14 @@ const RegisProfile = () => {
             type='submit'
             color='gray'
             size='small'
+            width={200}
+            height={38}
           >
             Thoát
           </CustomButton>
-          <CustomButton type='submit'>Lưu</CustomButton>
+          <CustomButton type='submit' width={200} height={38}>
+            Lưu
+          </CustomButton>
         </div>
       </form>
     </div>

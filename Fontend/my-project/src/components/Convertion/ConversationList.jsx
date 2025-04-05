@@ -5,11 +5,12 @@ import { FaSearch, FaUserPlus } from 'react-icons/fa';
 import useConversation from '../../hooks/useConversation.js';
 import ConversationBox from './ConversationBox';
 import GroupChatModal from './GroupChatModal';
-
+import FriendModel from '../FriendUser/FriendModel';
 
 const ConversationList = ({ initialItems, users }) => {
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFriendModel, setIsFriendModel] = useState(false);
   const { conversationId, isOpen } = useConversation();
 
   useEffect(() => {
@@ -22,6 +23,11 @@ const ConversationList = ({ initialItems, users }) => {
         users={users}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+      <FriendModel
+        users={users}
+        isOpen={isFriendModel}
+        onClose={() => setIsFriendModel(false)}
       />
       <aside
         className={clsx(
@@ -40,7 +46,10 @@ const ConversationList = ({ initialItems, users }) => {
               />
             </div>
             <div className='flex items-center space-x-2'>
-              <div className='flex items-center justify-center p-2 text-gray-600 rounded-md cursor-pointer hover:bg-gray-200 transition'>
+              <div
+                onClick={() => setIsFriendModel(true)}
+                className='flex items-center justify-center p-2 text-gray-600 rounded-md cursor-pointer hover:bg-gray-200 transition'
+              >
                 <FaUserPlus size={18} />
               </div>
               <div

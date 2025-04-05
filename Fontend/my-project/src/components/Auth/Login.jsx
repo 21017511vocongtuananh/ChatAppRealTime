@@ -106,7 +106,12 @@ const Login = () => {
               Quên mật khẩu?
             </span>
           </div>
-          <CustomButton type='submit' isLoading={isLoading}>
+          <CustomButton
+            type='submit'
+            isLoading={isLoading}
+            height={38}
+            className={'w-full '}
+          >
             Đăng nhập
           </CustomButton>
         </form>
