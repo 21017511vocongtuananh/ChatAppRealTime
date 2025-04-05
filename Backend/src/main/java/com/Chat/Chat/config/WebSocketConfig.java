@@ -28,8 +28,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private final JwtUtils jwtUtils;
 	private final UserRepo userRepo;
-	private final RedisTemplate<String, String > redisTemplate;
-
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -64,14 +63,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 						String token = authHeader.substring(7);
 						try {
 							String username = jwtUtils.getUsernameFromToken(token);
-							User user = userRepo.findByPhoneNumber(username).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND));
-							if (user != null) {
-								// Lưu user trực tiếp vào session attributes
-								accessor.getSessionAttributes().put("CURRENT_USER", user);
-								log.info("CONNECT - Stored user in session: {}", username);
-							} else {
-								throw new IllegalArgumentException("User not found for token!");
-							}
+							User user = userRepo.findByPhoneNumber(username)
+									.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND));
+
+							// Lưu user vào session
+							accessor.getSessionAttributes().put("CURRENT_USER", user);
+
+							// Lưu trạng thái Online vào Redis
+							redisTemplate.opsForValue().set("ONLINE_USER:" + user.getId(), "ONLINE");
+							log.info("User {} is now ONLINE", username);
+
 						} catch (Exception e) {
 							throw new IllegalArgumentException("Token processing failed: " + e.getMessage());
 						}
@@ -82,6 +83,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 				return message;
 			}
 		});
+	}
+
+	@Override
+	public void configureClientOutboundChannel(ChannelRegistration registration) {
 	}
 
 	}

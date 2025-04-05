@@ -37,11 +37,5 @@ public class RedisConfig {
 		template.afterPropertiesSet();
 		return template;
 	}
-	@Bean
-	public StringRedisTemplate stringRedisTemplate(LettuceConnectionFactory connectionFactory) {
-		StringRedisTemplate template = new StringRedisTemplate();
-		template.setConnectionFactory(connectionFactory);
-		return template;
-	}
 
 }

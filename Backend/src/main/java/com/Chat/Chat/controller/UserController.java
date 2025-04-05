@@ -30,6 +30,11 @@ public class UserController {
 		return ApiResource.ok(userService.getByPhoneNumBer(),"SUCCESS");
 	}
 
+	@GetMapping("/onlineUser")
+	public  ApiResource<List<UserResponse>> getOnlineUsers(){
+		return ApiResource.ok(userService.getOnlineUsers(),"SUCCESS");
+	}
+
 //	@PostMapping("/api/profile")
 //	public ResponseEntity<User> saveProfile(@RequestBody User user) {
 //		User savedUser = userRepository.save(user);
