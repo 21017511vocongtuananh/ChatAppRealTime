@@ -82,6 +82,12 @@ public class UserImpl implements UserService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public UserResponse getPhoneUserFriend(String phoneNumber) {
+		User user = userRepo.findByPhoneNumber(phoneNumber).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
+		return userMapper.toUserResponse(user);
+	}
+
 
 //	@Override
 //	public FriendShipResponse addFriend(String userId) {

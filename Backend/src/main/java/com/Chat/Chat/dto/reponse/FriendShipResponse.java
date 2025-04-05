@@ -1,5 +1,6 @@
 package com.Chat.Chat.dto.reponse;
 
+import com.Chat.Chat.enums.FriendshipStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,11 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FriendShipResponse {
-	private String id;
 	private String userId;
 	private String friendId;
-	private String status;
+	private FriendshipStatus status;
 	private String conversationId;
-	private LocalDateTime createdAt = LocalDateTime.now();
-	private LocalDateTime updatedAt = LocalDateTime.now();
 }

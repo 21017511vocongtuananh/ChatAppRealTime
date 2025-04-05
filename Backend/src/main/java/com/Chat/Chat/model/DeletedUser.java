@@ -21,10 +21,10 @@ public class DeletedUser {
 	private String id;
 
 	@Field("userId")
-	private String userId; // ID của user bị xóa
+	private String userId;
 
 	@Field("deletedBy")
-	private String deletedBy; // Người yêu cầu xóa
+	private String deletedBy;
 
 	@Field("deletedAt")
 	private LocalDateTime deletedAt = LocalDateTime.now();

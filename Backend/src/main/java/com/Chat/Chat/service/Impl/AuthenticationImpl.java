@@ -14,18 +14,13 @@ import com.Chat.Chat.security.CustomUserDetailsService;
 import com.Chat.Chat.security.JwtUtils;
 import com.Chat.Chat.service.AuthenticationService;
 import com.Chat.Chat.service.BlacklistService;
-import com.Chat.Chat.service.FileStorageService;
 import com.Chat.Chat.service.RefreshTokenService;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Service
 @Slf4j

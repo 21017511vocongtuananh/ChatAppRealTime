@@ -1,5 +1,6 @@
 package com.Chat.Chat.model;
 
+import com.Chat.Chat.enums.FriendshipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class FriendShips {
 	private String friendId;
 
 	@Field("status")
-	private String status;
+	private FriendshipStatus status;
 
 	@Field("conversationId")
 	private String conversationId;

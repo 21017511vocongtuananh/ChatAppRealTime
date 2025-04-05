@@ -17,9 +17,7 @@ public interface UserService {
 	List<UserResponse> getAllUser();
 	UserResponse getByPhoneNumBer();
 	List<UserResponse> getOnlineUsers();
-//	FriendShipResponse addFriend(String userId);
-
+	UserResponse getPhoneUserFriend(String phoneNumber);
 }
 
-//	User updateUser(id, updatedUser);
 
