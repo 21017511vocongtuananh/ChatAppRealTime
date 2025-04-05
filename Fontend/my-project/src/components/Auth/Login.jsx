@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ApiService from '../../services/apis.js';
 import CustomButton from '../Button/Button.jsx';
 import { Input, Button } from 'antd';
+import { useWebSocket } from '../Message/WebSocketContext.jsx';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { connect } = useWebSocket();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,6 +39,7 @@ const Login = () => {
       const data = await ApiService.loginApi(formData);
       sessionStorage.setItem('token', data.data.token);
       sessionStorage.setItem('refreshToken', data.data.refreshToken);
+      connect(data.data.token);
       navigate('/conversations');
     } catch (errorMessage) {
       setError(errorMessage);

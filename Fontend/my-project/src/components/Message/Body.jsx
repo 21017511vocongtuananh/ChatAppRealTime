@@ -1,4 +1,4 @@
-import useConversation from '../../hooks/useConversation';
+import useConversation from '../../hooks/useConversation.js';
 import MessageBox from './MessageBox';
 import { useEffect, useRef } from 'react';
 import ApiService from '../../services/apis';

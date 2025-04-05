@@ -1,57 +1,70 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
 const WebSocketContext = createContext();
 
-const getHeader = () => ({
-  Authorization: `Bearer ${sessionStorage.getItem('token') || ''}`
-});
-
 export const WebSocketProvider = ({ children }) => {
   const stompClientRef = useRef(null);
 
-  useEffect(() => {
+  const connect = (token) => {
+    if (token == null) {
+      return;
+    }
+
     const socket = new SockJS('http://localhost:8080/ws');
     const client = Stomp.over(socket);
-    client.connect(
-      getHeader(),
-      () => {
-        stompClientRef.current = client;
-      },
-      (error) => console.error('WebSocket connection error:', error)
-    );
+    client.connect({ Authorization: `Bearer ${token}` }, () => {
+      stompClientRef.current = client;
+      console.log('🔌 WebSocket connected');
+    });
+  };
 
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.disconnect();
-      }
-    };
+  useEffect(() => {
+    connect();
   }, []);
 
   const subscribe = (topic, callback) => {
-    if (!stompClientRef.current?.connected) return () => {};
+    if (!stompClientRef.current?.connected) {
+      return () => {
+        console.log(`Unsubscribed from ${topic} (no connection)`);
+      };
+    }
 
+    console.log(`📡 Subscribing to ${topic}`);
     const subscription = stompClientRef.current.subscribe(topic, (msg) => {
       callback(JSON.parse(msg.body));
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      console.log(`Unsubscribing from ${topic}`);
+      subscription.unsubscribe();
+    };
   };
 
   const sendMessage = (destination, payload) => {
     if (stompClientRef.current?.connected) {
+      console.log(`Sending message to ${destination}:`, payload);
       stompClientRef.current.send(destination, {}, JSON.stringify(payload));
+    } else {
+      console.warn('Cannot send message: WebSocket is not connected.');
+    }
+  };
+
+  const disconnect = () => {
+    if (stompClientRef.current?.connected) {
+      stompClientRef.current.disconnect(() => {
+        console.log('🔌 Disconnected from WebSocket');
+      });
+    } else {
+      console.warn('Cannot disconnect: client not connected');
     }
   };
 
   return (
-    <WebSocketContext.Provider value={{ subscribe, sendMessage }}>
+    <WebSocketContext.Provider
+      value={{ connect, subscribe, sendMessage, disconnect }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

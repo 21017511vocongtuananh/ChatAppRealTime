@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import useConversation from '../hooks/useConversation';
+import useConversation from '../hooks/useConversation.js';
 import { useNavigate } from 'react-router-dom';
 import ApiService from '../services/apis.js';
 import { message } from 'antd';

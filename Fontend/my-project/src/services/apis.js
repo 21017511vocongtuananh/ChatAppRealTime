@@ -87,6 +87,14 @@ export default class ApiService {
     }
   }
 
+  static async getOnlineUser() {
+    try {
+      const response = await axios.get(`${this.BASE_URL}/users/onlineUser`);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin online user:', error);
+    }
+  }
   // CONVERSSTION
   static async getConversation() {
     try {

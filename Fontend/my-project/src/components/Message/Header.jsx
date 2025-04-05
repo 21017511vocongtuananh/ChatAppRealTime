@@ -9,16 +9,21 @@ import {
 import Avatar from '../Avatar';
 import { MdOutlineGroupAdd } from 'react-icons/md';
 import AvatarGroup from '@components/AvatarGroup';
+import useActiveList from '../../hooks/useActiveList';
 
 const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
   const otherUser = useOtherUser(conversation.data || []);
+  const { members } = useActiveList();
+  const isActive = members.some(
+    (member) => member.phoneNumber === otherUser.phoneNumber
+  );
 
   const statusText = useMemo(() => {
     if (conversation?.data.isGroup) {
       return `${conversation?.data?.users?.length || 0} thành viên`;
     }
-    return `Active`;
-  }, [conversation]);
+    return isActive ? `Online` : `Offline`;
+  }, [conversation, isActive]);
 
   const toggleDrawer = () => {
     setDrawerOpen((prev) => !prev);

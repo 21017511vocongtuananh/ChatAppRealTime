@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DesktopSidebar from './DesktopSidebar';
-import ApiService from '../../services/apis';
-import usePhoneNumber from '../../hooks/usePhoneNumber';
+import usePhoneNumber from '../../hooks/usePhoneNumber.js';
 
 const Sidebar = ({ children }) => {
   const { data } = usePhoneNumber();

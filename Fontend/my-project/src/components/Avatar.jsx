@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import clsx from 'clsx';
+import ApiService from '../services/apis';
+import usePhoneNumber from '../hooks/usePhoneNumber.js';
+import useActiveList from '../hooks/useActiveList';
 
 const Avatar = ({ user }) => {
+  const [isOnline, setIsOnline] = useState(false);
+  const { members, fetchOnlineUsers } = useActiveList();
+  const isActive = members.some(
+    (member) => member.phoneNumber === user?.phoneNumber
+  );
+
+  // Gọi API khi component mount
+  useEffect(() => {
+    fetchOnlineUsers();
+  }, [fetchOnlineUsers]);
+
   return (
     <div className='relative'>
       <div
@@ -21,23 +36,24 @@ const Avatar = ({ user }) => {
           className='object-cover w-full h-full'
         />
       </div>
-
-      <span
-        className='
-          absolute
-          block
-          rounded-full
-          bg-green-500
-          ring-2
-          ring-white
-          top-0
-          right-0
-          h-2
-          w-2
-          md:h-3
-          md:w-3
-        '
-      ></span>
+      {isActive && (
+        <span
+          className='
+            absolute
+            block
+            rounded-full
+            bg-green-500
+            ring-2
+            ring-white
+            top-0
+            right-0
+            h-2
+            w-2
+            md:h-3
+            md:w-3
+          '
+        />
+      )}
     </div>
   );
 };

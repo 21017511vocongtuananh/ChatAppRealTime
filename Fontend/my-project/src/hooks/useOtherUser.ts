@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import usePhoneNumber from './usePhoneNumber';
+import usePhoneNumber from './usePhoneNumber.js';
 
 const useOtherUser = (conversation) => {
   const { phone } = usePhoneNumber();

@@ -5,10 +5,15 @@ import { IoTrash } from 'react-icons/io5';
 import Avatar from '@components/Avatar';
 import ConfirmModal from '@components/ConfirmModal';
 import AvatarGroup from '@components/AvatarGroup';
+import useActiveList from '../../hooks/useActiveList';
 
 const ProfileDrawer = ({ isOpen, onClose, data }) => {
   const otherUser = useOtherUser(data.data || []);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const { members } = useActiveList();
+  const isActive = members.some(
+    (member) => member.phoneNumber === otherUser.phoneNumber
+  );
 
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), 'PP');
@@ -22,8 +27,8 @@ const ProfileDrawer = ({ isOpen, onClose, data }) => {
     if (data.data.isGroup) {
       return `${data.data.users.length} thành viên`;
     }
-    return 'Active';
-  }, [data]);
+    return isActive ? 'Online' : 'Offline';
+  }, [data, isActive]);
 
   if (!isOpen) return null;
 

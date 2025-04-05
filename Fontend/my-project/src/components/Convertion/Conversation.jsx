@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import useConversation from '../../hooks/useConversation';
+import useConversation from '../../hooks/useConversation.js';
 import EmptyState from '../EmptyState';
 import ConversationLayout from './ConversationLayout';
 

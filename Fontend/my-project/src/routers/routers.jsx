@@ -2,9 +2,10 @@ import { lazy, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { HiChat } from 'react-icons/hi';
 import { HiArrowLeftOnRectangle, HiUsers } from 'react-icons/hi2';
-import useConversation from '../hooks/useConversation.jsx';
-import withAuth from '../hoc/withAuth.jsx';
+import useConversation from '../hooks/useConversation.js';
+import withAuth from '../hoc/withAuth';
 import ConversationLayout from '../components/Convertion/ConversationLayout.jsx';
+import { useWebSocket } from '../components/Message/WebSocketContext.jsx';
 
 // Load các component động
 const User = lazy(() => import('../components/users/User.jsx'));
@@ -29,9 +30,11 @@ const useRoutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { conversationId } = useConversation();
+  const { disconnect } = useWebSocket();
 
   const handleLogout = () => {
-    sessionStorage.removeItem('token'); // Xóa token nếu có
+    disconnect();
+    sessionStorage.removeItem('token');
     sessionStorage.removeItem('refreshToken');
     navigate('/');
   };
