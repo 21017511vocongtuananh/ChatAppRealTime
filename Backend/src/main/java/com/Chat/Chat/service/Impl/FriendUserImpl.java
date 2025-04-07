@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -44,8 +45,8 @@ public class FriendUserImpl implements FriendUserService {
 				.status(FriendshipStatus.PENDING)
 				.build();
 		friendShipRepo.save(friendShip);
-		FriendShipResponse FriendShips = friendShipMapper.toFriendResponse(friendShip);
-		return	FriendShips;
+		FriendShipResponse response = friendShipMapper.toFriendResponse(friendShip);
+		return	response;
 	}
 
 	@Override
@@ -55,10 +56,6 @@ public class FriendUserImpl implements FriendUserService {
 		if(friendshipOpt.isPresent()){
 			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + loggedInUser.getId() + " đến " + friendId);
 		}
-		FriendShips friendShips = friendshipOpt.get();
-		friendShips.setStatus(FriendshipStatus.ACCEPTED);
-		friendShipRepo.save(friendShips);
-		FriendShipResponse FriendShips = friendShipMapper.toFriendResponse(friendShips);
 		Conversation conversation = new Conversation();
 		conversation.setIsGroup(false);
 		List<Conversation.GroupMember> groupMembers = new ArrayList<>();
@@ -66,6 +63,21 @@ public class FriendUserImpl implements FriendUserService {
 		groupMembers.add(new Conversation.GroupMember(friendId, Role.USER));
 		conversation.setGroupMembers(groupMembers);
 		conversationRepo.save(conversation);
-		return	FriendShips;
+		FriendShips friendShips = friendshipOpt.get();
+		friendShips.setStatus(FriendshipStatus.ACCEPTED);
+		friendShips.setConversationId(conversation.getId());
+		friendShipRepo.save(friendShips);
+		FriendShipResponse response = friendShipMapper.toFriendResponse(friendShips);
+		return	response;
+	}
+
+	@Override
+	public List<FriendShipResponse> getFriendUserLogin() {
+		User loggedInUser = userService.getLoginUser();
+		List<FriendShipResponse> friendShipResponse = friendShipRepo.findByUserId(loggedInUser.getId())
+				.stream()
+				.map(friendShipMapper::toFriendResponse)
+				.collect(Collectors.toList());
+		return friendShipResponse;
 	}
 }

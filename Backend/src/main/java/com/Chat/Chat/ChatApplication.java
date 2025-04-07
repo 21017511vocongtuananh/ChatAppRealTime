@@ -38,12 +38,12 @@ public class ChatApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		if (conversationRepo.count() == 0 && messageRepo.count() == 0 && userRepo.count() == 0) {
-			// Thêm dữ liệu User
 			User user1 = new User();
 			user1.setId("67c086a68c03631f6367499e");
 			user1.setName("tuananh3");
 			user1.setPhoneNumber("0347804278");
 			user1.setEmail("anhchiyeuminhem2k2@gmail.com");
+			user1.setGender("male");
 			user1.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
 			user1.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1732065025/samples/smile.jpg");
 			user1.setDateOfBirth(LocalDate.of(2003, 4, 3));
@@ -57,6 +57,7 @@ public class ChatApplication implements CommandLineRunner {
 			user2.setName("minhthanh");
 			user2.setPhoneNumber("012345678");
 			user2.setEmail("huy2222@gmail.com");
+			user1.setGender("female");
 			user2.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
 			user2.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1739335351/Screenshot_2025-02-12_114000_eqxpfv.png");
 			user2.setDateOfBirth(LocalDate.of(2003, 4, 3));
@@ -70,6 +71,7 @@ public class ChatApplication implements CommandLineRunner {
 			user3.setName("hoanglong");
 			user3.setPhoneNumber("0987654321");
 			user3.setEmail("long123@gmail.com");
+			user3.setGender("male");
 			user3.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
 			user3.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1732616273/2fcd8ec1-4fa0-4b50-a559-7012234ba504_aothundainu.jpg");
 			user3.setDateOfBirth(LocalDate.of(2002, 5, 15));
@@ -78,7 +80,35 @@ public class ChatApplication implements CommandLineRunner {
 			user3.setConversationIds(Collections.singletonList("507f191e810c19729de860eb"));
 			user3.setSeenMessageIds(Collections.emptyList());
 
-			userRepo.saveAll(Arrays.asList(user1, user2, user3));
+			User user4 = new User();
+			user4.setId("67c0c789fe7b947481a9c691");
+			user4.setName("ngocanh");
+			user4.setPhoneNumber("0901234567");
+			user4.setEmail("ngocanh2002@gmail.com");
+			user4.setGender("female");
+			user4.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
+			user4.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1732616273/female_avatar_1.jpg");
+			user4.setDateOfBirth(LocalDate.of(2002, 9, 10));
+			user4.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 39, 0, 0));
+			user4.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 39, 0, 0));
+			user4.setConversationIds(Collections.singletonList("507f191e810c19729de860ea"));
+			user4.setSeenMessageIds(Collections.emptyList());
+
+			User user5 = new User();
+			user5.setId("67c0c789fe7b947481a9c692");
+			user5.setName("khanhduy");
+			user5.setPhoneNumber("0912345678");
+			user5.setEmail("khanhduy2025@gmail.com");
+			user5.setGender("male");
+			user5.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
+			user5.setImage("https://res.cloudinary.com/doypwarq0/image/upload/v1732616273/male_avatar_2.jpg");
+			user5.setDateOfBirth(LocalDate.of(2001, 12, 25));
+			user5.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 40, 0, 0));
+			user5.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 40, 0, 0));
+			user5.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
+			user5.setSeenMessageIds(Collections.emptyList());
+
+			userRepo.saveAll(Arrays.asList(user1, user2, user3,user4,user5));
 
 			// Thêm dữ liệu Message
 			Message message1 = new Message();

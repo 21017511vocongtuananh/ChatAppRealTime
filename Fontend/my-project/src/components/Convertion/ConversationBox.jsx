@@ -33,7 +33,6 @@ const ConversationBox = ({ data, selected }) => {
     return lastMessage.seen.some((user) => user.phoneNumber === userNumPhone);
   }, [userNumPhone, lastMessage]);
 
-  // Nội dung hiển thị của tin nhắn cuối
   const lastMessageText = useMemo(() => {
     if (!lastMessage) return 'Bắt đầu cuộc trò chuyện';
 

@@ -10,7 +10,7 @@ const CustomButton = ({
   width,
   height,
   fontSize,
-  className // nhận thêm class từ bên ngoài
+  className
 }) => {
   const colorClasses = {
     blue: 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500 disabled:bg-blue-300',

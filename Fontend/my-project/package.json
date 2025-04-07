@@ -24,11 +24,13 @@
     "react-country-flag": "^3.1.0",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.2",
+    "react-hot-toast": "^2.5.2",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.5",
     "react-select": "^5.10.1",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
+    "swiper": "^11.2.6",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

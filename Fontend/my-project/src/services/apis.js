@@ -95,6 +95,17 @@ export default class ApiService {
       console.error('Lỗi khi lấy thông tin online user:', error);
     }
   }
+
+  static async getPhoneFriend(phoneNumber) {
+    try {
+      const reponse = await axios.get(
+        `${this.BASE_URL}/users/getPhoneFriend?phoneNumber=${phoneNumber}`
+      );
+      return reponse.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin phone friend:', error);
+    }
+  }
   // CONVERSSTION
   static async getConversation() {
     try {
@@ -163,6 +174,47 @@ export default class ApiService {
       return response.data || [];
     } catch (error) {
       console.error('API Error:', error.response);
+    }
+  }
+
+  //FRIEND
+  static async sendFriend(friendId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/friend/sendFriend?friendId=${friendId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi gửi lời mời kết bạn:', error);
+    }
+  }
+
+  static async acceptFriend(friendId) {
+    try {
+      const reponse = await axios.post(
+        `${this.BASE_URL}/friend/acceptFriend?friendId=${friendId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      console.error('Lỗi khi chấp nhận lời mời kết bạn:', error);
+    }
+  }
+
+  static async getFriendUserLogin() {
+    try {
+      const reponse = await axios.get(
+        `${this.BASE_URL}/friend/getFriendUserLogin`,
+        {
+          headers: this.getHeader()
+        }
+      );
+      return reponse.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách bạn bè:', error);
     }
   }
 

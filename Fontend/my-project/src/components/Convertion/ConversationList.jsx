@@ -60,8 +60,6 @@ const ConversationList = ({ initialItems, users }) => {
               </div>
             </div>
           </div>
-
-          {/* Menu Tất cả, Chưa đọc, Phân loại */}
           <div className='border-b border-gray-300 mb-2'>
             <div className='flex space-x-3 text-gray-500 text-sm font-medium'>
               <div className='cursor-pointer text-blue-600 border-b-2 border-blue-600 pb-2'>

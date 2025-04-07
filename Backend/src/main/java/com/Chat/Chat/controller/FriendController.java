@@ -4,10 +4,9 @@ import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.request.ApiResource;
 import com.Chat.Chat.service.FriendUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/friend")
@@ -23,5 +22,10 @@ public class FriendController {
 	@PostMapping("/acceptFriend")
 	public ApiResource<FriendShipResponse> acceptFriend(@RequestParam String friendId){
 		return ApiResource.ok(friendUserService.acceptFriendRequest(friendId),"SUCCESS");
+	}
+
+	@GetMapping("/getFriendUserLogin")
+	public ApiResource<List<FriendShipResponse>> getFriendUserLogin(){
+		return ApiResource.ok(friendUserService.getFriendUserLogin(),"SUCCESS");
 	}
 }

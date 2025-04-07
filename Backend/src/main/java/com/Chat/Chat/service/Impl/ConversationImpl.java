@@ -32,7 +32,7 @@ public class ConversationImpl implements ConversationService {
 	@Override
 	public ConversationResponse getConversationId(String id) {
 		Conversation conversation = conversationRepo.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"conversation id not found"));
-		ConversationResponse conversationResponse = conversationMapper.toConversationResponseUser(conversation);
+		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
 		return conversationResponse;
 	}
 
@@ -54,7 +54,7 @@ public class ConversationImpl implements ConversationService {
 		}
 		conversation.setGroupMembers(groupMembers);
 		conversationRepo.save(conversation);
-		ConversationResponse conversationResponse = conversationMapper.toConversationResponseUser(conversation);
+		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
 		return conversationResponse;
 	}
 
@@ -62,7 +62,6 @@ public class ConversationImpl implements ConversationService {
 	@Override
 	public List<ConversationResponse> getConversations() {
 		User currentUser = userService.getLoginUser();
-		// lay tat ca
 		List<ConversationResponse> conversationResponses  = conversationRepo.findByGroupMembersUserIdOrderByLastMessageAtDesc(currentUser.getId())
 				.stream()
 				.map(conversationMapper::toConversationResponse)

@@ -6,6 +6,7 @@ import { Button, Image } from 'antd';
 
 const MessageBox = ({ data, isLast }) => {
   const { phone } = usePhoneNumber();
+  if (!phone) return null;
   const isOwn = phone === data.sender.phoneNumber;
   const isVideo = data.image?.endsWith('.mp4');
   const isFile = data.image?.endsWith('.pdf');
@@ -20,6 +21,7 @@ const MessageBox = ({ data, isLast }) => {
     isOwn ? 'justify-end' : 'justify-start'
   );
   const avatar = clsx(isOwn && 'order-2');
+
   const body = clsx(
     'flex flex-col gap-1 bg-gray-100 shadow-sm rounded-lg p-2 w-fit min-w-[100px] max-w-[75%] break-words',
     isOwn && 'items-end',
