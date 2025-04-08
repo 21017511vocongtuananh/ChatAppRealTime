@@ -3,7 +3,7 @@ import { FaSearch, FaUserPlus, FaUsers, FaUsersCog } from 'react-icons/fa';
 import { MdOutlineGroupAdd } from 'react-icons/md';
 import MenuItem from './MenuItem';
 
-const UserList = ({ items = [] }) => {
+const UserList = () => {
   return (
     <aside
       className='

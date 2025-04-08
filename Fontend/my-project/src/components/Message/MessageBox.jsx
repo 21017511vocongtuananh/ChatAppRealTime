@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import usePhoneNumber from '../../hooks/usePhoneNumber.js';
-import Avatar from '@components/Avatar';
+import Avatar from '../Avartar/Avatar';
 import { format } from 'date-fns';
 import { Button, Image } from 'antd';
 

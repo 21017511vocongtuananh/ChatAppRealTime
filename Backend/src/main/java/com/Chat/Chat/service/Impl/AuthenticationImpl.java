@@ -74,6 +74,7 @@ public class AuthenticationImpl implements AuthenticationService {
 		String refreshToken = jwtUtils.generateRefreshToken(user);
 		saveTokenToRedis(user,refreshToken);
 		UserResponse userResponse = UserResponse.builder()
+				.id(user.getId())
 				.name(user.getName())
 				.phoneNumber(user.getPhoneNumber())
 				.email(user.getEmail())

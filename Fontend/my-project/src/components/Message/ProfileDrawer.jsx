@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react';
 import useOtherUser from '../../hooks/useOtherUser';
 import { format } from 'date-fns';
 import { IoTrash } from 'react-icons/io5';
-import Avatar from '@components/Avatar';
+import Avatar from '../Avartar/Avatar';
 import ConfirmModal from '@components/ConfirmModal';
-import AvatarGroup from '@components/AvatarGroup';
+import AvatarGroup from '@components/Avartar/AvatarGroup';
 import useActiveList from '../../hooks/useActiveList';
 
 const ProfileDrawer = ({ isOpen, onClose, data }) => {

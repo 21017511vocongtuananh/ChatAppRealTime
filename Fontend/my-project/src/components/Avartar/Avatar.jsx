@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import ApiService from '../services/apis';
-import usePhoneNumber from '../hooks/usePhoneNumber.js';
-import useActiveList from '../hooks/useActiveList';
+
+import useActiveList from '../../hooks/useActiveList';
 
 const Avatar = ({ user }) => {
   const { members, fetchOnlineUsers } = useActiveList();

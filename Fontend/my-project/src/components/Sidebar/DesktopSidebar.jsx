@@ -1,7 +1,7 @@
 import { useRoutes } from '../../routers/routers';
 import { useState, useEffect } from 'react';
 import DesktopItem from './DesktopItem';
-import Avatar from '../Avatar';
+import Avatar from '../Avartar/Avatar';
 import SettingsModal from './SettingsModal';
 const DesktopSidebar = ({ currentUser }) => {
   const routes = useRoutes();

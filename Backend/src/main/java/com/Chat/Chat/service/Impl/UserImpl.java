@@ -3,6 +3,7 @@ package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
+import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.UserMapper;
@@ -17,7 +18,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +34,9 @@ public class UserImpl implements UserService {
 
 	private final UserRepo userRepo;
 	private final UserMapper userMapper;
+	private final S3Service s3Service;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final PasswordEncoder passwordEncoder;
 
 
 	@Override
@@ -88,33 +93,19 @@ public class UserImpl implements UserService {
 		return userMapper.toUserResponse(user);
 	}
 
-
-//	@Override
-//	public FriendShipResponse addFriend(String userId) {
-//		User currenUser = getLoginUser();
-//		if(currenUser == null)
-//		{
-//			throw new ErrorException(ErrorCode.)
-//		}
-//	}
-
-
-//	public User updateUser(String id, User updatedUser) {
-//		Optional<User> existingUser = userRepo.findById(id);
-//		if (existingUser.isPresent()) {
-//			User user = existingUser.get();
-//			user.setName(updatedUser.getName());
-//			user.setGender(updatedUser.getGender());
-//			user.setDateOfBirth(updatedUser.getDateOfBirth());
-//			user.setImage(updatedUser.getImage());
-//			return userRepo.save(user);
-//		} else {
-//			throw new RuntimeException("User not found");
-//		}
-//	}
-
-
-
-
+	@Override
+	public UserResponse updateUser(String userId, MultipartFile imageFile, UserRequest userRequest) {
+		User user = userRepo.findById(userId).orElseThrow(() -> new ErrorException(ErrorCode.USER_NOT_FOUND));
+		user.setName(userRequest.getName());
+		user.setPhoneNumber(userRequest.getPhoneNumber());
+		user.setEmail(userRequest.getEmail());
+		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+		String imageUrl = s3Service.saveImageToS3(imageFile);
+		user.setImage(imageUrl);
+		user.setGender(userRequest.getGender());
+		user.setDateOfBirth(userRequest.getDateOfBirth());
+		userRepo.save(user);
+		return userMapper.toUserResponse(user);
+	}
 
 }

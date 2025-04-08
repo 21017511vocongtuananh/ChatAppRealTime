@@ -4,7 +4,7 @@ import Modal from '@components/Modal';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import Avatar from '../Avatar';
+import Avatar from '../Avartar/Avatar';
 import ApiService from '../../services/apis';
 
 const GroupChatModal = ({ isOpen, onClose, users }) => {

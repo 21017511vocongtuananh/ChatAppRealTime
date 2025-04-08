@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 	public User toUser(UserRequest request) {
 		return User.builder()
+				.id(request.getId())
 				.name(request.getName())
 				.phoneNumber(request.getPhoneNumber())
 				.email(request.getEmail())

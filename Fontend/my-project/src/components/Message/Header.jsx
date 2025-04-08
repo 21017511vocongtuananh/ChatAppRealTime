@@ -6,9 +6,9 @@ import {
   HiMiniListBullet,
   HiMiniVideoCamera
 } from 'react-icons/hi2';
-import Avatar from '../Avatar';
+import Avatar from '../Avartar/Avatar';
 import { MdOutlineGroupAdd } from 'react-icons/md';
-import AvatarGroup from '@components/AvatarGroup';
+import AvatarGroup from '@components/Avartar/AvatarGroup';
 import useActiveList from '../../hooks/useActiveList';
 
 const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {

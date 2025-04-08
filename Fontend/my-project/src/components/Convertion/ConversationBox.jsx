@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import Avatar from '@/components/Avatar';
+import Avatar from '../Avartar/Avatar';
 import useOtherUser from '../../hooks/useOtherUser';
 import { format, parseISO } from 'date-fns';
 import usePhoneNumber from '../../hooks/usePhoneNumber.js';
-import AvatarGroup from '@components/AvatarGroup';
+import AvatarGroup from '../Avartar/AvatarGroup';
 
 const ConversationBox = ({ data, selected }) => {
   const otherUser = useOtherUser(data);

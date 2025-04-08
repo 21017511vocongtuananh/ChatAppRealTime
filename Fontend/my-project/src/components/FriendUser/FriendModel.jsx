@@ -4,7 +4,7 @@ import ReactCountryFlag from 'react-country-flag';
 import ApiService from '../../services/apis';
 import { Input } from 'antd';
 import CustomButton from '../Button/Button';
-import Avatar from '../Avatar';
+import Avatar from '../Avartar/Avatar';
 import Modal from '../Modal';
 import { message } from 'antd';
 
