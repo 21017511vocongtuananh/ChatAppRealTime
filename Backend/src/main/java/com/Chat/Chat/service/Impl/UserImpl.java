@@ -3,6 +3,7 @@ package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
+import com.Chat.Chat.dto.request.UpdateUserRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
@@ -94,12 +95,9 @@ public class UserImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse updateUser(String userId, MultipartFile imageFile, UserRequest userRequest) {
+	public UserResponse updateUser(String userId, MultipartFile imageFile, UpdateUserRequest userRequest) {
 		User user = userRepo.findById(userId).orElseThrow(() -> new ErrorException(ErrorCode.USER_NOT_FOUND));
 		user.setName(userRequest.getName());
-		user.setPhoneNumber(userRequest.getPhoneNumber());
-		user.setEmail(userRequest.getEmail());
-		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 		String imageUrl = s3Service.saveImageToS3(imageFile);
 		user.setImage(imageUrl);
 		user.setGender(userRequest.getGender());

@@ -4,6 +4,7 @@ package com.Chat.Chat.service;
 import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ApiResource;
+import com.Chat.Chat.dto.request.UpdateUserRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.model.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +20,7 @@ public interface UserService {
 	UserResponse getByPhoneNumBer();
 	List<UserResponse> getOnlineUsers();
 	UserResponse getPhoneUserFriend(String phoneNumber);
-	UserResponse updateUser(String userId,MultipartFile imageFile, UserRequest userRequest);
+	UserResponse updateUser(String userId,MultipartFile imageFile, UpdateUserRequest userRequest);
 }
 
 

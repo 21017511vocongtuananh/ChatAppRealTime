@@ -13,6 +13,7 @@ public class UserMapper {
 				.name(request.getName())
 				.phoneNumber(request.getPhoneNumber())
 				.email(request.getEmail())
+				.gender(request.getGender())
 				.password(request.getPassword())
 				.dateOfBirth(request.getDateOfBirth())
 				.build();
@@ -26,6 +27,7 @@ public class UserMapper {
 		response.setPhoneNumber(user.getPhoneNumber());
 		response.setPhoneNumber(user.getPhoneNumber());
 		response.setImage(user.getImage());
+		response.setGender(user.getGender());
 		response.setDateOfBirth(user.getDateOfBirth());
 		return response;
 	}

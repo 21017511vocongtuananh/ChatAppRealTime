@@ -65,10 +65,10 @@ public class AuthenticationImpl implements AuthenticationService {
 
 	@Override
 	public AuthResponse loginUser(AuthRequest authRequest) {
-		User user = userRepo.findByPhoneNumber(authRequest.getPhoneNumber()).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND));
+		User user = userRepo.findByPhoneNumber(authRequest.getPhoneNumber()).orElseThrow(() -> new ErrorException(ErrorCode.PHONE_NOT_FOUND,"số điện thoại không tồn tại"));
 		if(!passwordEncoder.matches(authRequest.getPassword(),user.getPassword()))
 		{
-			throw new ErrorException(ErrorCode.BAD_REQUEST);
+			throw new ErrorException(ErrorCode.UNAUTHORIZED,"Sai mật khẩu");
 		}
 		String token = jwtUtils.generateToken(user);
 		String refreshToken = jwtUtils.generateRefreshToken(user);

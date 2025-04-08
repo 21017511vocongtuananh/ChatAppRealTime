@@ -2,6 +2,7 @@ package com.Chat.Chat.controller;
 
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ApiResource;
+import com.Chat.Chat.dto.request.UpdateUserRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.service.UserService;
@@ -43,7 +44,7 @@ public class UserController {
 		return ApiResource.ok(userService.getPhoneUserFriend(phoneNumber),"SUCCESS");
 	}
 	@PostMapping("/update/{userId}")
-	public ApiResource<UserResponse> updateUser(@PathVariable String userId,@ModelAttribute @Valid UserRequest userRequest,
+	public ApiResource<UserResponse> updateUser(@PathVariable String userId,@ModelAttribute @Valid UpdateUserRequest userRequest,
 												@RequestParam(value = "image", required = false) MultipartFile imageFile)
 	{
 		return ApiResource.ok(userService.updateUser(userId,imageFile,userRequest),"SUCCESS");
