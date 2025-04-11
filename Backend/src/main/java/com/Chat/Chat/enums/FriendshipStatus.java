@@ -1,5 +1,5 @@
 package com.Chat.Chat.enums;
 
 public enum FriendshipStatus {
-	PENDING, ACCEPTED, BLOCKED
+	PENDING, ACCEPTED, BLOCKED, REMOVED
 }

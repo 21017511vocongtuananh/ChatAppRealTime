@@ -3,6 +3,7 @@ package com.Chat.Chat.repository;
 import com.Chat.Chat.enums.FriendshipStatus;
 import com.Chat.Chat.model.FriendShips;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
