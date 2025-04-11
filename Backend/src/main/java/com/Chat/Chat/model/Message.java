@@ -20,21 +20,16 @@ public class Message {
 
 	@Id
 	private String id;
-
 	private String body;
-
 	private String image;
-
 	@Field("createdAt")
 	private LocalDateTime createdAt = LocalDateTime.now();
-
 	@Field("seenIds")
 	@Builder.Default
 	private List<String> seenIds = new ArrayList<>();
-
 	@Field("conversationId")
 	private String conversationId;
-
 	@Field("senderId")
 	private String senderId;
+	private boolean isDeleted;
 }

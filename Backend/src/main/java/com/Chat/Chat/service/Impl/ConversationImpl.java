@@ -66,7 +66,6 @@ public class ConversationImpl implements ConversationService {
 				.stream()
 				.map(conversationMapper::toConversationResponse)
 				.collect(Collectors.toList());
-
 		return conversationResponses;
 	}
 }

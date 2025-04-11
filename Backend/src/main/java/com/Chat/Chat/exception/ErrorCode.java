@@ -18,8 +18,8 @@ public enum ErrorCode {
 	INVALID_CREDENTIALS(401, "Thông tin đăng nhập không chính xác", HttpStatus.BAD_REQUEST),
 	ALREADY_EXISTS(409, "Dữ liệu đã tồn tại", HttpStatus.CONFLICT),
 	INVALID_TOKEN(401, "Token không hợp lệ hoặc đã hết hạn", HttpStatus.UNAUTHORIZED),
-	INVALID_PASSWORD(401, "Mật khẩu hiện tại không đúng", HttpStatus.UNAUTHORIZED);
-
+	INVALID_PASSWORD(401, "Mật khẩu hiện tại không đúng", HttpStatus.UNAUTHORIZED),
+	FORBIDDEN(403,"Không có quyền truy cập",HttpStatus.FORBIDDEN);
 	private final int code;
 	private final String defaultMessage;
 	private final HttpStatus status;

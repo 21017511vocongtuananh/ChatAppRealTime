@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "deleted_messages")
 @Data
@@ -19,16 +21,11 @@ public class DeletedMessage {
 
 	@Id
 	private String id;
-
 	@Field("messageId")
-	private String messageId; // ID của tin nhắn bị xóa
-
+	private String messageId;
 	@Field("deletedBy")
-	private String deletedBy; // Người yêu cầu xóa
-
+	private String deletedBy;
 	@Field("deletedAt")
 	private LocalDateTime deletedAt = LocalDateTime.now();
 
-	@Field("reason")
-	private String reason; // Lý do xóa (tùy chọn)
 }

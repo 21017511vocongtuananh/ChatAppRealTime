@@ -49,8 +49,6 @@ public class ChatApplication implements CommandLineRunner {
 			user1.setDateOfBirth(LocalDate.of(2003, 4, 3));
 			user1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user1.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
-			user1.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
-			user1.setSeenMessageIds(Collections.emptyList());
 
 			User user2 = new User();
 			user2.setId("67c0b55afe7b947481a9c68f");
@@ -63,8 +61,7 @@ public class ChatApplication implements CommandLineRunner {
 			user2.setDateOfBirth(LocalDate.of(2003, 4, 3));
 			user2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user2.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
-			user2.setConversationIds(Arrays.asList("507f191e810c19729de860ea", "507f191e810c19729de860eb"));
-			user2.setSeenMessageIds(Collections.emptyList());
+
 
 
 			userRepo.saveAll(Arrays.asList(user1, user2));
@@ -90,11 +87,11 @@ public class ChatApplication implements CommandLineRunner {
 
 			Message message3 = new Message();
 			message3.setId("507f191e810c19729de860ee");
-			message3.setBody(null);
-			message3.setImage("https://example.com/images/group-photo.jpg");
+			message3.setBody("hello");
+			message3.setImage(null);
 			message3.setCreatedAt(LocalDateTime.of(2025, 2, 27, 11, 5));
 			message3.setSeenIds(Collections.singletonList("67c086a68c03631f6367499e"));
-			message3.setConversationId("507f191e810c19729de860eb");
+			message3.setConversationId("507f191e810c19729de860ea");
 			message3.setSenderId("67c086a68c03631f6367499e");
 
 			messageRepo.saveAll(Arrays.asList(message1, message2, message3));
@@ -105,7 +102,7 @@ public class ChatApplication implements CommandLineRunner {
 			convo1.setIsGroup(false);
 			convo1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0)); // Thời gian tạo
 			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10)); // Thời gian tin nhắn cuối cùng
-			convo1.setMessagesIds(Arrays.asList("507f191e810c19729de860ec", "507f191e810c19729de860ed"));
+			convo1.setMessagesIds(Arrays.asList("507f191e810c19729de860ec", "507f191e810c19729de860ed","507f191e810c19729de860ee"));
 			convo1.setGroupMembers(Arrays.asList(
 					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER),
 					new Conversation.GroupMember("67c0b55afe7b947481a9c68f", Role.USER)

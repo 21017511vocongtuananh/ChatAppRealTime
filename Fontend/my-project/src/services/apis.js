@@ -192,7 +192,8 @@ export default class ApiService {
   static async getMessages(conversationId) {
     try {
       const response = await axios.get(
-        `${this.BASE_URL}/messages/${conversationId}`
+        `${this.BASE_URL}/messages/${conversationId}`,
+        { headers: this.getHeader() }
       );
       return response.data;
     } catch (error) {
@@ -209,6 +210,31 @@ export default class ApiService {
       return response.data || [];
     } catch (error) {
       console.error('API Error:', error.response);
+    }
+  }
+  static async deleteMessage(messageId) {
+    try {
+      const response = await axios.delete(
+        `${this.BASE_URL}/messages/${messageId}/xoa`,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async recallMessage(messageId) {
+    try {
+      const response = await axios.delete(
+        `${this.BASE_URL}/messages/${messageId}/thu-hoi`,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
     }
   }
 

@@ -84,7 +84,6 @@ public class FriendUserImpl implements FriendUserService {
 	@Override
 	public List<FriendShipResponse> getPendingRequestsForCurrentUser() {
 		User currentUser = userService.getLoginUser();
-
 		List<FriendShips> pendingRequests = friendShipRepo
 				.findByFriendIdAndStatus(currentUser.getId(), FriendshipStatus.PENDING);
 		return pendingRequests.stream()

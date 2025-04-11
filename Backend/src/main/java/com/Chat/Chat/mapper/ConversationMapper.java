@@ -5,6 +5,7 @@ import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.model.Conversation;
 import com.Chat.Chat.model.Message;
+import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.MessageRepo;
 import com.Chat.Chat.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class ConversationMapper {
 
 
 	public ConversationResponse toConversationResponse(Conversation conversation) {
+
 		Set<String> allUserIds = new HashSet<>();
 		conversation.getGroupMembers().forEach(member -> allUserIds.add(member.getUserId()));
 
@@ -53,6 +55,7 @@ public class ConversationMapper {
 
 		List<MessageResponse> messageResponses = messages.stream()
 				.map(message -> MessageResponse.builder()
+						.id(message.getId())
 						.body(message.getBody())
 						.image(message.getImage())
 						.createdAt(message.getCreatedAt())

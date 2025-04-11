@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,40 +21,32 @@ import java.util.stream.Collectors;
 public class MessageMapper {
 
 	private final UserRepo userRepo;
+	private final UserMapper userMapper;
 
 
-	public MessageResponse toMessageResponse(Message message)
-	{
-		List<UserResponse> users = message.getSeenIds().stream()
-				.map(id -> {
-					Optional<User> userOpt = userRepo.findById(id);
-					if(userOpt.isEmpty()){
-						return null;
-					}
-					User user = userOpt.get();
-					return UserResponse.builder()
-							.name(user.getName())
-							.phoneNumber(user.getPhoneNumber())
-							.image(user.getImage())
-							.build();
-				})
+	public MessageResponse toMessageResponse(Message message) {
+		List<String> allUserIds = new ArrayList<>(message.getSeenIds());
+		allUserIds.add(message.getSenderId());
+
+		Map<String, User> userMap = userRepo.findAllById(allUserIds).stream()
+				.collect(Collectors.toMap(User::getId, u -> u));
+
+		List<UserResponse> seen = message.getSeenIds().stream()
+				.map(id -> userMapper.toUserResponse(userMap.get(id)))
 				.collect(Collectors.toList());
-		UserResponse sender = userRepo.findById(message.getSenderId())
-				.map(u -> UserResponse.builder()
-						.name(u.getName())
-						.phoneNumber(u.getPhoneNumber())
-						.image(u.getImage())
-						.build()
-				).orElse(null);
+
+		UserResponse sender = userMapper.toUserResponse(userMap.get(message.getSenderId()));
+
 		return MessageResponse.builder()
 				.id(message.getId())
 				.body(message.getBody())
 				.image(message.getImage())
-				.seen(users)
+				.seen(seen)
 				.sender(sender)
 				.createdAt(message.getCreatedAt())
 				.conversationId(message.getConversationId())
 				.build();
-
 	}
+
+
 }

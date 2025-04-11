@@ -22,4 +22,5 @@ public class MessageResponse {
 	private List<UserResponse> seen;
 	private UserResponse sender;
 	private String conversationId;
+	private boolean deleted;
 }

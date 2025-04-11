@@ -33,12 +33,7 @@ public class User {
 
 	@Field("updatedAt")
 	private LocalDateTime updatedAt = LocalDateTime.now();
-
-	@Field("conversationIds")
+	@Field("deletedMessageIds")
 	@Builder.Default
-	private List<String> conversationIds = new ArrayList<>();
-
-	@Field("seenMessageIds")
-	@Builder.Default
-	private List<String> seenMessageIds = new ArrayList<>();
+	private List<String> deletedMessageIds = new ArrayList<>();
 }

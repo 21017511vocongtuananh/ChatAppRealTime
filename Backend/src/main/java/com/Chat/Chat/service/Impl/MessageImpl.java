@@ -6,10 +6,13 @@ import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.MessageMapper;
 import com.Chat.Chat.model.Conversation;
+import com.Chat.Chat.model.DeletedMessage;
 import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
+import com.Chat.Chat.repository.DeletedMessageRepo;
 import com.Chat.Chat.repository.MessageRepo;
+import com.Chat.Chat.repository.UserRepo;
 import com.Chat.Chat.service.MessageService;
 import com.Chat.Chat.service.UserService;
 import io.jsonwebtoken.io.IOException;
@@ -20,6 +23,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +37,10 @@ public class MessageImpl implements MessageService {
 	private final MessageMapper messageMapper;
 	private final ConversationRepo conversationRepo;
 	private final UserService userService;
+	private final UserRepo userRepo;
+	private final DeletedMessageRepo deletedMessageRepo;
+
+
 	@Override
 	public MessageResponse createMessage(String conversationId, MessageRequest request, User currentUser) {
 		Message message = new Message();
@@ -74,14 +83,26 @@ public class MessageImpl implements MessageService {
 
 	@Override
 	public List<MessageResponse> getAllMessage(String conversationId) {
-		List<Message> messages = messageRepo.findByConversationId(
+		User currentUser = userService.getLoginUser();
+
+		List<Message> allMessages = messageRepo.findByConversationId(
 				conversationId,
 				Sort.by(Sort.Direction.ASC, "createdAt")
 		);
-		return messages.stream()
-				.map(messageMapper::toMessageResponse)
-				.collect(Collectors.toList());
+		List<MessageResponse> result = new ArrayList<>();
+		for (Message message : allMessages) {
+			boolean isDeletedByUser = currentUser.getDeletedMessageIds().contains(message.getId());
+			boolean isRecalled = message.isDeleted();
+			if (!isDeletedByUser && !isRecalled) {
+				MessageResponse response = messageMapper.toMessageResponse(message);
+				result.add(response);
+			}
+		}
+		return result;
 	}
+
+
+
 
 	public MultipartFile convertBase64ToMultipartFile(String base64) throws IOException {
 		String[] parts = base64.split(",");
@@ -103,6 +124,50 @@ public class MessageImpl implements MessageService {
 		}
 		byte[] decodedBytes = Base64.getDecoder().decode(parts[1]);
 		return new MockMultipartFile("file", fileName, contentType, decodedBytes);
+	}
+
+	@Override
+	public void deleteMessage(String messageId) {
+		Optional<Message> message = messageRepo.findById(messageId);
+		if (!message.isPresent()) {
+			throw new ErrorException(ErrorCode.NOT_FOUND,"Không tìm thấy tin nhắn");
+		}
+		User login = userService.getLoginUser();
+		if (!login.getDeletedMessageIds().contains(messageId)) {
+			login.getDeletedMessageIds().add(messageId);
+			userRepo.save(login);
+		}
+		DeletedMessage deletedMessage = DeletedMessage.builder()
+				.messageId(messageId)
+				.deletedBy(login.getId())
+				.deletedAt(LocalDateTime.now())
+				.build();
+		deletedMessageRepo.save(deletedMessage);
+	}
+
+	@Override
+	public void recallMessage(String messageId) {
+		Optional<Message> messageOpt = messageRepo.findById(messageId);
+		if (!messageOpt.isPresent()) {
+			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn");
+		}
+		Message message = messageOpt.get();
+		User login = userService.getLoginUser();
+		if (!message.getSenderId().equals(login.getId())) {
+			throw new ErrorException(ErrorCode.FORBIDDEN, "Chỉ người gửi mới có thể thu hồi tin nhắn");
+		}
+		long phutDaGui = ChronoUnit.MINUTES.between(message.getCreatedAt(), LocalDateTime.now());
+		if (phutDaGui > 6) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Đã quá thời gian thu hồi (giới hạn 6 phút)");
+		}
+		message.setDeleted(true);
+		messageRepo.save(message);
+		DeletedMessage deletedMessage = DeletedMessage.builder()
+				.messageId(messageId)
+				.deletedBy(login.getId())
+				.deletedAt(LocalDateTime.now())
+				.build();
+		deletedMessageRepo.save(deletedMessage);
 	}
 
 }

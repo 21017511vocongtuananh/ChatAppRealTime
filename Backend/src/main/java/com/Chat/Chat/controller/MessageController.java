@@ -76,4 +76,20 @@ public class MessageController {
 	}
 
 
+	@DeleteMapping("/{messageId}/xoa")
+	public ApiResource<String> deleteMessage(
+			@PathVariable String messageId) {
+			messageService.deleteMessage(messageId);
+			return ApiResource.<String>builder().message("Xóa tin nhắn thành công").build();
+
+	}
+
+	@DeleteMapping("/{messageId}/thu-hoi")
+	public ApiResource<String> recallMessage(
+			@PathVariable String messageId) {
+			messageService.recallMessage(messageId);
+			return ApiResource.<String>builder().message("Thu hồi tin nhắn thành công").build();
+	}
+
+
 }

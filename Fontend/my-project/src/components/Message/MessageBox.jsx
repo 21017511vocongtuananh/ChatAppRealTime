@@ -2,19 +2,81 @@ import clsx from 'clsx';
 import usePhoneNumber from '../../hooks/usePhoneNumber.js';
 import Avatar from '../Avartar/Avatar';
 import { format } from 'date-fns';
-import { Button, Image } from 'antd';
+import { Button, Image, Dropdown, message } from 'antd';
+
+import { AiOutlineEllipsis } from 'react-icons/ai';
+import {
+  CopyOutlined,
+  PushpinOutlined,
+  StarOutlined,
+  CheckSquareOutlined,
+  InfoCircleOutlined,
+  UndoOutlined,
+  DeleteOutlined
+} from '@ant-design/icons';
+import ApiService from '../../services/apis.js';
 
 const MessageBox = ({ data, isLast }) => {
   const { phone } = usePhoneNumber();
   if (!phone) return null;
+
   const isOwn = phone === data.sender.phoneNumber;
   const isVideo = data.image?.endsWith('.mp4');
   const isFile = data.image?.endsWith('.pdf');
 
-  // const seenList = (data.seen || [])
-  //   .filter((user) => user.phone !== data.sender.phoneNumber)
-  //   .map((user) => user.name)
-  //   .join(', ');
+  const handleMenuClick = async ({ key }) => {
+    try {
+      if (key === 'delete') {
+        await ApiService.deleteMessage(data.id);
+        message.success('Đã xóa tin nhắn');
+      } else if (key === 'recall') {
+        await ApiService.recallMessage(data.id);
+        message.success('Đã thu hồi tin nhắn');
+      }
+    } catch (error) {
+      message.error(error.message);
+    }
+  };
+
+  const menuItems = [
+    {
+      key: 'copy',
+      label: 'Copy tin nhắn',
+      icon: <CopyOutlined />
+    },
+    {
+      key: 'pin',
+      label: 'Ghim tin nhắn',
+      icon: <PushpinOutlined />
+    },
+    {
+      key: 'star',
+      label: 'Đánh dấu tin nhắn',
+      icon: <StarOutlined />
+    },
+    {
+      key: 'select',
+      label: 'Chọn nhiều tin nhắn',
+      icon: <CheckSquareOutlined />
+    },
+    {
+      key: 'details',
+      label: 'Xem chi tiết',
+      icon: <InfoCircleOutlined />
+    },
+    {
+      key: 'recall',
+      label: 'Thu hồi',
+      icon: <UndoOutlined />,
+      style: { color: 'red' }
+    },
+    {
+      key: 'delete',
+      label: 'Xóa chỉ ở phía tôi',
+      icon: <DeleteOutlined />,
+      style: { color: 'red' }
+    }
+  ];
 
   const container = clsx(
     'flex gap-3 p-4',
@@ -27,7 +89,7 @@ const MessageBox = ({ data, isLast }) => {
     isOwn && 'items-end',
     data.image && 'bg-white !shadow-none'
   );
-  const message = clsx(
+  const messageCls = clsx(
     'text-sm w-fit overflow-hidden break-all',
     isOwn ? 'text-black' : 'bg-gray-100',
     data.image ? 'rounded-md p-0' : 'py-2'
@@ -67,7 +129,7 @@ const MessageBox = ({ data, isLast }) => {
         <div className='flex items-center gap-1'>
           <div className='text-sm text-gray-500'>{data.sender.name}</div>
         </div>
-        <div className={message}>
+        <div className={messageCls}>
           {data.image ? (
             isVideo ? (
               <video
@@ -108,7 +170,17 @@ const MessageBox = ({ data, isLast }) => {
           )}
         </div>
         <div className={time}>
-          <button className='text-2xl font-bold text-gray-500'>...</button>
+          <Dropdown
+            menu={{
+              items: menuItems,
+              onClick: handleMenuClick
+            }}
+            trigger={['click']}
+          >
+            <button className='text-2xl font-bold text-gray-500'>
+              <AiOutlineEllipsis />
+            </button>
+          </Dropdown>
           <span className='text-[12px] self-end'>
             {format(new Date(data.createdAt), 'h:mm a')}
           </span>

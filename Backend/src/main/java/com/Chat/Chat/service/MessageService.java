@@ -12,4 +12,6 @@ public interface MessageService {
 	MessageResponse updateMessage(String conversationId);
 	List<MessageResponse> getAllMessage(String conversationId);
 	MultipartFile convertBase64ToMultipartFile(String base64);
+	void deleteMessage(String messageId);
+	void recallMessage(String messageId);
 }
