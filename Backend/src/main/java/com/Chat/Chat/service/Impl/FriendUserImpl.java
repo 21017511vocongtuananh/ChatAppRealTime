@@ -80,4 +80,15 @@ public class FriendUserImpl implements FriendUserService {
 				.collect(Collectors.toList());
 		return friendShipResponse;
 	}
+
+	@Override
+	public List<FriendShipResponse> getPendingRequestsForCurrentUser() {
+		User currentUser = userService.getLoginUser();
+
+		List<FriendShips> pendingRequests = friendShipRepo
+				.findByFriendIdAndStatus(currentUser.getId(), FriendshipStatus.PENDING);
+		return pendingRequests.stream()
+				.map(friendShipMapper::toFriendResponse)
+				.collect(Collectors.toList());
+	}
 }

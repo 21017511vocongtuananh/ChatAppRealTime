@@ -3,6 +3,7 @@ package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
+import com.Chat.Chat.dto.request.UpdatePassword;
 import com.Chat.Chat.dto.request.UpdateUserRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.exception.ErrorCode;
@@ -104,6 +105,11 @@ public class UserImpl implements UserService {
 		user.setDateOfBirth(userRequest.getDateOfBirth());
 		userRepo.save(user);
 		return userMapper.toUserResponse(user);
+	}
+
+	@Override
+	public UserResponse updatePassword(String userId, UpdatePassword newPassword) {
+
 	}
 
 }
