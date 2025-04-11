@@ -52,24 +52,40 @@ public class FriendUserImpl implements FriendUserService {
 	@Override
 	public FriendShipResponse acceptFriendRequest(String friendId) {
 		User loggedInUser = userService.getLoginUser();
-		Optional<FriendShips> friendshipOpt = friendShipRepo.findByUserIdAndFriendId(loggedInUser.getId(),friendId);
-		if(friendshipOpt.isPresent()){
-			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + loggedInUser.getId() + " đến " + friendId);
+		String currentUserId = loggedInUser.getId();
+
+
+		Optional<FriendShips> friendshipOpt = friendShipRepo.findByUserIdAndFriendId(friendId, currentUserId);
+		if (friendshipOpt.isEmpty() || friendshipOpt.get().getStatus() != FriendshipStatus.PENDING) {
+			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + friendId + " đến " + currentUserId);
 		}
-		Conversation conversation = new Conversation();
-		conversation.setIsGroup(false);
-		List<Conversation.GroupMember> groupMembers = new ArrayList<>();
-		groupMembers.add(new Conversation.GroupMember(loggedInUser.getId(), Role.USER));
-		groupMembers.add(new Conversation.GroupMember(friendId, Role.USER));
-		conversation.setGroupMembers(groupMembers);
-		conversationRepo.save(conversation);
+
+
+		Optional<Conversation> existingConvoOpt = conversationRepo.findPrivateConversationBetween(currentUserId, friendId);
+
+		Conversation conversation;
+		if (existingConvoOpt.isPresent()) {
+			conversation = existingConvoOpt.get();
+		} else {
+
+			conversation = new Conversation();
+			conversation.setIsGroup(false);
+			List<Conversation.GroupMember> groupMembers = new ArrayList<>();
+			groupMembers.add(new Conversation.GroupMember(currentUserId, Role.USER));
+			groupMembers.add(new Conversation.GroupMember(friendId, Role.USER));
+			conversation.setGroupMembers(groupMembers);
+			conversationRepo.save(conversation);
+		}
+
+		
 		FriendShips friendShips = friendshipOpt.get();
 		friendShips.setStatus(FriendshipStatus.ACCEPTED);
 		friendShips.setConversationId(conversation.getId());
 		friendShipRepo.save(friendShips);
-		FriendShipResponse response = friendShipMapper.toFriendResponse(friendShips);
-		return	response;
+
+		return friendShipMapper.toFriendResponse(friendShips);
 	}
+
 
 	@Override
 	public List<FriendShipResponse> getFriendUserLogin() {

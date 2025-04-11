@@ -26,6 +26,9 @@ public class Conversation {
 	@Field("isGroup")
 	private Boolean isGroup;
 
+	@Field("isDeleted")
+	private Boolean isDeleted = false;
+
 	@Field("createdAt")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
