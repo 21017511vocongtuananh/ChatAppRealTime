@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -51,6 +53,10 @@ public class AuthenticationImpl implements AuthenticationService {
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setImage(imageUrl);
 		user.setGender(request.getGender());
+		if(request.getDateOfBirth().getYear() > LocalDate.now().getYear()) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST,"Năm sinh không được lớn hơn năm hiện tại");
+		}
+		user.setDateOfBirth(request.getDateOfBirth());
 		userRepo.save(user);
 		return userMapper.toUserResponse(user);
 	}
@@ -78,6 +84,7 @@ public class AuthenticationImpl implements AuthenticationService {
 				.name(user.getName())
 				.phoneNumber(user.getPhoneNumber())
 				.email(user.getEmail())
+				.gender(user.getGender())
 				.image(user.getImage())
 				.gender(user.getGender())
 				.dateOfBirth(user.getDateOfBirth())

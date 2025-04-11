@@ -2,6 +2,7 @@ package com.Chat.Chat.controller;
 
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ApiResource;
+import com.Chat.Chat.dto.request.UpdatePassword;
 import com.Chat.Chat.dto.request.UpdateUserRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.model.User;
@@ -48,6 +49,11 @@ public class UserController {
 												@RequestParam(value = "image", required = false) MultipartFile imageFile)
 	{
 		return ApiResource.ok(userService.updateUser(userId,imageFile,userRequest),"SUCCESS");
+	}
+
+	@PostMapping("/updatePassword/{userId}")
+	public ApiResource<UserResponse> updatePassword(@PathVariable String userId , @ModelAttribute @Valid UpdatePassword password){
+		return ApiResource.ok(userService.updatePassword(userId,password),"SUCCESS");
 	}
 
 
