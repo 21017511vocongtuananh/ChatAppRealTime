@@ -92,4 +92,14 @@ public class FriendUserImpl implements FriendUserService {
 				.map(friendShipMapper::toFriendResponse)
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public void unfriend(String friendId) {
+		User currentUser = userService.getLoginUser();
+		Optional<FriendShips> relation1 = friendShipRepo.findByUserIdAndFriendId(currentUser.getId(), friendId);
+		Optional<FriendShips> relation2 = friendShipRepo.findByUserIdAndFriendId(friendId, currentUser.getId());
+
+		relation1.ifPresent(friendShipRepo::delete);
+		relation2.ifPresent(friendShipRepo::delete);
+	}
 }
