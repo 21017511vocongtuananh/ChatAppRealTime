@@ -52,8 +52,8 @@ public class FriendUserImpl implements FriendUserService {
 	@Override
 	public FriendShipResponse acceptFriendRequest(String friendId) {
 		User loggedInUser = userService.getLoginUser();
-		Optional<FriendShips> friendshipOpt = friendShipRepo.findByUserIdAndFriendId(friendId,loggedInUser.getId());
-		if(friendshipOpt.isEmpty()){
+		Optional<FriendShips> friendshipOpt = friendShipRepo.findByUserIdAndFriendId(loggedInUser.getId(),friendId);
+		if(friendshipOpt.isPresent()){
 			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + loggedInUser.getId() + " đến " + friendId);
 		}
 		Conversation conversation = new Conversation();
@@ -81,6 +81,7 @@ public class FriendUserImpl implements FriendUserService {
 		return friendShipResponse;
 	}
 
+
 	@Override
 	public List<FriendShipResponse> getPendingRequestsForCurrentUser() {
 		User currentUser = userService.getLoginUser();
@@ -102,4 +103,5 @@ public class FriendUserImpl implements FriendUserService {
 		relation1.ifPresent(friendShipRepo::delete);
 		relation2.ifPresent(friendShipRepo::delete);
 	}
+
 }

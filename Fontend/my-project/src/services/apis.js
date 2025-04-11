@@ -106,6 +106,41 @@ export default class ApiService {
       console.error('Lỗi khi lấy thông tin phone friend:', error);
     }
   }
+  static async updateUser(userId, data) {
+    try {
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('gender', data.gender);
+      formData.append('dateOfBirth', data.dateOfBirth);
+
+      if (data.image) {
+        formData.append('image', data.image);
+      }
+
+      const response = await axios.post(
+        `${this.BASE_URL}/users/update/${userId}`,
+        formData
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi cập nhật thông tin người dùng:', error);
+      throw error;
+    }
+  }
+  static async updatePassword(userId, data) {
+    const formData = new FormData();
+    formData.append('currentPassword', data.currentPassword);
+    formData.append('newPassword', data.newPassword);
+    formData.append('confirmNewPassword', data.confirmPassword);
+
+    const response = await axios.post(
+      `${this.BASE_URL}/users/updatePassword/${userId}`,
+      formData
+    );
+    return response.data;
+  }
+
   // CONVERSSTION
   static async getConversation() {
     try {
