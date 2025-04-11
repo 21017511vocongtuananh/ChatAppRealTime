@@ -9,8 +9,8 @@ const RegisProfile = () => {
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
-    image: null, // Sẽ lưu file ảnh
-    gender: 'male',
+    image: null,
+    gender: 'Nam',
     dateOfBirth: ''
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -150,16 +150,16 @@ const RegisProfile = () => {
           <input
             type='radio'
             name='gender'
-            value='male'
-            checked={formData.gender === 'male'}
+            value='Nam'
+            checked={formData.gender === 'Nam'}
             onChange={handleChange}
           />{' '}
           Nam
           <input
             type='radio'
             name='gender'
-            value='female'
-            checked={formData.gender === 'female'}
+            value='Nữ'
+            checked={formData.gender === 'Nữ'}
             onChange={handleChange}
             className='ml-2'
           />{' '}
