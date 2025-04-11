@@ -33,4 +33,10 @@ public class FriendController {
 	public ApiResource<List<FriendShipResponse>> getFriendUserLogin(){
 		return ApiResource.ok(friendUserService.getFriendUserLogin(),"SUCCESS");
 	}
+
+	@PostMapping("/unfriend")
+	public ApiResource<String> unfriend(@RequestParam String friendId) {
+		friendUserService.unfriend(friendId); 
+		return ApiResource.ok("Unfriend successfully", "SUCCESS");
+	}
 }

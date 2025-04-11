@@ -80,4 +80,28 @@ public class FriendUserImpl implements FriendUserService {
 				.collect(Collectors.toList());
 		return friendShipResponse;
 	}
+
+
+	@Override
+	public List<FriendShipResponse> getPendingRequestsForCurrentUser() {
+		User currentUser = userService.getLoginUser();
+
+		List<FriendShips> pendingRequests = friendShipRepo
+				.findByFriendIdAndStatus(currentUser.getId(), FriendshipStatus.PENDING);
+
+		return pendingRequests.stream()
+				.map(friendShipMapper::toFriendResponse)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public void unfriend(String friendId) {
+		User currentUser = userService.getLoginUser();
+		Optional<FriendShips> relation1 = friendShipRepo.findByUserIdAndFriendId(currentUser.getId(), friendId);
+		Optional<FriendShips> relation2 = friendShipRepo.findByUserIdAndFriendId(friendId, currentUser.getId());
+
+		relation1.ifPresent(friendShipRepo::delete);
+		relation2.ifPresent(friendShipRepo::delete);
+	}
+
 }

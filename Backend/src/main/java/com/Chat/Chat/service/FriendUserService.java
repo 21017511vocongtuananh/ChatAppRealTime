@@ -10,4 +10,6 @@ public interface FriendUserService {
 	List<FriendShipResponse> getFriendUserLogin();
 
 	public List<FriendShipResponse> getPendingRequestsForCurrentUser();
+
+	public void unfriend( String friendId);
 }
