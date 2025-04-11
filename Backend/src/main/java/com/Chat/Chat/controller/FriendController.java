@@ -24,6 +24,11 @@ public class FriendController {
 		return ApiResource.ok(friendUserService.acceptFriendRequest(friendId),"SUCCESS");
 	}
 
+	@GetMapping("/received-requests")
+	public ApiResource<List<FriendShipResponse>> getPendingRequests() {
+		return ApiResource.ok(friendUserService.getPendingRequestsForCurrentUser(), "SUCCESS");
+	}
+
 	@GetMapping("/getFriendUserLogin")
 	public ApiResource<List<FriendShipResponse>> getFriendUserLogin(){
 		return ApiResource.ok(friendUserService.getFriendUserLogin(),"SUCCESS");
