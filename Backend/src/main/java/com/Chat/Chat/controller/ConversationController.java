@@ -1,9 +1,11 @@
 package com.Chat.Chat.controller;
 
 import com.Chat.Chat.dto.reponse.ConversationResponse;
+import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.request.ApiResource;
 import com.Chat.Chat.dto.request.ConversationRequest;
 import com.Chat.Chat.service.ConversationService;
+import com.Chat.Chat.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,21 @@ public class ConversationController {
 	public ApiResource<ConversationResponse> createConversation(@Valid @RequestBody ConversationRequest request)
 	{
 		return ApiResource.ok(conversationService.createConversation(request),"SUCCESS");
+	}
+
+	@PostMapping("/{conversationId}/pin/{messageId}")
+	public ApiResource<ConversationResponse> pinMessage(@PathVariable String conversationId,@PathVariable String messageId){
+		return ApiResource.ok(conversationService.pinMessage(conversationId,messageId),"SUCCESS");
+	}
+	@GetMapping("/{conversationId}/pin")
+	public ApiResource<MessageResponse> getPinnedMessage(@PathVariable String conversationId){
+		return ApiResource.ok(conversationService.getPinnedMessages(conversationId),"SUCCESS");
+	}
+
+	@DeleteMapping("/{conversationId}/delete/pin")
+	public ApiResource<String> deletePinnedMessage(@PathVariable String conversationId) {
+		conversationService.deletePinnedMessages(conversationId);
+		return ApiResource.<String>builder().message("Xóa ghim thành công").build();
 	}
 
 }

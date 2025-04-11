@@ -72,6 +72,7 @@ public class ConversationMapper {
 				.isGroup(conversation.getIsGroup())
 				.createdAt(conversation.getCreatedAt())
 				.lastMessageAt(conversation.getLastMessageAt())
+				.pinnedMessageId(conversation.getPinnedMessageId())
 				.users(users)
 				.messages(messageResponses)
 				.groupMembers(conversation.getGroupMembers())

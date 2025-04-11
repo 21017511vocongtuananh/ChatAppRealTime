@@ -1,16 +1,21 @@
 package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.ConversationResponse;
+import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.request.ConversationRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.enums.Role;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.ConversationMapper;
+import com.Chat.Chat.mapper.MessageMapper;
 import com.Chat.Chat.model.Conversation;
+import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
+import com.Chat.Chat.repository.MessageRepo;
 import com.Chat.Chat.service.ConversationService;
+import com.Chat.Chat.service.MessageService;
 import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +32,8 @@ import java.util.stream.Collectors;
 public class ConversationImpl implements ConversationService {
 	private final ConversationRepo conversationRepo;
 	private final UserService userService;
+	private final MessageMapper messageMapper;
+	private final MessageRepo messageRepo;
 	private final ConversationMapper conversationMapper;
 
 	@Override
@@ -56,6 +63,36 @@ public class ConversationImpl implements ConversationService {
 		conversationRepo.save(conversation);
 		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
 		return conversationResponse;
+	}
+
+	@Override
+	public ConversationResponse pinMessage(String conversationId, String messageId) {
+		Conversation conversation = conversationRepo.findById(conversationId).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"không tìm thấy cuộc trò chuyện"));
+		conversation.setPinnedMessageId(messageId);
+		conversationRepo.save(conversation);
+		return conversationMapper.toConversationResponse(conversation);
+	}
+
+	@Override
+	public MessageResponse getPinnedMessages(String conversationId) {
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+
+		String pinnedMessageId = conversation.getPinnedMessageId();
+		if (pinnedMessageId.isEmpty()) {
+			throw new ErrorException(ErrorCode.NOT_FOUND, "Chưa có tin nhắn nào được ghim");
+		}
+		Message pinnedMessage = messageRepo.findById(pinnedMessageId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn đã ghim"));
+		return messageMapper.toMessageResponse(pinnedMessage);
+	}
+
+
+	@Override
+	public void deletePinnedMessages(String conversationId) {
+		Conversation conversation = conversationRepo.findById(conversationId).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Khng tìm thấy cuộc trò chuyện"));
+		conversation.setPinnedMessageId("");
+		conversationRepo.save(conversation);
 	}
 
 

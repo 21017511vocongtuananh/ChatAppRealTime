@@ -24,4 +24,5 @@ public class ConversationResponse {
 	private List<UserResponse> users;
 	private List<MessageResponse> messages;
 	private List<Conversation.GroupMember> groupMembers;
+	private String pinnedMessageId;
 }

@@ -15,9 +15,11 @@ import {
   DeleteOutlined
 } from '@ant-design/icons';
 import ApiService from '../../services/apis.js';
+import useConversation from '../../hooks/useConversation.js';
 
-const MessageBox = ({ data, isLast }) => {
+const MessageBox = ({ data, isLast, onPinSuccess }) => {
   const { phone } = usePhoneNumber();
+  const { conversationId } = useConversation();
   if (!phone) return null;
 
   const isOwn = phone === data.sender.phoneNumber;
@@ -32,51 +34,71 @@ const MessageBox = ({ data, isLast }) => {
       } else if (key === 'recall') {
         await ApiService.recallMessage(data.id);
         message.success('Đã thu hồi tin nhắn');
+      } else if (key === 'pin') {
+        await ApiService.pinMessage(conversationId, data.id);
+        message.success('Đã ghim tin nhắn');
+        onPinSuccess && onPinSuccess();
       }
     } catch (error) {
       message.error(error.message);
     }
   };
 
-  const menuItems = [
-    {
-      key: 'copy',
-      label: 'Copy tin nhắn',
-      icon: <CopyOutlined />
-    },
-    {
-      key: 'pin',
-      label: 'Ghim tin nhắn',
-      icon: <PushpinOutlined />
-    },
-    {
-      key: 'star',
-      label: 'Đánh dấu tin nhắn',
-      icon: <StarOutlined />
-    },
-    {
-      key: 'select',
-      label: 'Chọn nhiều tin nhắn',
-      icon: <CheckSquareOutlined />
-    },
-    {
-      key: 'details',
-      label: 'Xem chi tiết',
-      icon: <InfoCircleOutlined />
-    },
-    {
-      key: 'recall',
-      label: 'Thu hồi',
-      icon: <UndoOutlined />,
-      style: { color: 'red' }
-    },
-    {
-      key: 'delete',
-      label: 'Xóa chỉ ở phía tôi',
-      icon: <DeleteOutlined />,
-      style: { color: 'red' }
-    }
-  ];
+  const getMenuItems = () => {
+    const commonItems = [
+      {
+        key: 'copy',
+        label: 'Copy tin nhắn',
+        icon: <CopyOutlined />
+      },
+      {
+        key: 'pin',
+        label: 'Ghim tin nhắn',
+        icon: <PushpinOutlined />
+      },
+      {
+        key: 'star',
+        label: 'Đánh dấu tin nhắn',
+        icon: <StarOutlined />
+      },
+      {
+        key: 'select',
+        label: 'Chọn nhiều tin nhắn',
+        icon: <CheckSquareOutlined />
+      },
+      {
+        key: 'details',
+        label: 'Xem chi tiết',
+        icon: <InfoCircleOutlined />
+      }
+    ];
+
+    const ownItems = [
+      {
+        key: 'recall',
+        label: 'Thu hồi',
+        icon: <UndoOutlined />,
+        style: { color: 'red' }
+      },
+      {
+        key: 'delete',
+        label: 'Xóa chỉ ở phía tôi',
+        icon: <DeleteOutlined />,
+        style: { color: 'red' }
+      }
+    ];
+
+    const otherItems = [
+      {
+        key: 'delete',
+        label: 'Xóa chỉ ở phía tôi',
+        icon: <DeleteOutlined />,
+        style: { color: 'red' }
+      }
+    ];
+
+    return [...commonItems, ...(isOwn ? ownItems : otherItems)];
+  };
 
   const container = clsx(
     'flex gap-3 p-4',
@@ -172,7 +194,7 @@ const MessageBox = ({ data, isLast }) => {
         <div className={time}>
           <Dropdown
             menu={{
-              items: menuItems,
+              items: getMenuItems(),
               onClick: handleMenuClick
             }}
             trigger={['click']}
@@ -189,5 +211,4 @@ const MessageBox = ({ data, isLast }) => {
     </div>
   );
 };
-
 export default MessageBox;

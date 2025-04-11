@@ -188,6 +188,42 @@ export default class ApiService {
     }
   }
 
+  static async pinMessage(conversationId, messageId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/conversation/${conversationId}/pin/${messageId}`
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async getPinmessage(conversationId) {
+    try {
+      const response = await axios.get(
+        `${this.BASE_URL}/conversation/${conversationId}/pin`
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.code;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async deletePinMessage(conversationId) {
+    try {
+      const response = await axios.delete(
+        `${this.BASE_URL}/conversation/${conversationId}/delete/pin`
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
   // MESSAGE
   static async getMessages(conversationId) {
     try {

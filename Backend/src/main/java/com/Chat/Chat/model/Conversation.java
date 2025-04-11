@@ -40,6 +40,9 @@ public class Conversation {
 	@Builder.Default
 	private List<GroupMember> groupMembers = new ArrayList<>();
 
+	@Field("pinnedMessageId")
+	private String pinnedMessageId;
+
 
 	@Data
 	@Builder
