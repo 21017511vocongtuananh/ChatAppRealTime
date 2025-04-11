@@ -109,7 +109,16 @@ public class UserImpl implements UserService {
 
 	@Override
 	public UserResponse updatePassword(String userId, UpdatePassword newPassword) {
-
+		User user = getLoginUser();
+		if(!user.getPassword().equals(newPassword.getCurrentPassword())) {
+			throw new ErrorException(ErrorCode.INVALID_PASSWORD);
+		}
+		if(!newPassword.getNewPassword().equals(newPassword.getConfirmNewPassword())) {
+			throw new ErrorException(ErrorCode.INVALID_PASSWORD,"mật khẩu mới không trùng nhau");
+		}
+		user.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
+		userRepo.save(user);
+		return userMapper.toUserResponse(user);
 	}
 
 }
