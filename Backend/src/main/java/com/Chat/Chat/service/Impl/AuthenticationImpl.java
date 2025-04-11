@@ -79,6 +79,7 @@ public class AuthenticationImpl implements AuthenticationService {
 				.phoneNumber(user.getPhoneNumber())
 				.email(user.getEmail())
 				.image(user.getImage())
+				.gender(user.getGender())
 				.dateOfBirth(user.getDateOfBirth())
 				.build();
 		return AuthResponse.builder()
