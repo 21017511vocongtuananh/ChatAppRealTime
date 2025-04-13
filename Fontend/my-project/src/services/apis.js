@@ -261,10 +261,27 @@ export default class ApiService {
     }
   }
 
-  static async recallMessage(messageId) {
+  static async recallMessage(messageId, conversationId) {
     try {
       const response = await axios.delete(
         `${this.BASE_URL}/messages/${messageId}/thu-hoi`,
+        {
+          params: { conversationId },
+          headers: this.getHeader()
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async undoRecallMessage(messageId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/messages/${messageId}/undoRecall`,
+        {},
         { headers: this.getHeader() }
       );
       return response.data;

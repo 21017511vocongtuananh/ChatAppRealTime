@@ -32,4 +32,5 @@ public class Message {
 	@Field("senderId")
 	private String senderId;
 	private boolean isDeleted;
+	private boolean recalling;
 }

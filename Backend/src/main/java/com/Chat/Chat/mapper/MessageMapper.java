@@ -43,6 +43,7 @@ public class MessageMapper {
 				.image(message.getImage())
 				.seen(seen)
 				.sender(sender)
+				.deleted(message.isDeleted())
 				.createdAt(message.getCreatedAt())
 				.conversationId(message.getConversationId())
 				.build();

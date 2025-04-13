@@ -38,12 +38,16 @@ const ConversationBox = ({ data, selected }) => {
 
     const isOwnMessage = lastMessage.sender?.phoneNumber === userNumPhone;
     const senderName = isOwnMessage ? 'Bạn' : lastMessage.sender?.name || '';
+    if (lastMessage.deleted) {
+      return `${senderName} : tin nhắn này đã được thu hồi`;
+    }
     if (lastMessage.image) {
       return `${senderName} : đã gữi ảnh`;
     }
     if (lastMessage.body) {
       return `${senderName} : ${lastMessage.body}`;
     }
+
     return 'Bắt đầu cuộc trò chuyện';
   }, [lastMessage, userNumPhone]);
 

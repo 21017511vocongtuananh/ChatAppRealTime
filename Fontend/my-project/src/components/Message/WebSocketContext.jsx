@@ -16,7 +16,7 @@ export const WebSocketProvider = ({ children }) => {
     const client = Stomp.over(socket);
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       stompClientRef.current = client;
-      console.log('🔌 WebSocket connected');
+      console.log('🔌 Kết nối WebSocket thành công');
     });
   };
 
@@ -30,37 +30,37 @@ export const WebSocketProvider = ({ children }) => {
   const subscribe = (topic, callback) => {
     if (!stompClientRef.current?.connected) {
       return () => {
-        console.log(`Unsubscribed from ${topic} (no connection)`);
+        console.log(`Đã hủy đăng ký ${topic} (không có kết nối)`);
       };
     }
 
-    console.log(`📡 Subscribing to ${topic}`);
+    console.log(`📡 Đang đăng ký vào ${topic}`);
     const subscription = stompClientRef.current.subscribe(topic, (msg) => {
       callback(JSON.parse(msg.body));
     });
 
     return () => {
-      console.log(`Unsubscribing from ${topic}`);
+      console.log(`Đã hủy đăng ký từ ${topic}`);
       subscription.unsubscribe();
     };
   };
 
   const sendMessage = (destination, payload) => {
     if (stompClientRef.current?.connected) {
-      console.log(`Sending message to ${destination}:`, payload);
+      console.log(`Đang gửi tin nhắn đến ${destination}:`, payload);
       stompClientRef.current.send(destination, {}, JSON.stringify(payload));
     } else {
-      console.warn('Cannot send message: WebSocket is not connected.');
+      console.warn('Không thể gửi tin nhắn: WebSocket chưa được kết nối.');
     }
   };
 
   const disconnect = () => {
     if (stompClientRef.current?.connected) {
       stompClientRef.current.disconnect(() => {
-        console.log('🔌 Disconnected from WebSocket');
+        console.log('🔌 Đã ngắt kết nối WebSocket');
       });
     } else {
-      console.warn('Cannot disconnect: client not connected');
+      console.warn('Không thể ngắt kết nối: client chưa được kết nối');
     }
   };
 

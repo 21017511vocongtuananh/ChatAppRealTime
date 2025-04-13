@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useReducer } from 'react';
+import { useEffect, useRef, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useWebSocket } from './WebSocketContext';
@@ -15,6 +15,7 @@ const Form = ({ messages, setMessages }) => {
   const { conversationId } = useParams();
   const { sendMessage, subscribe } = useWebSocket();
   const messageSet = useRef(new Set());
+  const subscribed = useRef(false); // Ngăn trùng lặp subscription
 
   const [showEmojiPicker, toggleEmojiPicker] = useReducer(
     (state) => !state,
@@ -28,18 +29,26 @@ const Form = ({ messages, setMessages }) => {
   const imageValue = watch('image');
   const messageValue = watch('message');
 
-  // Lắng nghe tin nhắn mới từ WebSocket
   useEffect(() => {
+    if (subscribed.current) return; // Ngăn subscribe lại
+
     const unsubscribe = subscribe(
       `/topic/conversation/${conversationId}`,
-      (newMsg) => {
-        if (!messageSet.current.has(newMsg.id)) {
-          messageSet.current.add(newMsg.id);
-          setMessages((prev) => [...prev, newMsg]);
+      (data) => {
+        if (data && !data.deleted && (data.body || data.image)) {
+          if (!messageSet.current.has(data.id)) {
+            messageSet.current.add(data.id);
+            setMessages((prev) => [...(prev || []), data]);
+          }
         }
       }
     );
-    return unsubscribe; // Hủy subscription khi component unmount
+
+    subscribed.current = true;
+    return () => {
+      subscribed.current = false;
+      unsubscribe();
+    };
   }, [conversationId, subscribe, setMessages]);
 
   const handleFileChange = async (e) => {

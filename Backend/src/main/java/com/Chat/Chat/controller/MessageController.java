@@ -41,11 +41,13 @@ public class MessageController {
 		return ApiResource.ok(messageService.getAllMessage(conversationId),"SUCCESS");
 	}
 
+
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ApiResource<Map<String, String>> uploadImage(@RequestParam("photo") MultipartFile photo) {
 		String url = s3Service.saveImageToS3(photo);
 		return ApiResource.ok(Collections.singletonMap("url", url),"ok");
 	}
+
 
 	@MessageMapping("/chat/{conversationId}")
 	@SendTo("/topic/conversation/{conversationId}")
@@ -84,12 +86,17 @@ public class MessageController {
 
 	}
 
+
 	@DeleteMapping("/{messageId}/thu-hoi")
 	public ApiResource<String> recallMessage(
-			@PathVariable String messageId) {
-			messageService.recallMessage(messageId);
+			@PathVariable String messageId,
+			@RequestParam String conversationId) {
+			messageService.recallMessage(messageId,conversationId);
 			return ApiResource.<String>builder().message("Thu hồi tin nhắn thành công").build();
 	}
 
-
+	@PostMapping("/{messageId}/undoRecall")
+	public ApiResource<MessageResponse> undoRecallMessage(@PathVariable String messageId) {
+		return ApiResource.ok(messageService.undoRecallMessage(messageId),"SUCCESS");
+	}
 }

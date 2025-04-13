@@ -17,11 +17,16 @@ import {
 import ApiService from '../../services/apis.js';
 import useConversation from '../../hooks/useConversation.js';
 
-const MessageBox = ({ data, isLast, onPinSuccess }) => {
+const MessageBox = ({
+  data,
+  isLast,
+  onPinSuccess,
+  onDeleteSuccess,
+  onRestoreSuccess
+}) => {
   const { phone } = usePhoneNumber();
   const { conversationId } = useConversation();
   if (!phone) return null;
-
   const isOwn = phone === data.sender.phoneNumber;
   const isVideo = data.image?.endsWith('.mp4');
   const isFile = data.image?.endsWith('.pdf');
@@ -30,9 +35,27 @@ const MessageBox = ({ data, isLast, onPinSuccess }) => {
     try {
       if (key === 'delete') {
         await ApiService.deleteMessage(data.id);
-        message.success('Đã xóa tin nhắn');
+        onDeleteSuccess && onDeleteSuccess();
+
+        message.open({
+          type: 'info',
+          content: (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>1 tin nhắn đã xóa</span>
+              <Button
+                type='link'
+                size='small'
+                onClick={() => onRestoreSuccess && onRestoreSuccess(data.id)}
+              >
+                Khôi phục
+              </Button>
+            </div>
+          ),
+          duration: 3,
+          icon: <UndoOutlined />
+        });
       } else if (key === 'recall') {
-        await ApiService.recallMessage(data.id);
+        await ApiService.recallMessage(data.id, conversationId);
         message.success('Đã thu hồi tin nhắn');
       } else if (key === 'pin') {
         await ApiService.pinMessage(conversationId, data.id);
@@ -152,7 +175,9 @@ const MessageBox = ({ data, isLast, onPinSuccess }) => {
           <div className='text-sm text-gray-500'>{data.sender.name}</div>
         </div>
         <div className={messageCls}>
-          {data.image ? (
+          {data.deleted ? (
+            <i className='text-gray-500 italic'>Tin nhắn này đã được thu hồi</i>
+          ) : data.image ? (
             isVideo ? (
               <video
                 controls

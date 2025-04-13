@@ -1,33 +1,81 @@
+import { useEffect, useRef, useState } from 'react';
+import { useWebSocket } from './WebSocketContext';
 import useConversation from '../../hooks/useConversation.js';
 import MessageBox from './MessageBox';
-import { useEffect, useRef, useState } from 'react';
 import ApiService from '../../services/apis';
 import { Dropdown, message } from 'antd';
 import { AiOutlineEllipsis } from 'react-icons/ai';
 
-const Body = ({ messages }) => {
+const Body = ({ messages: initialMessages, fetchMessages }) => {
   const { conversationId } = useConversation();
+  const { subscribe } = useWebSocket();
   const [pinnedMessage, setPinnedMessage] = useState(null);
+  const [messages, setMessages] = useState(initialMessages || []);
+  const subscribed = useRef(false);
 
   useEffect(() => {
-    ApiService.updateMessage(conversationId) || [];
-  }, [conversationId]);
+    setMessages(initialMessages || []);
+  }, [initialMessages]);
 
   useEffect(() => {
-    const fetchPinnedMessage = async () => {
-      try {
-        const res = await ApiService.getPinmessage(conversationId);
-        setPinnedMessage(res.data);
-      } catch (error) {
-        if (error.message === '404') {
-          setPinnedMessage(null);
+    if (subscribed.current) return;
+
+    const unsubscribe = subscribe(
+      `/topic/conversation/${conversationId}`,
+      async (data) => {
+        if (data?.pinnedMessageId) {
+          try {
+            const res = await ApiService.getPinmessage(conversationId);
+            setPinnedMessage(res.data);
+          } catch {
+            setPinnedMessage(null);
+          }
         } else {
-          message.error(error.message);
+          setPinnedMessage(null);
+        }
+
+        if (data?.id && data.deleted) {
+          setMessages((prev) =>
+            (prev || []).map((msg) =>
+              msg?.id === data.id ? { ...msg, ...data } : msg
+            )
+          );
         }
       }
-    };
+    );
 
-    fetchPinnedMessage();
+    subscribed.current = true;
+    return () => {
+      subscribed.current = false;
+      unsubscribe();
+    };
+  }, [conversationId, subscribe]);
+
+  const handleDeleteMessage = (id) => {
+    setMessages((prev) => (prev || []).filter((msg) => msg?.id !== id));
+  };
+
+  const handleRecallMessage = (id) => {
+    setMessages((prev) =>
+      (prev || []).map((msg) =>
+        msg?.id === id ? { ...msg, deleted: true } : msg
+      )
+    );
+  };
+
+  const handleRestoreMessage = async (id) => {
+    try {
+      await ApiService.undoRecallMessage(id);
+      await fetchMessages();
+    } catch (error) {
+      message.error(error.message || 'Khôi phục thất bại');
+    }
+  };
+
+  useEffect(() => {
+    ApiService.updateMessage(conversationId).catch((error) => {
+      console.error('Error updating messages:', error);
+    });
   }, [conversationId]);
 
   const handleMenuClick = async ({ key }) => {
@@ -38,7 +86,7 @@ const Body = ({ messages }) => {
         message.success('Đã xoá ghim');
       }
     } catch (error) {
-      message.error(error.message);
+      message.error(error.message || 'Lỗi xóa ghim');
     }
   };
 
@@ -54,6 +102,10 @@ const Body = ({ messages }) => {
       }
     ];
   };
+
+  if (!messages) {
+    return <div>Loading...</div>; // Ngăn trắng màn hình
+  }
 
   return (
     <div className='flex-1 overflow-y-auto'>
@@ -80,9 +132,12 @@ const Body = ({ messages }) => {
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}
-          key={`${message.id}-${i}`}
+          key={`${message?.id}-${i}`}
           data={message}
           onPinSuccess={() => setPinnedMessage(message)}
+          onDeleteSuccess={() => handleDeleteMessage(message?.id)}
+          onRestoreSuccess={() => handleRestoreMessage(message?.id)}
+          onRecallSuccess={() => handleRecallMessage(message?.id)}
         />
       ))}
     </div>

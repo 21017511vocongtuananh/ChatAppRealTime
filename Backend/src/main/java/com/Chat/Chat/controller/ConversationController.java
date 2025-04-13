@@ -9,6 +9,7 @@ import com.Chat.Chat.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConversationController {
 	private final ConversationService conversationService;
+
 
 	@GetMapping()
 	public ApiResource<List<ConversationResponse>> getConversation(){
@@ -49,7 +51,9 @@ public class ConversationController {
 	}
 	@GetMapping("/{conversationId}/pin")
 	public ApiResource<MessageResponse> getPinnedMessage(@PathVariable String conversationId){
-		return ApiResource.ok(conversationService.getPinnedMessages(conversationId),"SUCCESS");
+		MessageResponse messageResponse = conversationService.getPinnedMessages(conversationId);
+		return ApiResource.ok(messageResponse,"SUCCESS");
+
 	}
 
 	@DeleteMapping("/{conversationId}/delete/pin")

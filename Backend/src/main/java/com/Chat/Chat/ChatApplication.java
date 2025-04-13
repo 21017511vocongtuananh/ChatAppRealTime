@@ -100,6 +100,7 @@ public class ChatApplication implements CommandLineRunner {
 			convo1.setId("507f191e810c19729de860ea");
 			convo1.setName("");
 			convo1.setIsGroup(false);
+			convo1.setPinnedMessageId("");
 			convo1.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0)); // Thời gian tạo
 			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10)); // Thời gian tin nhắn cuối cùng
 			convo1.setMessagesIds(Arrays.asList("507f191e810c19729de860ec", "507f191e810c19729de860ed","507f191e810c19729de860ee"));

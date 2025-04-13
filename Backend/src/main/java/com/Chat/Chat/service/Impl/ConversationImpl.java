@@ -19,6 +19,7 @@ import com.Chat.Chat.service.MessageService;
 import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ConversationImpl implements ConversationService {
 	private final MessageMapper messageMapper;
 	private final MessageRepo messageRepo;
 	private final ConversationMapper conversationMapper;
+	private final SimpMessagingTemplate messagingTemplate;
 
 	@Override
 	public ConversationResponse getConversationId(String id) {
@@ -70,7 +72,12 @@ public class ConversationImpl implements ConversationService {
 		Conversation conversation = conversationRepo.findById(conversationId).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"không tìm thấy cuộc trò chuyện"));
 		conversation.setPinnedMessageId(messageId);
 		conversationRepo.save(conversation);
-		return conversationMapper.toConversationResponse(conversation);
+		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
+		messagingTemplate.convertAndSend(
+				"/topic/conversation/" + conversationId,
+				conversationResponse
+		);
+		return conversationResponse;
 	}
 
 	@Override
@@ -90,9 +97,15 @@ public class ConversationImpl implements ConversationService {
 
 	@Override
 	public void deletePinnedMessages(String conversationId) {
-		Conversation conversation = conversationRepo.findById(conversationId).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Khng tìm thấy cuộc trò chuyện"));
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
 		conversation.setPinnedMessageId("");
 		conversationRepo.save(conversation);
+		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
+		messagingTemplate.convertAndSend(
+				"/topic/conversation/" + conversationId,
+				conversationResponse
+		);
 	}
 
 

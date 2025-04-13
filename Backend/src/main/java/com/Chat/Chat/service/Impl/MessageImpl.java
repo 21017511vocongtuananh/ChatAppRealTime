@@ -19,13 +19,21 @@ import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +47,9 @@ public class MessageImpl implements MessageService {
 	private final UserService userService;
 	private final UserRepo userRepo;
 	private final DeletedMessageRepo deletedMessageRepo;
+	private static final int RECALL_TIME_LIMIT_MINUTES = 6;
+	private static final int RECALL_DELAY_SECONDS = 15;
+	private final SimpMessagingTemplate messagingTemplate;
 
 
 	@Override
@@ -92,8 +103,7 @@ public class MessageImpl implements MessageService {
 		List<MessageResponse> result = new ArrayList<>();
 		for (Message message : allMessages) {
 			boolean isDeletedByUser = currentUser.getDeletedMessageIds().contains(message.getId());
-			boolean isRecalled = message.isDeleted();
-			if (!isDeletedByUser && !isRecalled) {
+			if (!isDeletedByUser) {
 				MessageResponse response = messageMapper.toMessageResponse(message);
 				result.add(response);
 			}
@@ -126,48 +136,100 @@ public class MessageImpl implements MessageService {
 		return new MockMultipartFile("file", fileName, contentType, decodedBytes);
 	}
 
+	@Transactional
 	@Override
 	public void deleteMessage(String messageId) {
-		Optional<Message> message = messageRepo.findById(messageId);
-		if (!message.isPresent()) {
-			throw new ErrorException(ErrorCode.NOT_FOUND,"Không tìm thấy tin nhắn");
-		}
+		Message message = messageRepo.findById(messageId)
+				.orElseThrow(() -> {
+					return new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn");
+				});
 		User login = userService.getLoginUser();
 		if (!login.getDeletedMessageIds().contains(messageId)) {
 			login.getDeletedMessageIds().add(messageId);
 			userRepo.save(login);
 		}
-		DeletedMessage deletedMessage = DeletedMessage.builder()
-				.messageId(messageId)
-				.deletedBy(login.getId())
-				.deletedAt(LocalDateTime.now())
-				.build();
-		deletedMessageRepo.save(deletedMessage);
-	}
-
-	@Override
-	public void recallMessage(String messageId) {
-		Optional<Message> messageOpt = messageRepo.findById(messageId);
-		if (!messageOpt.isPresent()) {
-			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn");
-		}
-		Message message = messageOpt.get();
-		User login = userService.getLoginUser();
-		if (!message.getSenderId().equals(login.getId())) {
-			throw new ErrorException(ErrorCode.FORBIDDEN, "Chỉ người gửi mới có thể thu hồi tin nhắn");
-		}
-		long phutDaGui = ChronoUnit.MINUTES.between(message.getCreatedAt(), LocalDateTime.now());
-		if (phutDaGui > 6) {
-			throw new ErrorException(ErrorCode.BAD_REQUEST, "Đã quá thời gian thu hồi (giới hạn 6 phút)");
-		}
-		message.setDeleted(true);
+		message.setRecalling(true);
 		messageRepo.save(message);
-		DeletedMessage deletedMessage = DeletedMessage.builder()
-				.messageId(messageId)
-				.deletedBy(login.getId())
-				.deletedAt(LocalDateTime.now())
-				.build();
-		deletedMessageRepo.save(deletedMessage);
+		scheduleMessageDeletion(messageId, login.getId());
 	}
 
-}
+		@Override
+		public void recallMessage(String messageId,String conversationId) {
+
+			Message message = messageRepo.findById(messageId)
+					.orElseThrow(() -> {
+						return new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn");
+					});
+			User login = userService.getLoginUser();
+			if (message.isDeleted()) {
+				throw new ErrorException(ErrorCode.BAD_REQUEST, "Tin nhắn đã bị xóa");
+			}
+			long minutesPassed = ChronoUnit.MINUTES.between(message.getCreatedAt(), LocalDateTime.now());
+			if (minutesPassed > RECALL_TIME_LIMIT_MINUTES) {
+				throw new ErrorException(ErrorCode.BAD_REQUEST, "Đã quá thời gian thu hồi (giới hạn 6 phút)");
+			}
+			message.setDeleted(true);
+			messageRepo.save(message);
+			DeletedMessage deletedMessage = DeletedMessage.builder()
+					.messageId(messageId)
+					.deletedBy(login.getId())
+					.deletedAt(LocalDateTime.now())
+					.build();
+			deletedMessageRepo.save(deletedMessage);
+			messagingTemplate.convertAndSend(
+					"/topic/conversation/" + conversationId,
+					message
+			);
+		}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	public MessageResponse undoRecallMessage(String messageId) {
+		Message message = messageRepo.findById(messageId)
+				.orElseThrow(() -> {
+					return new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn");
+				});
+		User login = userService.getLoginUser();
+		if (login.getDeletedMessageIds().contains(messageId)) {
+			login.getDeletedMessageIds().remove(messageId);
+			userRepo.save(login);
+		}
+		if (!message.getSenderId().equals(login.getId())) {
+			throw new ErrorException(ErrorCode.FORBIDDEN, "Bạn không có quyền khôi phục tin nhắn này");
+		}
+		if (!message.isRecalling()) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Tin nhắn không đang thu hồi");
+		}
+		message.setRecalling(false);
+		messageRepo.save(message);
+		return messageMapper.toMessageResponse(message);
+	}
+
+	@Async
+	public void scheduleMessageDeletion(String messageId, String userId) {
+		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		scheduler.schedule(() -> {
+			try {
+				Optional<Message> messageOpt = messageRepo.findById(messageId);
+				if (messageOpt.isPresent() && messageOpt.get().isRecalling()) {
+					Message message = messageOpt.get();
+					message.setDeleted(false);
+					message.setRecalling(true);
+					messageRepo.save(message);
+					DeletedMessage deletedMessage = DeletedMessage.builder()
+							.messageId(messageId)
+							.deletedBy(userId)
+							.deletedAt(LocalDateTime.now())
+							.build();
+					deletedMessageRepo.save(deletedMessage);
+				} else {
+					log.info("Message with ID: {} was not deleted (already undone or not recalling)", messageId);
+				}
+			} catch (Exception e) {
+				log.error("Error during scheduled message deletion for ID: {}", messageId, e);
+			}
+		}, RECALL_DELAY_SECONDS, TimeUnit.SECONDS);
+		scheduler.shutdown();
+	}
+	}
+

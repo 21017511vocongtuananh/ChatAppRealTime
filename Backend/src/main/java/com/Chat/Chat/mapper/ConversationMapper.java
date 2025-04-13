@@ -60,6 +60,7 @@ public class ConversationMapper {
 						.image(message.getImage())
 						.createdAt(message.getCreatedAt())
 						.sender(userMap.get(message.getSenderId()))
+						.deleted(message.isDeleted())
 						.seen(message.getSeenIds().stream()
 								.map(userMap::get)
 								.collect(Collectors.toList()))

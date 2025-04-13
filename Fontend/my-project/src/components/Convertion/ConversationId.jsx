@@ -14,6 +14,16 @@ const ConversationId = () => {
   const [messages, setMessages] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Hàm tải danh sách tin nhắn từ server
+  const fetchMessages = async () => {
+    try {
+      const messageResponse = await ApiService.getMessages(conversationId);
+      setMessages(messageResponse.data || []);
+    } catch (error) {
+      message.error('Lỗi khi tải tin nhắn: ' + error.message);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,13 +31,11 @@ const ConversationId = () => {
           conversationId
         );
         setConversation(conversationResponse);
-        const messageResponse = await ApiService.getMessages(conversationId);
-        setMessages(messageResponse.data || []);
+        await fetchMessages();
       } catch (error) {
-        message.error('Lỗi khi lấy dữ liệu:', error);
+        message.error('Lỗi khi lấy dữ liệu: ' + error.message);
       }
     };
-
     fetchData();
   }, [conversationId]);
 
@@ -53,7 +61,7 @@ const ConversationId = () => {
           setDrawerOpen={setDrawerOpen}
           drawerOpen={drawerOpen}
         />
-        <Body messages={messages} />
+        <Body messages={messages} fetchMessages={fetchMessages} />
         <Form messages={messages} setMessages={setMessages} />
       </div>
       {drawerOpen && (
