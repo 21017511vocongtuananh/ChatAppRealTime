@@ -29,6 +29,4 @@ public class DeletedUser {
 	@Field("deletedAt")
 	private LocalDateTime deletedAt = LocalDateTime.now();
 
-	@Field("reason")
-	private String reason; // Lý do xóa (tùy chọn)
 }

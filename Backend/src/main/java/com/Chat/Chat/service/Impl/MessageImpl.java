@@ -103,6 +103,7 @@ public class MessageImpl implements MessageService {
 		List<MessageResponse> result = new ArrayList<>();
 		for (Message message : allMessages) {
 			boolean isDeletedByUser = currentUser.getDeletedMessageIds().contains(message.getId());
+
 			if (!isDeletedByUser) {
 				MessageResponse response = messageMapper.toMessageResponse(message);
 				result.add(response);
