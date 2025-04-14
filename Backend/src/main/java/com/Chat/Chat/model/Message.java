@@ -34,6 +34,4 @@ public class Message {
 	private boolean isDeleted;
 	@Field("sharedMessageId")
 	private String sharedMessageId;
-	@Field("additionalMessage")
-	private String additionalMessage;
 }

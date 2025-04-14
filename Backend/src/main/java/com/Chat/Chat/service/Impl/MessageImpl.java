@@ -223,14 +223,26 @@ public class MessageImpl implements MessageService {
 			sharedMessage.setBody(originalMessage.getBody());
 			sharedMessage.setImage(originalMessage.getImage());
 			sharedMessage.setSharedMessageId(originalMessage.getId());
-			sharedMessage.setAdditionalMessage(request.getAdditionalMessage());
 			sharedMessage.setCreatedAt(LocalDateTime.now());
 			sharedMessage.setDeleted(false);
-
 			messageRepo.save(sharedMessage);
 			newMessages.add(sharedMessage);
+			conv.getMessagesIds().add(sharedMessage.getId());
 			conv.setLastMessageAt(LocalDateTime.now());
 			conversationRepo.save(conv);
+			if (request.getBody() != null && !request.getBody().trim().isEmpty()) {
+				Message additionalMessage = new Message();
+				additionalMessage.setConversationId(conv.getId());
+				additionalMessage.setSenderId(login.getId());
+				additionalMessage.setBody(request.getBody().trim());
+				additionalMessage.setCreatedAt(LocalDateTime.now());
+				additionalMessage.setDeleted(false);
+				messageRepo.save(additionalMessage);
+				newMessages.add(additionalMessage);
+				conv.getMessagesIds().add(additionalMessage.getId());
+				conv.setLastMessageAt(LocalDateTime.now());
+				conversationRepo.save(conv);
+			}
 		}
 		List<MessageResponse> messageResponses = newMessages.stream()
 				.map(messageMapper::toMessageResponse)

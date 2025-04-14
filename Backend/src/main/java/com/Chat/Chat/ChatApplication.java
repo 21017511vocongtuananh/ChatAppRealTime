@@ -62,9 +62,20 @@ public class ChatApplication implements CommandLineRunner {
 			user2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 			user2.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 
+			User user3 = new User();
+			user3.setId("67c0b55afe7b947481a9c68b");
+			user3.setName("Dung");
+			user3.setPhoneNumber("0336967664");
+			user3.setEmail("dung@gmail.com");
+			user3.setGender("Nữ");
+			user3.setPassword("$2a$10$Ao9OOMtka/BQQN567GwNO.q2HWUD4xzSaG1fIWzgnFiEL2JhzSuUe");
+			user3.setImage("https://image-clonezalo.s3.us-east-1.amazonaws.com/download.jpg");
+			user3.setDateOfBirth(LocalDate.of(2003, 4, 3));
+			user3.setCreatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
+			user3.setUpdatedAt(LocalDateTime.of(2025, 2, 27, 15, 37, 10, 229000000));
 
 
-			userRepo.saveAll(Arrays.asList(user1, user2));
+			userRepo.saveAll(Arrays.asList(user1, user2, user3));
 
 			// Thêm dữ liệu Message
 			Message message1 = new Message();
@@ -94,7 +105,16 @@ public class ChatApplication implements CommandLineRunner {
 			message3.setConversationId("507f191e810c19729de860ea");
 			message3.setSenderId("67c086a68c03631f6367499e");
 
-			messageRepo.saveAll(Arrays.asList(message1, message2, message3));
+			Message message4 = new Message();
+			message4.setId("507f191e810c19729de860eb");
+			message4.setBody("hello");
+			message4.setImage(null);
+			message4.setCreatedAt(LocalDateTime.of(2025, 2, 27, 11, 5));
+			message4.setSeenIds(Collections.singletonList("67c0b55afe7b947481a9c68b"));
+			message4.setConversationId("507f191e810c19729de860eb");
+			message4.setSenderId("67c0b55afe7b947481a9c68b");
+
+			messageRepo.saveAll(Arrays.asList(message1, message2, message3,message4));
 
 			Conversation convo1 = new Conversation();
 			convo1.setId("507f191e810c19729de860ea");
@@ -109,9 +129,22 @@ public class ChatApplication implements CommandLineRunner {
 					new Conversation.GroupMember("67c0b55afe7b947481a9c68f", Role.USER)
 			));
 
+			Conversation convo2 = new Conversation();
+			convo2.setId("507f191e810c19729de860eb");
+			convo2.setName("");
+			convo2.setIsGroup(false);
+			convo2.setPinnedMessageId("");
+			convo2.setCreatedAt(LocalDateTime.of(2025, 2, 27, 10, 0)); // Thời gian tạo
+			convo2.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10)); // Thời gian tin nhắn cuối cùng
+			convo2.setMessagesIds(Arrays.asList("507f191e810c19729de860eb"));
+			convo2.setGroupMembers(Arrays.asList(
+					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER),
+					new Conversation.GroupMember("67c0b55afe7b947481a9c68b", Role.USER)
+			));
 
 
-			conversationRepo.saveAll(Arrays.asList(convo1));
+
+			conversationRepo.saveAll(Arrays.asList(convo1,convo2));
 			System.out.println("Initialized sample data for MongoDB with 3 users and GroupMember");
 
 		}

@@ -8,5 +8,5 @@ import java.util.List;
 public class ShareMessageRequest {
 	private String messageId;
 	private List<String> conversationIds;
-	private String additionalMessage;
+	private String body;
 }

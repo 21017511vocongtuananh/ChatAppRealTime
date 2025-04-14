@@ -46,7 +46,6 @@ public class MessageMapper {
 				.deleted(message.isDeleted())
 				.createdAt(message.getCreatedAt())
 				.sharedMessageId(message.getSharedMessageId())
-				.additionalMessage(message.getAdditionalMessage())
 				.conversationId(message.getConversationId())
 				.build();
 	}
