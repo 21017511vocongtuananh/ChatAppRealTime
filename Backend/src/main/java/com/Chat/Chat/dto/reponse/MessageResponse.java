@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,4 +24,6 @@ public class MessageResponse {
 	private UserResponse sender;
 	private String conversationId;
 	private boolean deleted;
+	private String sharedMessageId;
+	private String additionalMessage;
 }

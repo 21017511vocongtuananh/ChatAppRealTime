@@ -61,6 +61,8 @@ public class ConversationMapper {
 						.createdAt(message.getCreatedAt())
 						.sender(userMap.get(message.getSenderId()))
 						.deleted(message.isDeleted())
+						.sharedMessageId(message.getSharedMessageId())
+						.additionalMessage(message.getAdditionalMessage())
 						.seen(message.getSeenIds().stream()
 								.map(userMap::get)
 								.collect(Collectors.toList()))

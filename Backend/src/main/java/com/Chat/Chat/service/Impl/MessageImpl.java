@@ -2,6 +2,7 @@ package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.request.MessageRequest;
+import com.Chat.Chat.dto.request.ShareMessageRequest;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.MessageMapper;
@@ -149,7 +150,6 @@ public class MessageImpl implements MessageService {
 			login.getDeletedMessageIds().add(messageId);
 			userRepo.save(login);
 		}
-		message.setRecalling(true);
 		messageRepo.save(message);
 		scheduleMessageDeletion(messageId, login.getId());
 	}
@@ -198,13 +198,55 @@ public class MessageImpl implements MessageService {
 		if (!message.getSenderId().equals(login.getId())) {
 			throw new ErrorException(ErrorCode.FORBIDDEN, "Bạn không có quyền khôi phục tin nhắn này");
 		}
-		if (!message.isRecalling()) {
-			throw new ErrorException(ErrorCode.BAD_REQUEST, "Tin nhắn không đang thu hồi");
-		}
-		message.setRecalling(false);
 		messageRepo.save(message);
 		return messageMapper.toMessageResponse(message);
 	}
+
+	@Override
+	public List<MessageResponse> shareMessage(ShareMessageRequest request) {
+		User login = userService.getLoginUser();
+		Message originalMessage = messageRepo.findById(request.getMessageId()).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn"));
+		Conversation originalConversation = conversationRepo.findById(originalMessage.getConversationId()).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy nhóm"));
+		List<String> conversationIds = request.getConversationIds();
+		if (conversationIds == null || conversationIds.isEmpty()) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Danh sách cuộc hội thoại nhận không được rỗng");
+		}
+		List<Conversation> targetConversations = conversationRepo.findAllById(conversationIds);
+		if (targetConversations.size() != conversationIds.size()) {
+			throw new ErrorException(ErrorCode.NOT_FOUND, "Một số cuộc hội thoại nhận không tồn tại");
+		}
+		List<Message> newMessages = new ArrayList<>();
+		for (Conversation conv : targetConversations) {
+			Message sharedMessage = new Message();
+			sharedMessage.setConversationId(conv.getId());
+			sharedMessage.setSenderId(login.getId());
+			sharedMessage.setBody(originalMessage.getBody());
+			sharedMessage.setImage(originalMessage.getImage());
+			sharedMessage.setSharedMessageId(originalMessage.getId());
+			sharedMessage.setAdditionalMessage(request.getAdditionalMessage());
+			sharedMessage.setCreatedAt(LocalDateTime.now());
+			sharedMessage.setDeleted(false);
+
+			messageRepo.save(sharedMessage);
+			newMessages.add(sharedMessage);
+			conv.setLastMessageAt(LocalDateTime.now());
+			conversationRepo.save(conv);
+		}
+		List<MessageResponse> messageResponses = newMessages.stream()
+				.map(messageMapper::toMessageResponse)
+				.collect(Collectors.toList());
+		for (Message message : newMessages) {
+			String conversationId = message.getConversationId();
+			MessageResponse messageResponse = messageMapper.toMessageResponse(message);
+			messagingTemplate.convertAndSend(
+					"/topic/conversation/" + conversationId,
+					messageResponse
+			);
+		}
+		return messageResponses;
+	}
+
+
 
 	@Async
 	public void scheduleMessageDeletion(String messageId, String userId) {
@@ -212,10 +254,9 @@ public class MessageImpl implements MessageService {
 		scheduler.schedule(() -> {
 			try {
 				Optional<Message> messageOpt = messageRepo.findById(messageId);
-				if (messageOpt.isPresent() && messageOpt.get().isRecalling()) {
+				if (messageOpt.isPresent()) {
 					Message message = messageOpt.get();
 					message.setDeleted(false);
-					message.setRecalling(true);
 					messageRepo.save(message);
 					DeletedMessage deletedMessage = DeletedMessage.builder()
 							.messageId(messageId)

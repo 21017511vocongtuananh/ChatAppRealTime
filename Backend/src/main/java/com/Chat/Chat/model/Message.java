@@ -32,5 +32,8 @@ public class Message {
 	@Field("senderId")
 	private String senderId;
 	private boolean isDeleted;
-	private boolean recalling;
+	@Field("sharedMessageId")
+	private String sharedMessageId;
+	@Field("additionalMessage")
+	private String additionalMessage;
 }

@@ -3,6 +3,7 @@ package com.Chat.Chat.controller;
 import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.request.ApiResource;
 import com.Chat.Chat.dto.request.MessageRequest;
+import com.Chat.Chat.dto.request.ShareMessageRequest;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.model.User;
@@ -98,5 +99,10 @@ public class MessageController {
 	@PostMapping("/{messageId}/undoRecall")
 	public ApiResource<MessageResponse> undoRecallMessage(@PathVariable String messageId) {
 		return ApiResource.ok(messageService.undoRecallMessage(messageId),"SUCCESS");
+	}
+
+	@PostMapping("/shareMessage")
+	public ApiResource<List<MessageResponse>> shareMessage(@RequestBody ShareMessageRequest request) {
+		return ApiResource.ok(messageService.shareMessage(request),"SUCCESS");
 	}
 }
