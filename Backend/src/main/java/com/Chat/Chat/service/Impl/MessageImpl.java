@@ -150,7 +150,6 @@ public class MessageImpl implements MessageService {
 			login.getDeletedMessageIds().add(messageId);
 			userRepo.save(login);
 		}
-		messageRepo.save(message);
 		scheduleMessageDeletion(messageId, login.getId());
 	}
 
@@ -198,7 +197,6 @@ public class MessageImpl implements MessageService {
 		if (!message.getSenderId().equals(login.getId())) {
 			throw new ErrorException(ErrorCode.FORBIDDEN, "Bạn không có quyền khôi phục tin nhắn này");
 		}
-		messageRepo.save(message);
 		return messageMapper.toMessageResponse(message);
 	}
 
@@ -258,6 +256,24 @@ public class MessageImpl implements MessageService {
 		return messageResponses;
 	}
 
+	@Override
+	public void deleteHistoryMessageUser(String conversationId) {
+		User login = userService.getLoginUser();
+		Conversation conversation = conversationRepo.findById(conversationId).orElseThrow(() -> {
+			return new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn");
+		});
+		List<String> allMessageId = new ArrayList<>(conversation.getMessagesIds());
+		login.setDeletedMessageIds(allMessageId);
+		for(String message : allMessageId)
+		{
+			DeletedMessage deletedMessage = new DeletedMessage();
+			deletedMessage.setMessageId(message);
+			deletedMessage.setDeletedBy(login.getId());
+			deletedMessage.setDeletedAt(LocalDateTime.now());
+			deletedMessageRepo.save(deletedMessage);
+		}
+		userRepo.save(login);
+	}
 
 
 	@Async

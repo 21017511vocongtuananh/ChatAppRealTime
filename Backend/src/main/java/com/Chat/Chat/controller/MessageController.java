@@ -105,4 +105,11 @@ public class MessageController {
 	public ApiResource<List<MessageResponse>> shareMessage(@RequestBody ShareMessageRequest request) {
 		return ApiResource.ok(messageService.shareMessage(request),"SUCCESS");
 	}
+
+	@PostMapping("/deleteHistoryMessageUser/{conversationId}")
+	public ApiResource<String> deleteHistoryMessageUser(@PathVariable String conversationId) {
+		messageService.deleteHistoryMessageUser(conversationId);
+		return ApiResource.<String>builder().message("Xóa tin nhắn thành công").build();
+	}
+
 }

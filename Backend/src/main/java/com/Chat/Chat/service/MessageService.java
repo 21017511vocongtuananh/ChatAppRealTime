@@ -17,4 +17,5 @@ public interface MessageService {
 	void recallMessage(String messageId ,String conversationId);
 	MessageResponse undoRecallMessage(String messageId);
 	List<MessageResponse> shareMessage(ShareMessageRequest request);
+	void deleteHistoryMessageUser(String conversationId);
 }
