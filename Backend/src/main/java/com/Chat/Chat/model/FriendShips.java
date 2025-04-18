@@ -37,4 +37,5 @@ public class FriendShips {
 
 	@Field("updatedAt")
 	private LocalDateTime updatedAt = LocalDateTime.now();
+
 }

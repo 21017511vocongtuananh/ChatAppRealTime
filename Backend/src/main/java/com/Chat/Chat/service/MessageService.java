@@ -3,6 +3,7 @@ package com.Chat.Chat.service;
 import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.request.MessageRequest;
 import com.Chat.Chat.dto.request.ShareMessageRequest;
+import com.Chat.Chat.model.SignalMessage;
 import com.Chat.Chat.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,4 +19,5 @@ public interface MessageService {
 	MessageResponse undoRecallMessage(String messageId);
 	List<MessageResponse> shareMessage(ShareMessageRequest request);
 	void deleteHistoryMessageUser(String conversationId);
+
 }

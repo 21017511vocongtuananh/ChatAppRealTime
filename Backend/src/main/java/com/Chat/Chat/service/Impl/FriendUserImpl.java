@@ -1,5 +1,6 @@
 package com.Chat.Chat.service.Impl;
 
+import com.Chat.Chat.dto.reponse.FriendResponse;
 import com.Chat.Chat.dto.reponse.FriendShipResponse;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.enums.FriendshipStatus;
@@ -12,15 +13,18 @@ import com.Chat.Chat.model.FriendShips;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
 import com.Chat.Chat.repository.FriendShipRepo;
+import com.Chat.Chat.repository.UserRepo;
 import com.Chat.Chat.service.FriendUserService;
 import com.Chat.Chat.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,9 +32,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FriendUserImpl implements FriendUserService {
 	private final FriendShipRepo friendShipRepo;
+	private final UserRepo userRepo;
 	private final UserService userService;
 	private final FriendShipMapper friendShipMapper;
 	private final ConversationRepo conversationRepo;
+	private final SimpMessagingTemplate messagingTemplate;
+
+
 
 	@Override
 	public FriendShipResponse sendFriendRequest(String friendId) {
@@ -46,6 +54,12 @@ public class FriendUserImpl implements FriendUserService {
 				.build();
 		friendShipRepo.save(friendShip);
 		FriendShipResponse response = friendShipMapper.toFriendResponse(friendShip);
+		List<FriendResponse> updatedReceived = getPendingFriendRequestsReceivedByUser(friendId);
+		messagingTemplate.convertAndSendToUser(
+				friendId,
+				"/topic/friend-requests/received",
+				updatedReceived
+		);
 		return	response;
 	}
 
@@ -53,21 +67,15 @@ public class FriendUserImpl implements FriendUserService {
 	public FriendShipResponse acceptFriendRequest(String friendId) {
 		User loggedInUser = userService.getLoginUser();
 		String currentUserId = loggedInUser.getId();
-
-
 		Optional<FriendShips> friendshipOpt = friendShipRepo.findByUserIdAndFriendId(friendId, currentUserId);
 		if (friendshipOpt.isEmpty() || friendshipOpt.get().getStatus() != FriendshipStatus.PENDING) {
 			throw new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + friendId + " đến " + currentUserId);
 		}
-
-
 		Optional<Conversation> existingConvoOpt = conversationRepo.findPrivateConversationBetween(currentUserId, friendId);
-
 		Conversation conversation;
 		if (existingConvoOpt.isPresent()) {
 			conversation = existingConvoOpt.get();
 		} else {
-
 			conversation = new Conversation();
 			conversation.setIsGroup(false);
 			List<Conversation.GroupMember> groupMembers = new ArrayList<>();
@@ -76,27 +84,94 @@ public class FriendUserImpl implements FriendUserService {
 			conversation.setGroupMembers(groupMembers);
 			conversationRepo.save(conversation);
 		}
-
-		
 		FriendShips friendShips = friendshipOpt.get();
 		friendShips.setStatus(FriendshipStatus.ACCEPTED);
 		friendShips.setConversationId(conversation.getId());
 		friendShipRepo.save(friendShips);
-
+		Optional<FriendShips> reverseFriendshipOpt = friendShipRepo.findByUserIdAndFriendId(currentUserId, friendId);
+		if (reverseFriendshipOpt.isEmpty()) {
+			FriendShips reverseFriendShip = new FriendShips();
+			reverseFriendShip.setUserId(currentUserId);
+			reverseFriendShip.setFriendId(friendId);
+			reverseFriendShip.setStatus(FriendshipStatus.ACCEPTED);
+			reverseFriendShip.setConversationId(conversation.getId());
+			friendShipRepo.save(reverseFriendShip);
+		}
 		return friendShipMapper.toFriendResponse(friendShips);
 	}
 
 
+	// loi moi da gui
 	@Override
-	public List<FriendShipResponse> getFriendUserLogin() {
+	public List<FriendResponse> getPendingFriendRequestsSentByUser() {
 		User loggedInUser = userService.getLoginUser();
-		List<FriendShipResponse> friendShipResponse = friendShipRepo.findByUserId(loggedInUser.getId())
-				.stream()
-				.map(friendShipMapper::toFriendResponse)
-				.collect(Collectors.toList());
-		return friendShipResponse;
+		List<FriendShips> friendShips = friendShipRepo.findByUserIdAndStatus(loggedInUser.getId(),FriendshipStatus.PENDING);
+		List<String> friendIds = friendShips.stream().map(FriendShips::getFriendId).collect(Collectors.toList());
+		List<User> friends = userRepo.findAllById(friendIds);
+		Map<String, User> friendMap = new HashMap<>();
+		for (User friend : friends) {
+			friendMap.put(friend.getId(), friend);
+		}
+		List<FriendResponse> responses = new ArrayList<>();
+		for (FriendShips friendship : friendShips) {
+			User friend = friendMap.get(friendship.getFriendId());
+			FriendResponse response = new FriendResponse();
+			response.setFriendId(friend.getId());
+			response.setFriendName(friend.getName());
+			response.setImage(friend.getImage());
+			response.setConversationId(friendship.getConversationId());
+			responses.add(response);
+		}
+		return responses;
 	}
-	
+
+	// loi moi nhan duoc
+	@Override
+	public List<FriendResponse> getPendingFriendRequestsReceivedByUser(String userId) {
+		List<FriendShips> friendShips = friendShipRepo.findByFriendIdAndStatus(userId, FriendshipStatus.PENDING);
+		List<String> senderIds = friendShips.stream().map(FriendShips::getUserId).collect(Collectors.toList());
+		List<User> senders = userRepo.findAllById(senderIds);
+		Map<String, User> senderMap = new HashMap<>();
+		for (User sender : senders) {
+			senderMap.put(sender.getId(), sender);
+		}
+		List<FriendResponse> responses = new ArrayList<>();
+		for (FriendShips friendship : friendShips) {
+			User sender = senderMap.get(friendship.getUserId());
+			FriendResponse response = new FriendResponse();
+			response.setFriendId(sender.getId());
+			response.setFriendName(sender.getName());
+			response.setImage(sender.getImage());
+			response.setConversationId(friendship.getConversationId());
+			responses.add(response);
+		}
+		return responses;
+	}
+
+	@Override
+	public List<FriendResponse> getFriendAccept() {
+		User loggedInUser = userService.getLoginUser();
+		List<FriendShips> friendShips = friendShipRepo.findByUserIdAndStatus(loggedInUser.getId(),FriendshipStatus.ACCEPTED);
+		List<String> friendIds = friendShips.stream().map(FriendShips::getFriendId).collect(Collectors.toList());
+		List<User> friends = userRepo.findAllById(friendIds);
+		Map<String, User> friendMap = new HashMap<>();
+		for (User friend : friends) {
+			friendMap.put(friend.getId(), friend);
+		}
+		List<FriendResponse> responses = new ArrayList<>();
+		for (FriendShips friendship : friendShips) {
+			User friend = friendMap.get(friendship.getFriendId());
+			FriendResponse response = new FriendResponse();
+			response.setFriendId(friend.getId());
+			response.setFriendName(friend.getName());
+			response.setImage(friend.getImage());
+			response.setConversationId(friendship.getConversationId());
+			responses.add(response);
+		}
+		return responses;
+	}
+
+
 	@Override
 	public List<FriendShipResponse> getPendingRequestsForCurrentUser() {
 		User currentUser = userService.getLoginUser();
@@ -106,7 +181,6 @@ public class FriendUserImpl implements FriendUserService {
 				.map(friendShipMapper::toFriendResponse)
 				.collect(Collectors.toList());
 	}
-
 
 	@Override
 	public void unfriend(String friendId) {

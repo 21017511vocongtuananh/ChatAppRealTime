@@ -2,6 +2,7 @@ package com.Chat.Chat.service.Impl;
 
 import com.Chat.Chat.dto.reponse.ConversationResponse;
 import com.Chat.Chat.dto.reponse.MessageResponse;
+import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ConversationRequest;
 import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.enums.Role;
@@ -14,6 +15,7 @@ import com.Chat.Chat.model.Message;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.repository.ConversationRepo;
 import com.Chat.Chat.repository.MessageRepo;
+import com.Chat.Chat.repository.UserRepo;
 import com.Chat.Chat.service.ConversationService;
 import com.Chat.Chat.service.MessageService;
 import com.Chat.Chat.service.UserService;
@@ -22,9 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +37,7 @@ public class ConversationImpl implements ConversationService {
 	private final MessageRepo messageRepo;
 	private final ConversationMapper conversationMapper;
 	private final SimpMessagingTemplate messagingTemplate;
+	private final UserRepo userRepo;
 
 	@Override
 	public ConversationResponse getConversationId(String id) {
@@ -106,6 +107,141 @@ public class ConversationImpl implements ConversationService {
 				"/topic/conversation/" + conversationId,
 				conversationResponse
 		);
+	}
+
+	@Override
+	public List<ConversationResponse> getConversationIsGroupTrue() {
+		User currentUser = userService.getLoginUser();
+		List<ConversationResponse> conversationResponses = conversationRepo.findAllGroupConversationsOfUser(currentUser.getId())
+				.stream()
+				.map(conversationMapper::toConversationResponse)
+				.collect(Collectors.toList());
+		return conversationResponses;
+	}
+
+	@Override
+	public List<ConversationResponse> getConversationIsGroupFalse() {
+		User currentUser = userService.getLoginUser();
+		List<ConversationResponse> conversationResponses  = conversationRepo.findAllNonGroupConversationsOfUser(currentUser.getId())
+				.stream()
+				.map(conversationMapper::toConversationResponse)
+				.collect(Collectors.toList());
+		return conversationResponses;
+	}
+
+	@Override
+	public ConversationResponse addUserToConversation(String conversationId, List<UserRequest> userIds) {
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+		List<Conversation.GroupMember> currentMembers = conversation.getGroupMembers() != null
+				? conversation.getGroupMembers()
+				: new ArrayList<>();
+		Set<String> existingMemberIds = new HashSet<>();
+		for (Conversation.GroupMember member : currentMembers) {
+			existingMemberIds.add(member.getUserId());
+		}
+		for (UserRequest userRequest : userIds) {
+			String userId = userRequest.getId();
+			if (!existingMemberIds.contains(userId)) {
+				currentMembers.add(new Conversation.GroupMember(userId, Role.USER));
+				existingMemberIds.add(userId);
+			}
+		}
+		conversation.setGroupMembers(currentMembers);
+		conversationRepo.save(conversation);
+		ConversationResponse response = conversationMapper.toConversationResponse(conversation);
+		return response;
+	}
+
+	@Override
+	public ConversationResponse removeUserFromConversation(String conversationId, List<UserRequest> users) {
+//		Conversation conversation = conversationRepo.findById(conversationId)
+//				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+//		List<Conversation.GroupMember> currentMembers = conversation.getGroupMembers();
+//		currentMembers
+		return null;
+	}
+
+	@Override
+	public void exitConversation(String conversationId, String newAdminId) {
+		User currentUser = userService.getLoginUser();
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+		if (!conversation.getIsGroup()) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Không thể rời khỏi cuộc trò chuyện cá nhân");
+		}
+		boolean isAdmin = conversation.getGroupMembers().stream()
+				.anyMatch(member -> member.getUserId().equals(currentUser.getId()) && member.getRole() == Role.ADMIN);
+		if (isAdmin) {
+			if (newAdminId == null || newAdminId.isBlank()) {
+				throw new ErrorException(ErrorCode.BAD_REQUEST, "Phải chọn admin mới");
+			}
+			boolean isValidNewAdmin = conversation.getGroupMembers().stream()
+					.anyMatch(member -> member.getUserId().equals(newAdminId) && !member.getUserId().equals(currentUser.getId()));
+			if (!isValidNewAdmin) {
+				throw new ErrorException(ErrorCode.BAD_REQUEST, "Người được chọn không hợp lệ");
+			}
+			conversation.getGroupMembers().forEach(member -> {
+				if (member.getUserId().equals(newAdminId)) {
+					member.setRole(Role.ADMIN);
+				}
+			});
+		}
+		conversation.getGroupMembers().removeIf(member -> member.getUserId().equals(currentUser.getId()));
+		if (conversation.getGroupMembers().size() <= 1) {
+			conversationRepo.delete(conversation);
+		} else {
+			conversationRepo.save(conversation);
+		}
+	}
+
+	@Override
+	public List<UserResponse> getUsersConversation(String conversationId) {
+		User currentUser = userService.getLoginUser();
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+		List<UserResponse> users = new ArrayList<>();
+		for (Conversation.GroupMember member : conversation.getGroupMembers()) {
+			if (!member.getUserId().equals(currentUser.getId())) {
+				User user = userRepo.findById(member.getUserId())
+						.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy người dùng"));
+				users.add(UserResponse.builder()
+						.id(user.getId())
+						.name(user.getName())
+						.phoneNumber(user.getPhoneNumber())
+								.image(user.getImage())
+						.build());
+			}
+		}
+		return users;
+	}
+
+	@Override
+	public ConversationResponse changeConversationLeader(String conversationId, String newAdminId) {
+		User currentUser = userService.getLoginUser();
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+		boolean isAdmin = conversation.getGroupMembers().stream()
+				.anyMatch(member -> member.getUserId().equals(currentUser.getId()) && member.getRole() == Role.ADMIN);
+		if (!isAdmin) {
+			throw new ErrorException(ErrorCode.FORBIDDEN, "Chỉ trưởng nhóm mới có thể chuyển quyền");
+		}
+		boolean isValidNewAdmin = conversation.getGroupMembers().stream()
+				.anyMatch(member -> member.getUserId().equals(newAdminId) && !member.getUserId().equals(currentUser.getId()));
+		if (!isValidNewAdmin) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Người được chọn không hợp lệ hoặc không có trong nhóm");
+		}
+
+		conversation.getGroupMembers().forEach(member -> {
+			if (member.getUserId().equals(newAdminId)) {
+				member.setRole(Role.ADMIN);
+			}
+			if (member.getUserId().equals(currentUser.getId())) {
+				member.setRole(Role.USER);
+			}
+		});
+		conversationRepo.save(conversation);
+		return conversationMapper.toConversationResponse(conversation);
 	}
 
 

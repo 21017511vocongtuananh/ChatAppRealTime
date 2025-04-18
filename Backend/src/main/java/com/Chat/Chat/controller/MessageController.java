@@ -6,6 +6,7 @@ import com.Chat.Chat.dto.request.MessageRequest;
 import com.Chat.Chat.dto.request.ShareMessageRequest;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
+import com.Chat.Chat.model.SignalMessage;
 import com.Chat.Chat.model.User;
 import com.Chat.Chat.service.Impl.S3Service;
 import com.Chat.Chat.service.MessageService;
@@ -70,6 +71,13 @@ public class MessageController {
 		return savedMessage;
 	}
 
+	@MessageMapping("/call/{conversationId}")
+	@SendTo("/topic/conversation/{conversationId}")
+	public SignalMessage handleSignal(@DestinationVariable String conversationId,SignalMessage message) {
+		return message;
+	}
+
+
 	@PostMapping("/{conversationId}/seen")
 	public ApiResource<MessageResponse> updateMessageSeen(
 			@PathVariable String conversationId) {
@@ -86,7 +94,6 @@ public class MessageController {
 			return ApiResource.<String>builder().message("Xóa tin nhắn thành công").build();
 
 	}
-
 
 	@DeleteMapping("/{messageId}/thu-hoi")
 	public ApiResource<String> recallMessage(

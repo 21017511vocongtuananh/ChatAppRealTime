@@ -6,10 +6,7 @@ import com.Chat.Chat.dto.request.ShareMessageRequest;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.MessageMapper;
-import com.Chat.Chat.model.Conversation;
-import com.Chat.Chat.model.DeletedMessage;
-import com.Chat.Chat.model.Message;
-import com.Chat.Chat.model.User;
+import com.Chat.Chat.model.*;
 import com.Chat.Chat.repository.ConversationRepo;
 import com.Chat.Chat.repository.DeletedMessageRepo;
 import com.Chat.Chat.repository.MessageRepo;
@@ -274,6 +271,7 @@ public class MessageImpl implements MessageService {
 		}
 		userRepo.save(login);
 	}
+
 
 
 	@Async

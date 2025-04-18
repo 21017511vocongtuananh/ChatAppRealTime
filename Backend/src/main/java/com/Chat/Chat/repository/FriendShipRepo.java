@@ -11,7 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface FriendShipRepo extends MongoRepository<FriendShips, String> {
+	@Query("{ '$or': [ { 'userId': ?0 }, { 'friendId': ?0 } ], 'status': ?1 }")
+	List<FriendShips> findByUserIdOrFriendIdAndStatus(String userId, FriendshipStatus status);
 	Optional<FriendShips> findByUserIdAndFriendId(String userId, String friendId);
+	List<FriendShips> findByUserIdAndStatus(String userId, FriendshipStatus status);
 	List<FriendShips> findByUserId(String userId);
 	List<FriendShips> findByFriendIdAndStatus(String friendId, FriendshipStatus status);
 }

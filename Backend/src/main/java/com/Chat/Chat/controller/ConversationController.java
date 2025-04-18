@@ -2,8 +2,10 @@ package com.Chat.Chat.controller;
 
 import com.Chat.Chat.dto.reponse.ConversationResponse;
 import com.Chat.Chat.dto.reponse.MessageResponse;
+import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ApiResource;
 import com.Chat.Chat.dto.request.ConversationRequest;
+import com.Chat.Chat.dto.request.UserRequest;
 import com.Chat.Chat.service.ConversationService;
 import com.Chat.Chat.service.MessageService;
 import jakarta.validation.Valid;
@@ -62,4 +64,35 @@ public class ConversationController {
 		return ApiResource.<String>builder().message("Xóa ghim thành công").build();
 	}
 
+	@GetMapping("/getConversationIsGroupTrue")
+	public ApiResource<List<ConversationResponse>> getConversationIsGroupTrue(){
+		return ApiResource.ok(conversationService.getConversationIsGroupTrue(),"SUCCESS");
+	}
+	@GetMapping("/getConversationIsGroupFalse")
+	public ApiResource<List<ConversationResponse>> getConversationIsGroupFalse(){
+		return ApiResource.ok(conversationService.getConversationIsGroupFalse(),"SUCCESS");
+	}
+
+	@PostMapping("/addUserConversation/{conversationId}")
+	public ApiResource<ConversationResponse> addUserConversation(
+			@PathVariable String conversationId,
+			@RequestBody List<UserRequest> userIds) {
+		ConversationResponse response = conversationService.addUserToConversation(conversationId, userIds);
+		return ApiResource.ok(response,"SUCCESS");
+	}
+
+	@PutMapping("/exit/{conversationId}")
+	public ApiResource<String> exitConversation(@PathVariable String conversationId, @RequestParam String newAdminId) {
+		conversationService.exitConversation(conversationId,newAdminId);
+		return ApiResource.<String>builder().message("Rời nhóm thành công").build();
+	}
+	@GetMapping("/getUser/{conversationId}")
+	public ApiResource<List<UserResponse>> getUserInConversation(@PathVariable String conversationId) {
+		return ApiResource.ok(conversationService.getUsersConversation(conversationId),"SUCCESS");
+	}
+
+	@PutMapping("/changeLeader/{conversationId}")
+	public ApiResource<ConversationResponse> changeLeader(@PathVariable String conversationId, @RequestParam String newAdminId) {
+		return ApiResource.ok(conversationService.changeConversationLeader(conversationId,newAdminId),"SUCCESS");
+	}
 }
