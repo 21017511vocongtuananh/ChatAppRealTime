@@ -162,6 +162,8 @@ public class ConversationImpl implements ConversationService {
 		return null;
 	}
 
+
+
 	@Override
 	public void exitConversation(String conversationId, String newAdminId) {
 		User currentUser = userService.getLoginUser();
@@ -242,6 +244,46 @@ public class ConversationImpl implements ConversationService {
 		});
 		conversationRepo.save(conversation);
 		return conversationMapper.toConversationResponse(conversation);
+	}
+
+	@Override
+	public void removeMember(String conversationId, String memberIdToRemove) {
+		User currentUser = userService.getLoginUser();
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+
+		if (!conversation.getIsGroup()) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Không thể xóa thành viên khỏi cuộc trò chuyện cá nhân");
+		}
+
+		boolean isAdmin = conversation.getGroupMembers().stream()
+				.anyMatch(member -> member.getUserId().equals(currentUser.getId()) && member.getRole() == Role.ADMIN);
+
+		if (!isAdmin) {
+			throw new ErrorException(ErrorCode.FORBIDDEN, "Chỉ trưởng nhóm mới có thể xóa thành viên");
+		}
+
+
+		boolean memberExists = conversation.getGroupMembers().stream()
+				.anyMatch(member -> member.getUserId().equals(memberIdToRemove));
+
+		if (!memberExists) {
+			throw new ErrorException(ErrorCode.NOT_FOUND, "Thành viên không tồn tại trong nhóm");
+		}
+
+
+		if (memberIdToRemove.equals(currentUser.getId())) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Bạn không thể tự xóa chính mình. Hãy dùng chức năng rời nhóm");
+		}
+
+		// Thực hiện xóa
+		conversation.getGroupMembers().removeIf(member -> member.getUserId().equals(memberIdToRemove));
+
+		if (conversation.getGroupMembers().size() < 2) {
+			conversationRepo.delete(conversation);
+		} else {
+			conversationRepo.save(conversation);
+		}
 	}
 
 

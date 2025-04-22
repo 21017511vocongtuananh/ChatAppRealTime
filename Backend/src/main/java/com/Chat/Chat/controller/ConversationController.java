@@ -95,4 +95,14 @@ public class ConversationController {
 	public ApiResource<ConversationResponse> changeLeader(@PathVariable String conversationId, @RequestParam String newAdminId) {
 		return ApiResource.ok(conversationService.changeConversationLeader(conversationId,newAdminId),"SUCCESS");
 	}
+
+	@DeleteMapping("/removeMember/{conversationId}")
+	public ApiResource<String> removeMember(
+			@PathVariable String conversationId,
+			@RequestParam String memberId) {
+		conversationService.removeMember(conversationId, memberId);
+		return ApiResource.<String>builder()
+				.message("Xóa thành viên thành công")
+				.build();
+	}
 }
