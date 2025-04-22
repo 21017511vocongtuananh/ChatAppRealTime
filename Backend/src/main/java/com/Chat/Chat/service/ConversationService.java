@@ -23,4 +23,5 @@ public interface ConversationService {
    void exitConversation(String conversationId,String newAdminId);
    List<UserResponse> getUsersConversation(String conversationId);
    ConversationResponse changeConversationLeader(String conversationId,String newAdminId);
+   void removeMember(String conversationId, String memberIdToRemove);
 }
