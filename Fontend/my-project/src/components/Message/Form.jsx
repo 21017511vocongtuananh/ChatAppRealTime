@@ -15,7 +15,7 @@ const Form = ({ messages, setMessages }) => {
   const { conversationId } = useParams();
   const { sendMessage, subscribe } = useWebSocket();
   const messageSet = useRef(new Set());
-  const subscribed = useRef(false); // Ngăn trùng lặp subscription
+  const subscribed = useRef(false);
 
   const [showEmojiPicker, toggleEmojiPicker] = useReducer(
     (state) => !state,
@@ -30,8 +30,7 @@ const Form = ({ messages, setMessages }) => {
   const messageValue = watch('message');
 
   useEffect(() => {
-    if (subscribed.current) return; // Ngăn subscribe lại
-
+    if (subscribed.current) return;
     const unsubscribe = subscribe(
       `/topic/conversation/${conversationId}`,
       (data) => {
@@ -43,7 +42,6 @@ const Form = ({ messages, setMessages }) => {
         }
       }
     );
-
     subscribed.current = true;
     return () => {
       subscribed.current = false;
@@ -82,7 +80,6 @@ const Form = ({ messages, setMessages }) => {
           ? data.image.data
           : data.image || ''
     };
-
     sendMessage(`/app/chat/${conversationId}`, payload);
     reset();
   };

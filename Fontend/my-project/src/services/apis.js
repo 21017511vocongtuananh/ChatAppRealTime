@@ -223,6 +223,85 @@ export default class ApiService {
       throw new Error(errorMessage);
     }
   }
+  static async getConversationisGroupTrue() {
+    try {
+      const response = await axios.get(
+        `${this.BASE_URL}/conversation/getConversationIsGroupTrue`,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+  static async getConversationIsGroupFalse() {
+    try {
+      const response = await axios.get(
+        `${this.BASE_URL}/conversation/getConversationIsGroupFalse`,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async addUserConversation(conversationId, data) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/conversation/addUserConversation/${conversationId}`,
+        data,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async exitConversation(conversationId, newAdminId) {
+    try {
+      const response = await axios.put(
+        `${this.BASE_URL}/conversation/exit/${conversationId}?newAdminId=${newAdminId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error exiting conversation:', error);
+      throw error;
+    }
+  }
+
+  static async getUserInConversation(conversationId) {
+    try {
+      const response = await axios.get(
+        `${this.BASE_URL}/conversation/getUser/${conversationId}`,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error exiting conversation:', error);
+      throw error;
+    }
+  }
+
+  static async changeLeaderConversation(conversationId, newAdminId) {
+    try {
+      const response = await axios.put(
+        `${this.BASE_URL}/conversation/changeLeader/${conversationId}?newAdminId=${newAdminId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error exiting conversation:', error);
+      throw error;
+    }
+  }
 
   // MESSAGE
   static async getMessages(conversationId) {
@@ -291,6 +370,34 @@ export default class ApiService {
     }
   }
 
+  static async shareMessage(data) {
+    try {
+      const reponse = await axios.post(
+        `${this.BASE_URL}/messages/shareMessage`,
+        data,
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async deleteHistoryMessageUser(conversationId) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/messages/deleteHistoryMessageUser/${conversationId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
   //FRIEND
   static async sendFriend(friendId) {
     try {
@@ -318,17 +425,42 @@ export default class ApiService {
     }
   }
 
-  static async getFriendUserLogin() {
+  static async getPendingFriendRequestsSentByUser() {
     try {
       const reponse = await axios.get(
-        `${this.BASE_URL}/friend/getFriendUserLogin`,
+        `${this.BASE_URL}/friend/getPendingFriendRequestsSentByUser`,
         {
           headers: this.getHeader()
         }
       );
       return reponse.data;
     } catch (error) {
-      console.error('Lỗi khi lấy danh sách bạn bè:', error);
+      console.error('Lỗi khi lấy danh sách gữi lời mời bạn bè:', error);
+    }
+  }
+
+  static async getPendingFriendRequestsReceivedByUser(userId) {
+    try {
+      const reponse = await axios.get(
+        `${this.BASE_URL}/friend/getFriend/RequestsReceivedByUser?userId=${userId}`,
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy lời mời kết bạn:', error);
+    }
+  }
+
+  static async getFriendUserAccept() {
+    try {
+      const reponse = await axios.get(
+        `${this.BASE_URL}/friend/getFriendUserAccept`,
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
     }
   }
 

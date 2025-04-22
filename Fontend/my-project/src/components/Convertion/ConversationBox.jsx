@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
@@ -12,18 +13,15 @@ const ConversationBox = ({ data, selected }) => {
   const navigate = useNavigate();
   const { phone } = usePhoneNumber();
 
-  // Chuyển trang khi click vào ConversationBox
   const handleClick = useCallback(() => {
     navigate(`/conversations/${data.id}`);
   }, [data.id, navigate]);
 
   // Lấy tin nhắn cuối cùng
   const lastMessage = useMemo(() => {
-    const messages = data.messages || [];
-    return messages[messages.length - 1];
+    return (data.messages || [])[data.messages.length - 1];
   }, [data.messages]);
 
-  // Lấy số điện thoại của user đăng nhập
   const userNumPhone = useMemo(() => {
     return phone;
   }, [phone]);
@@ -91,4 +89,4 @@ const ConversationBox = ({ data, selected }) => {
   );
 };
 
-export default ConversationBox;
+export default memo(ConversationBox);

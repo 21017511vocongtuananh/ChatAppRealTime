@@ -7,14 +7,12 @@ import Header from '../Message/Header';
 import Body from '../Message/Body';
 import Form from '../Message/Form';
 import ProfileDrawer from '@components/Message/ProfileDrawer';
-
 const ConversationId = () => {
   const { conversationId } = useParams();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Hàm tải danh sách tin nhắn từ server
   const fetchMessages = async () => {
     try {
       const messageResponse = await ApiService.getMessages(conversationId);
@@ -67,7 +65,7 @@ const ConversationId = () => {
       {drawerOpen && (
         <div className='w-[30%] h-full'>
           <ProfileDrawer
-            data={conversation}
+            datas={conversation}
             isOpen={drawerOpen}
             onClose={() => setDrawerOpen(false)}
           />

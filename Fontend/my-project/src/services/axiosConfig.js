@@ -25,11 +25,10 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  (res) => res, // Trả về response nếu không có lỗi
+  (res) => res,
   async (err) => {
     const originalRequest = err.config;
 
-    // Kiểm tra lỗi 401 (Unauthorized) và đảm bảo chưa retry
     if (
       err.response &&
       err.response.status === 401 &&

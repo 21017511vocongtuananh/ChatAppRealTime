@@ -38,11 +38,9 @@ const ConversationLayout = ({ children }) => {
       setConversation((prev) => {
         return prev.map((conv) => {
           if (conv.id === newMsg.conversationId) {
-            // Cập nhật messages trong conversation
             const updatedMessages = (conv.messages || []).map((msg) =>
               msg.id === newMsg.id ? { ...msg, seen: newMsg.seen } : msg
             );
-            // Nếu là tin nhắn mới, thêm vào danh sách
             if (!updatedMessages.some((msg) => msg.id === newMsg.id)) {
               updatedMessages.push(newMsg);
             }

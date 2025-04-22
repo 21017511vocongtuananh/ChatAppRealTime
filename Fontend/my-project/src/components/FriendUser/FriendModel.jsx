@@ -21,7 +21,7 @@ const FriendModel = ({ isOpen, onClose, users }) => {
     }
     const fetchFriendIds = async () => {
       try {
-        const response = await ApiService.getFriendUserLogin();
+        const response = await ApiService.getPendingFriendRequestsSentByUser();
         const friendIdsList = response.data.map((friend) => friend.friendId);
         setFriendIds(friendIdsList);
       } catch (error) {

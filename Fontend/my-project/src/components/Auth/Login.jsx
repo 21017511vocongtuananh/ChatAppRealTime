@@ -39,6 +39,7 @@ const Login = () => {
       const data = await ApiService.loginApi(formData);
       sessionStorage.setItem('token', data.data.token);
       sessionStorage.setItem('refreshToken', data.data.refreshToken);
+      sessionStorage.setItem('userId', data.data.user.id);
       connect(data.data.token);
       navigate('/conversations');
     } catch (errorMessage) {

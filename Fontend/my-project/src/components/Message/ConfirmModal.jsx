@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
-import useConversation from '../hooks/useConversation.js';
+import useConversation from '../../hooks/useConversation.js';
 import { useNavigate } from 'react-router-dom';
-import ApiService from '../services/apis.js';
+import ApiService from '../../services/apis.js';
 import { message } from 'antd';
-import Modal from './Modal';
+import Modal from '../Modal.jsx';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { Dialog } from '@headlessui/react';
-import CustomButton from './Button/Button';
+import CustomButton from '../Button/Button.jsx';
 
 const ConfirmModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const ConfirmModal = ({ isOpen, onClose }) => {
   const onDelete = useCallback(async () => {
     setIsLoading(true);
     try {
-      await ApiService.deleteConversation(conversationId);
+      await ApiService.deleteHistoryMessageUser(conversationId);
       onClose();
       navigate('/conversations');
     } catch (error) {
@@ -69,7 +69,13 @@ const ConfirmModal = ({ isOpen, onClose }) => {
           </div>
         </div>
         <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
-          <CustomButton isLoading={isLoading} onClick={onDelete} color='red'>
+          <CustomButton
+            isLoading={isLoading}
+            onClick={onDelete}
+            color='red'
+            width={100}
+            height={38}
+          >
             Delete
           </CustomButton>
           <CustomButton
@@ -77,6 +83,8 @@ const ConfirmModal = ({ isOpen, onClose }) => {
             onClick={onClose}
             color='gray'
             size='small'
+            width={100}
+            height={38}
           >
             Cancel
           </CustomButton>
