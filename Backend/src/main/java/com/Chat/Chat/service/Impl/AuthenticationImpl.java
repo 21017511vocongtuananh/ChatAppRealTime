@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 @Service
 @Slf4j
@@ -48,14 +49,19 @@ public class AuthenticationImpl implements AuthenticationService {
 			throw new ErrorException(ErrorCode.EMAIL_ALREADY_EXISTS);
 		}
 		// Xử lý ảnh
+		LocalDate dob = request.getDateOfBirth();
+		if(dob.isAfter(LocalDate.now())) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Năm sinh không được lớn hơn năm hiện tại");
+		}
+		int age = Period.between(dob, LocalDate.now()).getYears();
+		if(age < 18) {
+			throw new ErrorException(ErrorCode.BAD_REQUEST, "Bạn phải đủ 18 tuổi để đăng ký");
+		}
 		String imageUrl = s3Service.saveImageToS3(imageFile);
 		User user = userMapper.toUser(request);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setImage(imageUrl);
 		user.setGender(request.getGender());
-		if(request.getDateOfBirth().getYear() > LocalDate.now().getYear()) {
-			throw new ErrorException(ErrorCode.BAD_REQUEST,"Năm sinh không được lớn hơn năm hiện tại");
-		}
 		user.setDateOfBirth(request.getDateOfBirth());
 		userRepo.save(user);
 		return userMapper.toUserResponse(user);

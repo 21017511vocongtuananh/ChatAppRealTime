@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -79,8 +80,8 @@ public class FriendUserImpl implements FriendUserService {
 			conversation = new Conversation();
 			conversation.setIsGroup(false);
 			List<Conversation.GroupMember> groupMembers = new ArrayList<>();
-			groupMembers.add(new Conversation.GroupMember(currentUserId, Role.USER));
-			groupMembers.add(new Conversation.GroupMember(friendId, Role.USER));
+			groupMembers.add(new Conversation.GroupMember(currentUserId, Role.USER, LocalDateTime.now()));
+			groupMembers.add(new Conversation.GroupMember(friendId, Role.USER,LocalDateTime.now()));
 			conversation.setGroupMembers(groupMembers);
 			conversationRepo.save(conversation);
 		}

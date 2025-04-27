@@ -5,6 +5,7 @@ import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ConversationRequest;
 import com.Chat.Chat.dto.request.UserRequest;
+import com.Chat.Chat.enums.MessageType;
 import com.Chat.Chat.enums.Role;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
@@ -17,13 +18,13 @@ import com.Chat.Chat.repository.ConversationRepo;
 import com.Chat.Chat.repository.MessageRepo;
 import com.Chat.Chat.repository.UserRepo;
 import com.Chat.Chat.service.ConversationService;
-import com.Chat.Chat.service.MessageService;
 import com.Chat.Chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,8 +48,9 @@ public class ConversationImpl implements ConversationService {
 	}
 
 	@Override
-	public void deleteConversation(String id) {
-		conversationRepo.deleteById(id);
+	public void deleteConversation(String conversationId) {
+		messageRepo.deleteByConversationId(conversationId);
+		conversationRepo.deleteById(conversationId);
 	}
 
 	@Override
@@ -58,13 +60,14 @@ public class ConversationImpl implements ConversationService {
 		conversation.setName(conversationRequest.getName());
 		conversation.setIsGroup(true);
 		List<Conversation.GroupMember> groupMembers = new ArrayList<>();
-		groupMembers.add(new Conversation.GroupMember(currentUser.getId(), Role.ADMIN));
+		groupMembers.add(new Conversation.GroupMember(currentUser.getId(), Role.ADMIN,LocalDateTime.now()));
 		for (UserRequest userRequest : conversationRequest.getUsers()) {
-			groupMembers.add(new Conversation.GroupMember(userRequest.getId(), Role.USER));
+			groupMembers.add(new Conversation.GroupMember(userRequest.getId(), Role.USER,LocalDateTime.now()));
 		}
 		conversation.setGroupMembers(groupMembers);
 		conversationRepo.save(conversation);
 		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
+	notifyGroupMembers(conversation);
 		return conversationResponse;
 	}
 
@@ -103,7 +106,7 @@ public class ConversationImpl implements ConversationService {
 		conversation.setPinnedMessageId("");
 		conversationRepo.save(conversation);
 		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
-		messagingTemplate.convertAndSend(
+				messagingTemplate.convertAndSend(
 				"/topic/conversation/" + conversationId,
 				conversationResponse
 		);
@@ -143,13 +146,14 @@ public class ConversationImpl implements ConversationService {
 		for (UserRequest userRequest : userIds) {
 			String userId = userRequest.getId();
 			if (!existingMemberIds.contains(userId)) {
-				currentMembers.add(new Conversation.GroupMember(userId, Role.USER));
+				currentMembers.add(new Conversation.GroupMember(userId, Role.USER,LocalDateTime.now()));
 				existingMemberIds.add(userId);
 			}
 		}
 		conversation.setGroupMembers(currentMembers);
 		conversationRepo.save(conversation);
 		ConversationResponse response = conversationMapper.toConversationResponse(conversation);
+		notifyGroupMembers(conversation);
 		return response;
 	}
 
@@ -190,11 +194,28 @@ public class ConversationImpl implements ConversationService {
 			});
 		}
 		conversation.getGroupMembers().removeIf(member -> member.getUserId().equals(currentUser.getId()));
+		Message message = new Message();
+		message.setBody(currentUser.getName() + "đã rời nhóm");
+		message.setSenderId(null);
+		message.setDeleted(false);
+		message.setSeenIds(null);
+		message.setConversationId(conversationId);
+		message.setCreatedAt(LocalDateTime.now());
+		message.setMessageType(MessageType.SYSTEM);
+		Message savedMessage = messageRepo.save(message);
+		List<String> messageIds = new ArrayList<>(conversation.getMessagesIds());
+		messageIds.add(savedMessage.getId());
+		conversation.setMessagesIds(messageIds);
 		if (conversation.getGroupMembers().size() <= 1) {
 			conversationRepo.delete(conversation);
 		} else {
 			conversationRepo.save(conversation);
 		}
+		notifyGroupMembers(conversation);
+		messagingTemplate.convertAndSend(
+				"/topic/conversation/" + conversationId,
+				message
+		);
 	}
 
 	@Override
@@ -275,14 +296,26 @@ public class ConversationImpl implements ConversationService {
 		if (memberIdToRemove.equals(currentUser.getId())) {
 			throw new ErrorException(ErrorCode.BAD_REQUEST, "Bạn không thể tự xóa chính mình. Hãy dùng chức năng rời nhóm");
 		}
-
-		// Thực hiện xóa
 		conversation.getGroupMembers().removeIf(member -> member.getUserId().equals(memberIdToRemove));
 
 		if (conversation.getGroupMembers().size() < 2) {
 			conversationRepo.delete(conversation);
 		} else {
 			conversationRepo.save(conversation);
+		}
+	}
+
+	@Override
+	public void notifyGroupMembers(Conversation conversation) {
+		List<Conversation.GroupMember> members = conversation.getGroupMembers();
+		ConversationResponse notification = conversationMapper.toConversationResponse(conversation);
+		for (Conversation.GroupMember member : members) {
+			String userId = member.getUserId();
+				messagingTemplate.convertAndSendToUser(
+						userId,
+						"/queue/conversations",
+						notification
+				);
 		}
 	}
 

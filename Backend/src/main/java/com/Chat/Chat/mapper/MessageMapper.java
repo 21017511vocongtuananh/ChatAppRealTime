@@ -26,16 +26,27 @@ public class MessageMapper {
 
 	public MessageResponse toMessageResponse(Message message) {
 		List<String> allUserIds = new ArrayList<>(message.getSeenIds());
-		allUserIds.add(message.getSenderId());
+		if (message.getSenderId() != null) {
+			allUserIds.add(message.getSenderId());
+		}
 
-		Map<String, User> userMap = userRepo.findAllById(allUserIds).stream()
+		Map<String, User> userMap = allUserIds.isEmpty()
+				? Map.of()
+				: userRepo.findAllById(allUserIds).stream()
 				.collect(Collectors.toMap(User::getId, u -> u));
 
 		List<UserResponse> seen = message.getSeenIds().stream()
 				.map(id -> userMapper.toUserResponse(userMap.get(id)))
+				.filter(userResponse -> userResponse != null)
 				.collect(Collectors.toList());
 
-		UserResponse sender = userMapper.toUserResponse(userMap.get(message.getSenderId()));
+		UserResponse sender = null;
+		if (message.getSenderId() != null) {
+			User senderUser = userMap.get(message.getSenderId());
+			if (senderUser != null) {
+				sender = userMapper.toUserResponse(senderUser);
+			}
+		}
 
 		return MessageResponse.builder()
 				.id(message.getId())
@@ -47,6 +58,7 @@ public class MessageMapper {
 				.createdAt(message.getCreatedAt())
 				.sharedMessageId(message.getSharedMessageId())
 				.conversationId(message.getConversationId())
+				.type(message.getMessageType())
 				.build();
 	}
 

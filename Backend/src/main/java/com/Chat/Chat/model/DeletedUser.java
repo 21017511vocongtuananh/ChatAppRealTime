@@ -16,16 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeletedUser {
-
 	@Id
 	private String id;
-
 	@Field("userId")
 	private String userId;
-
 	@Field("deletedBy")
 	private String deletedBy;
-
 	@Field("deletedAt")
 	private LocalDateTime deletedAt = LocalDateTime.now();
 

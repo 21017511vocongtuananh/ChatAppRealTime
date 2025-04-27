@@ -19,7 +19,12 @@ public enum ErrorCode {
 	ALREADY_EXISTS(409, "Dữ liệu đã tồn tại", HttpStatus.CONFLICT),
 	INVALID_TOKEN(401, "Token không hợp lệ hoặc đã hết hạn", HttpStatus.UNAUTHORIZED),
 	INVALID_PASSWORD(401, "Mật khẩu hiện tại không đúng", HttpStatus.UNAUTHORIZED),
-	FORBIDDEN(403,"Không có quyền truy cập",HttpStatus.FORBIDDEN);
+	FORBIDDEN(403,"Không có quyền truy cập",HttpStatus.FORBIDDEN),
+	EXPIRED(410, "Mã OTP đã hết hạn hoặc không tồn tại", HttpStatus.GONE),
+	INVALID(401, "Mã OTP không đúng", HttpStatus.UNAUTHORIZED);
+
+
+
 	private final int code;
 	private final String defaultMessage;
 	private final HttpStatus status;

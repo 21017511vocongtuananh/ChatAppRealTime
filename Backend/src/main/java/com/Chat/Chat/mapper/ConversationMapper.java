@@ -65,6 +65,7 @@ public class ConversationMapper {
 						.seen(message.getSeenIds().stream()
 								.map(userMap::get)
 								.collect(Collectors.toList()))
+						.type(message.getMessageType())
 						.build())
 				.collect(Collectors.toList());
 

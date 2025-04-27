@@ -52,7 +52,7 @@ public class UserController {
 	}
 
 	@PostMapping("/updatePassword/{userId}")
-	public ApiResource<UserResponse> updatePassword(@PathVariable String userId , @ModelAttribute @Valid UpdatePassword password){
+	public ApiResource<UserResponse> updatePassword(@PathVariable String userId , @RequestBody @Valid UpdatePassword password){
 		return ApiResource.ok(userService.updatePassword(userId,password),"SUCCESS");
 	}
 

@@ -5,6 +5,7 @@ import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.reponse.UserResponse;
 import com.Chat.Chat.dto.request.ConversationRequest;
 import com.Chat.Chat.dto.request.UserRequest;
+import com.Chat.Chat.model.Conversation;
 
 import java.util.List;
 
@@ -24,4 +25,5 @@ public interface ConversationService {
    List<UserResponse> getUsersConversation(String conversationId);
    ConversationResponse changeConversationLeader(String conversationId,String newAdminId);
    void removeMember(String conversationId, String memberIdToRemove);
+   void notifyGroupMembers(Conversation conversation);
 }

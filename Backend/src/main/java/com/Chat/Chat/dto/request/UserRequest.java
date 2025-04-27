@@ -27,6 +27,7 @@ public class UserRequest {
 	private String email;
 
 	@NotBlank(message = "Mật khẩu không được để trống")
+	@Size(min = 6, message = "Mật khẩu phải lớn hơn 6 kí tự")
 	private String password;
 
 	@NotNull(message = "Ngày sinh không được để trống")

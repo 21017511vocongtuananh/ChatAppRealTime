@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -21,6 +22,15 @@ public class OtpController {
 			@Valid @RequestBody EmailRequest request,
 			@RequestParam("mode") String mode) {
 		Map<String, String> response = mailService.sendOtp(request, mode);
-		return ApiResource.ok(response, "Gửi OTP thành công");
+		return ApiResource.ok(response, "SUCCESS");
+	}
+
+	@PostMapping("/verifyOTP")
+	public ApiResource<Map<String, String>> verifyOtp(@RequestParam String Email,@RequestParam String otp){
+		boolean verifyOtp = mailService.verifyOtp(Email,otp);
+		Map<String,String> data = new HashMap<>();
+		data.put("otp",otp);
+		data.put("status",verifyOtp ? "OK" : "FAIL");
+		return ApiResource.ok(data, "Xác thực OTP thành công");
 	}
 }

@@ -33,11 +33,8 @@ public class AuthController {
 			@ModelAttribute @Valid UserRequest userRequest,
 			@RequestParam(value = "image", required = false) MultipartFile imageFile
 	) {
-		try {
+
 			return ApiResource.ok(authenticationService.registerUser(userRequest, imageFile), "SUCCESS");
-		} catch (Exception e) {
-			return ApiResource.error("Lỗi đăng ký: " + e.getMessage());
-		}
 	}
 
 
@@ -60,7 +57,7 @@ public class AuthController {
 		return ApiResource.ok(result,"Đưa thành công token vào BlacklistToken");
 	}
 
-	@GetMapping("/loggout")
+	@PostMapping("/loggout")
 	public ApiResource<Object> loggout(@RequestHeader("Authorization") String bearerToken){
 		try {
 			return ApiResource.ok(authenticationService.logOut(bearerToken),"Them Token Vao BlackList Thanh Cong");

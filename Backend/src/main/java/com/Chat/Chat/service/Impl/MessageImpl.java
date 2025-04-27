@@ -3,6 +3,7 @@ package com.Chat.Chat.service.Impl;
 import com.Chat.Chat.dto.reponse.MessageResponse;
 import com.Chat.Chat.dto.request.MessageRequest;
 import com.Chat.Chat.dto.request.ShareMessageRequest;
+import com.Chat.Chat.enums.MessageType;
 import com.Chat.Chat.exception.ErrorCode;
 import com.Chat.Chat.exception.ErrorException;
 import com.Chat.Chat.mapper.MessageMapper;
@@ -58,6 +59,7 @@ public class MessageImpl implements MessageService {
 		message.setConversationId(conversationId);
 		message.setSenderId(currentUser.getId());
 		message.setSeenIds(Collections.singletonList(currentUser.getId()));
+		message.setMessageType(MessageType.TEXT);
 		Message savedMessage = messageRepo.save(message);
 
 		Conversation conversation = conversationRepo.findById(conversationId)
@@ -93,18 +95,25 @@ public class MessageImpl implements MessageService {
 	@Override
 	public List<MessageResponse> getAllMessage(String conversationId) {
 		User currentUser = userService.getLoginUser();
-
+		Conversation conversation = conversationRepo.findById(conversationId)
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+		LocalDateTime joinTime = conversation.getGroupMembers().stream()
+				.filter(member -> member.getUserId().equals(currentUser.getId()))
+				.map(Conversation.GroupMember::getJoinTime)
+				.findFirst()
+				.orElse(LocalDateTime.now());
 		List<Message> allMessages = messageRepo.findByConversationId(
 				conversationId,
 				Sort.by(Sort.Direction.ASC, "createdAt")
 		);
 		List<MessageResponse> result = new ArrayList<>();
 		for (Message message : allMessages) {
-			boolean isDeletedByUser = currentUser.getDeletedMessageIds().contains(message.getId());
-
-			if (!isDeletedByUser) {
-				MessageResponse response = messageMapper.toMessageResponse(message);
-				result.add(response);
+			if (message.getCreatedAt().isAfter(joinTime)) {
+				boolean isDeletedByUser = currentUser.getDeletedMessageIds().contains(message.getId());
+				if (!isDeletedByUser) {
+					MessageResponse response = messageMapper.toMessageResponse(message);
+					result.add(response);
+				}
 			}
 		}
 		return result;

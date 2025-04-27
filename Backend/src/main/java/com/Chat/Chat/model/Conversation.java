@@ -54,5 +54,6 @@ public class Conversation {
 	public static class GroupMember {
 		private String userId;
 		private Role role;
+		private LocalDateTime joinTime;
 	}
 }

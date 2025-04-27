@@ -1,5 +1,6 @@
 package com.Chat.Chat.model;
 
+import com.Chat.Chat.enums.MessageType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,4 +35,6 @@ public class Message {
 	private boolean isDeleted;
 	@Field("sharedMessageId")
 	private String sharedMessageId;
+	@Field("messageType")
+	private MessageType messageType = MessageType.TEXT;
 }

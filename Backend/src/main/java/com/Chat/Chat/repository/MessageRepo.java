@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface MessageRepo extends MongoRepository<Message, String> {
 	List<Message> findByConversationId(String conversationId, Sort sort);
 	List<Message> findAllByIdInAndIsDeletedFalse(List<String> messageIds);
+
+	void deleteByConversationId(String conversationId);
 }

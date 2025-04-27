@@ -1,5 +1,6 @@
 package com.Chat.Chat.dto.reponse;
 
+import com.Chat.Chat.enums.MessageType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,5 @@ public class MessageResponse {
 	private String conversationId;
 	private boolean deleted;
 	private String sharedMessageId;
-	private String additionalMessage;
+	private MessageType type;
 }

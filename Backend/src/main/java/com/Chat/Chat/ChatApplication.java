@@ -125,8 +125,8 @@ public class ChatApplication implements CommandLineRunner {
 			convo1.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10)); // Thời gian tin nhắn cuối cùng
 			convo1.setMessagesIds(Arrays.asList("507f191e810c19729de860ec", "507f191e810c19729de860ed","507f191e810c19729de860ee"));
 			convo1.setGroupMembers(Arrays.asList(
-					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER),
-					new Conversation.GroupMember("67c0b55afe7b947481a9c68f", Role.USER)
+					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER,LocalDateTime.now()),
+					new Conversation.GroupMember("67c0b55afe7b947481a9c68f", Role.USER,LocalDateTime.now())
 			));
 
 			Conversation convo2 = new Conversation();
@@ -138,8 +138,8 @@ public class ChatApplication implements CommandLineRunner {
 			convo2.setLastMessageAt(LocalDateTime.of(2025, 2, 27, 10, 10)); // Thời gian tin nhắn cuối cùng
 			convo2.setMessagesIds(Arrays.asList("507f191e810c19729de860eb"));
 			convo2.setGroupMembers(Arrays.asList(
-					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER),
-					new Conversation.GroupMember("67c0b55afe7b947481a9c68b", Role.USER)
+					new Conversation.GroupMember("67c086a68c03631f6367499e", Role.USER,LocalDateTime.now()),
+					new Conversation.GroupMember("67c0b55afe7b947481a9c68b", Role.USER,LocalDateTime.now())
 			));
 
 
