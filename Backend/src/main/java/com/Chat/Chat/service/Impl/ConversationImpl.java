@@ -136,26 +136,45 @@ public class ConversationImpl implements ConversationService {
 	public ConversationResponse addUserToConversation(String conversationId, List<UserRequest> userIds) {
 		Conversation conversation = conversationRepo.findById(conversationId)
 				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
-		List<Conversation.GroupMember> currentMembers = conversation.getGroupMembers() != null
-				? conversation.getGroupMembers()
-				: new ArrayList<>();
-		Set<String> existingMemberIds = new HashSet<>();
-		for (Conversation.GroupMember member : currentMembers) {
-			existingMemberIds.add(member.getUserId());
-		}
+
+		List<Conversation.GroupMember> currentMembers = conversation.getGroupMembers();
+		Set<String> existingMemberIds = currentMembers.stream()
+				.map(Conversation.GroupMember::getUserId)
+				.collect(Collectors.toSet());
+
+		List<String> newUserNames = new ArrayList<>();
 		for (UserRequest userRequest : userIds) {
 			String userId = userRequest.getId();
 			if (!existingMemberIds.contains(userId)) {
-				currentMembers.add(new Conversation.GroupMember(userId, Role.USER,LocalDateTime.now()));
+				User user = userRepo.findById(userId)
+						.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy người dùng"));
+				currentMembers.add(new Conversation.GroupMember(userId, Role.USER, LocalDateTime.now()));
 				existingMemberIds.add(userId);
+				newUserNames.add(user.getName());
 			}
 		}
+		Message message = new Message();
+		message.setBody(String.join(", ", newUserNames) + " đã được thêm vào nhóm");
+		message.setSenderId(null);
+		message.setDeleted(false);
+		message.setSeenIds(null);
+		message.setConversationId(conversationId);
+		message.setCreatedAt(LocalDateTime.now());
+		message.setMessageType(MessageType.SYSTEM);
+		Message savedMessage = messageRepo.save(message);
+		List<String> messageIds = conversation.getMessagesIds();
+		messageIds.add(savedMessage.getId());
+		conversation.setMessagesIds(messageIds);
 		conversation.setGroupMembers(currentMembers);
 		conversationRepo.save(conversation);
-		ConversationResponse response = conversationMapper.toConversationResponse(conversation);
+		messagingTemplate.convertAndSend(
+				"/topic/conversation/" + conversationId,
+				savedMessage
+		);
 		notifyGroupMembers(conversation);
-		return response;
+		return conversationMapper.toConversationResponse(conversation);
 	}
+
 
 	@Override
 	public ConversationResponse removeUserFromConversation(String conversationId, List<UserRequest> users) {
@@ -195,7 +214,7 @@ public class ConversationImpl implements ConversationService {
 		}
 		conversation.getGroupMembers().removeIf(member -> member.getUserId().equals(currentUser.getId()));
 		Message message = new Message();
-		message.setBody(currentUser.getName() + "đã rời nhóm");
+		message.setBody(currentUser.getName() + " " + "đã rời nhóm");
 		message.setSenderId(null);
 		message.setDeleted(false);
 		message.setSeenIds(null);
@@ -264,6 +283,7 @@ public class ConversationImpl implements ConversationService {
 			}
 		});
 		conversationRepo.save(conversation);
+		notifyGroupMembers(conversation);
 		return conversationMapper.toConversationResponse(conversation);
 	}
 
@@ -297,12 +317,12 @@ public class ConversationImpl implements ConversationService {
 			throw new ErrorException(ErrorCode.BAD_REQUEST, "Bạn không thể tự xóa chính mình. Hãy dùng chức năng rời nhóm");
 		}
 		conversation.getGroupMembers().removeIf(member -> member.getUserId().equals(memberIdToRemove));
-
 		if (conversation.getGroupMembers().size() < 2) {
 			conversationRepo.delete(conversation);
 		} else {
 			conversationRepo.save(conversation);
 		}
+		notifyGroupMembers(conversation);
 	}
 
 	@Override
