@@ -11,8 +11,11 @@ public interface FriendUserService {
 	FriendShipResponse acceptFriendRequest(String friendId);
 	List<FriendResponse> getPendingFriendRequestsSentByUser();
 	List<FriendResponse> getPendingFriendRequestsReceivedByUser(String userId);
-
 	List<FriendResponse> getFriendAccept();
 	List<FriendShipResponse> getPendingRequestsForCurrentUser();
 	void unfriend( String friendId);
+	void blockUser(String friendId);
+	void notify(String id, String destination, Object payload);
+	List<FriendShipResponse> getFriendBlock();
+
 }

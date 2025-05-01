@@ -42,16 +42,31 @@ public class ConversationImpl implements ConversationService {
 
 	@Override
 	public ConversationResponse getConversationId(String id) {
-		Conversation conversation = conversationRepo.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"conversation id not found"));
+		Conversation conversation = conversationRepo.findById(id).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Không tìm thấy Conversation"));
 		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
 		return conversationResponse;
 	}
 
 	@Override
 	public void deleteConversation(String conversationId) {
-		messageRepo.deleteByConversationId(conversationId);
-		conversationRepo.deleteById(conversationId);
+		Optional<Conversation> conversationOpt = conversationRepo.findById(conversationId);
+		if (conversationOpt.isPresent()) {
+			Conversation conversation = conversationOpt.get();
+			Map<String, Object> payload = new HashMap<>();
+			payload.put("type", "DELETE");
+			payload.put("conversationId", conversation.getId());
+			for (Conversation.GroupMember member : conversation.getGroupMembers()) {
+				messagingTemplate.convertAndSendToUser(
+						member.getUserId(),
+						"/queue/conversations",
+						payload
+				);
+			}
+			messageRepo.deleteByConversationId(conversationId);
+			conversationRepo.deleteById(conversationId);
+		}
 	}
+
 
 	@Override
 	public ConversationResponse createConversation(ConversationRequest conversationRequest) {
@@ -67,7 +82,7 @@ public class ConversationImpl implements ConversationService {
 		conversation.setGroupMembers(groupMembers);
 		conversationRepo.save(conversation);
 		ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
-	notifyGroupMembers(conversation);
+		notifyGroupMembers(conversation);
 		return conversationResponse;
 	}
 
@@ -292,27 +307,20 @@ public class ConversationImpl implements ConversationService {
 		User currentUser = userService.getLoginUser();
 		Conversation conversation = conversationRepo.findById(conversationId)
 				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
-
 		if (!conversation.getIsGroup()) {
 			throw new ErrorException(ErrorCode.BAD_REQUEST, "Không thể xóa thành viên khỏi cuộc trò chuyện cá nhân");
 		}
-
 		boolean isAdmin = conversation.getGroupMembers().stream()
 				.anyMatch(member -> member.getUserId().equals(currentUser.getId()) && member.getRole() == Role.ADMIN);
 
 		if (!isAdmin) {
 			throw new ErrorException(ErrorCode.FORBIDDEN, "Chỉ trưởng nhóm mới có thể xóa thành viên");
 		}
-
-
 		boolean memberExists = conversation.getGroupMembers().stream()
 				.anyMatch(member -> member.getUserId().equals(memberIdToRemove));
-
 		if (!memberExists) {
 			throw new ErrorException(ErrorCode.NOT_FOUND, "Thành viên không tồn tại trong nhóm");
 		}
-
-
 		if (memberIdToRemove.equals(currentUser.getId())) {
 			throw new ErrorException(ErrorCode.BAD_REQUEST, "Bạn không thể tự xóa chính mình. Hãy dùng chức năng rời nhóm");
 		}

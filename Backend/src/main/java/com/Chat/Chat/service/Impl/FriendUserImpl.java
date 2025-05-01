@@ -98,6 +98,12 @@ public class FriendUserImpl implements FriendUserService {
 			reverseFriendShip.setConversationId(conversation.getId());
 			friendShipRepo.save(reverseFriendShip);
 		}
+		List<FriendResponse> updatedReceived = getPendingFriendRequestsSentByUser();
+		messagingTemplate.convertAndSendToUser(
+				friendId,
+				"/topic/friend-requests/sent",
+				updatedReceived
+		);
 		return friendShipMapper.toFriendResponse(friendShips);
 	}
 
@@ -172,7 +178,6 @@ public class FriendUserImpl implements FriendUserService {
 		return responses;
 	}
 
-
 	@Override
 	public List<FriendShipResponse> getPendingRequestsForCurrentUser() {
 		User currentUser = userService.getLoginUser();
@@ -183,13 +188,55 @@ public class FriendUserImpl implements FriendUserService {
 				.collect(Collectors.toList());
 	}
 
+
+
 	@Override
 	public void unfriend(String friendId) {
 		User currentUser = userService.getLoginUser();
-		Optional<FriendShips> relation1 = friendShipRepo.findByUserIdAndFriendId(currentUser.getId(), friendId);
-		Optional<FriendShips> relation2 = friendShipRepo.findByUserIdAndFriendId(friendId, currentUser.getId());
+		String currentUserId = currentUser.getId();
+
+		Optional<FriendShips> relation1 = friendShipRepo.findByUserIdAndFriendId(currentUserId, friendId);
+		Optional<FriendShips> relation2 = friendShipRepo.findByUserIdAndFriendId(friendId, currentUserId);
 		relation1.ifPresent(friendShipRepo::delete);
 		relation2.ifPresent(friendShipRepo::delete);
+		Map<String, Object> payloadForCurrentUser = new HashMap<>();
+		payloadForCurrentUser.put("type", "DELETE");
+		payloadForCurrentUser.put("friend", friendId);
+		Map<String, Object> payloadForFriend = new HashMap<>();
+		payloadForFriend.put("type", "DELETE");
+		payloadForFriend.put("friend", currentUserId);
+		notify(currentUserId, "/topic/friend-requests/received", payloadForCurrentUser);
+		notify(friendId, "/topic/friend-requests/received", payloadForFriend);
 	}
-	
+
+	@Override
+	public void blockUser(String friendId) {
+		User currentUser = userService.getLoginUser();
+		String currentUserId = currentUser.getId();
+		FriendShips relation1 = friendShipRepo.findByUserIdAndFriendId(currentUserId, friendId).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + currentUserId + " đến " + friendId));
+		relation1.setStatus(FriendshipStatus.BLOCKED);
+		friendShipRepo.save(relation1);
+	}
+
+
+
+	@Override
+	public void notify(String id, String destination, Object payload) {
+		messagingTemplate.convertAndSendToUser(
+				id,
+				destination,
+				payload
+		);
+	}
+
+	@Override
+	public List<FriendShipResponse> getFriendBlock() {
+		User currentUser = userService.getLoginUser();
+		List<FriendShips> pendingRequests = friendShipRepo
+				.findByUserIdAndStatus(currentUser.getId(), FriendshipStatus.BLOCKED);
+		return pendingRequests.stream()
+				.map(friendShipMapper::toFriendResponse)
+				.collect(Collectors.toList());
+	}
+
 }

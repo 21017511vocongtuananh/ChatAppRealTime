@@ -52,6 +52,16 @@ public class FriendController {
 	public ApiResource<List<FriendResponse>> getFriendUserAccept() {
 		return ApiResource.ok(friendUserService.getFriendAccept(), "SUCCESS");
 	}
+	@PostMapping("/block")
+	public ApiResource<String> exitConversation(@RequestParam String friendId) {
+		friendUserService.blockUser(friendId);
+		return ApiResource.<String>builder().message("Rời nhóm thành công").build();
+	}
+
+	@GetMapping("/getFriendBlock")
+	public ApiResource<List<FriendShipResponse>> getFriendBlock() {
+		return ApiResource.ok(friendUserService.getFriendBlock(), "SUCCESS");
+	}
 
 }
 
