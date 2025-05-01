@@ -239,4 +239,15 @@ public class FriendUserImpl implements FriendUserService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public FriendShipResponse deleteBlock(String friendId) {
+		User currentUser = userService.getLoginUser();
+		String currentUserId = currentUser.getId();
+		FriendShips relation1 = friendShipRepo.findByUserIdAndFriendId(currentUserId, friendId).orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời kết bạn từ " + currentUserId + " đến " + friendId));
+		relation1.setStatus(FriendshipStatus.ACCEPTED);
+		friendShipRepo.save(relation1);
+		notify(currentUser.getId(), "/topic/friend-requests/sent", friendShipMapper.toFriendResponse(relation1));
+		return friendShipMapper.toFriendResponse(relation1);
+	}
+
 }

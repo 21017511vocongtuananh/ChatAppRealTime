@@ -17,5 +17,6 @@ public interface FriendUserService {
 	void blockUser(String friendId);
 	void notify(String id, String destination, Object payload);
 	List<FriendShipResponse> getFriendBlock();
+	FriendShipResponse deleteBlock(String friendId);
 
 }

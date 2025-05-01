@@ -63,5 +63,10 @@ public class FriendController {
 		return ApiResource.ok(friendUserService.getFriendBlock(), "SUCCESS");
 	}
 
+	@PostMapping("/delete/block")
+	public ApiResource<FriendShipResponse> deleteBlock(@RequestParam String friendId) {
+		return ApiResource.ok(friendUserService.deleteBlock(friendId), "SUCCESS");
+	}
+
 }
 
