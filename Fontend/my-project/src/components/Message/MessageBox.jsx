@@ -47,7 +47,10 @@ const MessageBox = ({
   }, []);
 
   if (!phone) return null;
-  const isOwn = phone === data.sender.phoneNumber;
+
+  const isSystemMessage =
+    data.type === 'SYSTEM' || data.messageType === 'SYSTEM';
+  const isOwn = isSystemMessage ? false : phone === data.sender?.phoneNumber;
   const isVideo = data.image?.endsWith('.mp4');
   const isFile = data.image?.endsWith('.pdf');
 
@@ -142,28 +145,37 @@ const MessageBox = ({
       }
     ];
 
+    if (isSystemMessage) {
+      return [];
+    }
+
     return [...commonItems, ...(isOwn ? ownItems : otherItems)];
   };
 
   const container = clsx(
     'flex gap-3 p-4',
-    isOwn ? 'justify-end' : 'justify-start'
+    isSystemMessage ? 'justify-center' : isOwn ? 'justify-end' : 'justify-start'
   );
   const avatar = clsx(isOwn && 'order-2');
 
   const body = clsx(
-    'flex flex-col gap-1 bg-gray-100 shadow-sm rounded-lg p-2 w-fit min-w-[100px] max-w-[75%] break-words',
-    isOwn && 'items-end',
-    data.image && 'bg-white !shadow-none'
+    'flex flex-col gap-1 rounded-lg p-2 w-fit min-w-[100px] max-w-[75%] break-words',
+    !isSystemMessage && isOwn && 'items-end',
+    !isSystemMessage && data.image && 'bg-white !shadow-none',
+    isSystemMessage ? 'bg-transparent text-center' : 'bg-gray-100 shadow-sm'
   );
   const messageCls = clsx(
     'text-sm w-fit overflow-hidden break-all',
-    isOwn ? 'text-black' : 'bg-gray-100',
-    data.image ? 'rounded-md p-0' : 'py-2'
+    isSystemMessage
+      ? 'text-gray-500 italic'
+      : isOwn
+      ? 'text-black'
+      : 'bg-gray-100',
+    !isSystemMessage && data.image ? 'rounded-md p-0' : 'py-2'
   );
   const time = clsx(
-    'text-sm flex items-center justify-between text-gray-400 w-full ',
-    isOwn ? 'flex-row' : 'flex-row-reverse'
+    'text-sm flex items-center justify-between text-gray-400 w-full',
+    isSystemMessage ? 'justify-center' : isOwn ? 'flex-row' : 'flex-row-reverse'
   );
 
   const renderMessage = (text) => {
@@ -194,15 +206,19 @@ const MessageBox = ({
         onClose={() => setIsOpen(false)}
       />
       <div className={container}>
-        {!isOwn && (
+        {!isSystemMessage && !isOwn && (
           <div className={avatar}>
             <Avatar user={data.sender} />
           </div>
         )}
         <div className={body}>
-          <div className='flex items-center gap-1'>
-            <div className='text-sm text-gray-500'>{data.sender.name}</div>
-          </div>
+          {!isSystemMessage && (
+            <div className='flex items-center gap-1'>
+              <div className='text-sm text-gray-500'>
+                {data.sender?.name || 'Unknown'}
+              </div>
+            </div>
+          )}
           <div className={messageCls}>
             {data.deleted ? (
               <i className='text-gray-500 italic'>
@@ -250,20 +266,28 @@ const MessageBox = ({
             )}
           </div>
           <div className={time}>
-            <Dropdown
-              menu={{
-                items: getMenuItems(),
-                onClick: handleMenuClick
-              }}
-              trigger={['click']}
-            >
-              <button className='text-2xl font-bold text-gray-500'>
-                <AiOutlineEllipsis />
-              </button>
-            </Dropdown>
-            <span className='text-[12px] self-end'>
-              {format(new Date(data.createdAt), 'h:mm a')}
-            </span>
+            {!isSystemMessage && (
+              <Dropdown
+                menu={{
+                  items: getMenuItems(),
+                  onClick: handleMenuClick
+                }}
+                trigger={['click']}
+              >
+                <button className='text-2xl font-bold text-gray-500'>
+                  <AiOutlineEllipsis />
+                </button>
+              </Dropdown>
+            )}
+            {isSystemMessage ? (
+              <span className='text-[12px] w-full text-center block'>
+                {format(new Date(data.createdAt), 'h:mm a')}
+              </span>
+            ) : (
+              <span className='text-[12px] self-end'>
+                {format(new Date(data.createdAt), 'h:mm a')}
+              </span>
+            )}
           </div>
         </div>
       </div>

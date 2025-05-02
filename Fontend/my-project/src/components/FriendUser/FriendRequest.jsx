@@ -5,10 +5,11 @@ import ApiService from '../../services/apis';
 import { message } from 'antd';
 import { useWebSocket } from '../Message/WebSocketContext';
 
-const FriendRequests = ({ sendFriendPeding }) => {
+const FriendRequests = () => {
   const { subscribe } = useWebSocket();
   const [isLoading, setIsLoading] = useState(false);
   const [requestfriendPending, setRequestfriendPeding] = useState([]);
+  const [sendFriendPeding, setFriendPeding] = useState([]);
   const userId = sessionStorage.getItem('userId');
 
   const fetchPendingRequests = useCallback(async () => {
@@ -22,20 +23,46 @@ const FriendRequests = ({ sendFriendPeding }) => {
     }
   }, []);
 
+  const fetchPendingSendRequests = useCallback(async () => {
+    try {
+      const response = await ApiService.getPendingFriendRequestsSentByUser(
+        userId
+      );
+      setFriendPeding(response.data || []);
+    } catch (error) {
+      message.error('Lỗi khi lấy dữ liệu: ' + error.message);
+    }
+  }, []);
+
   useEffect(() => {
     fetchPendingRequests();
-  }, [fetchPendingRequests]);
+    fetchPendingSendRequests();
+  }, [fetchPendingRequests, fetchPendingSendRequests]);
 
   useEffect(() => {
     const unsubscribeReceived = subscribe(
       `/user/${userId}/topic/friend-requests/received`,
-      (requests) => {
-        console.log('Received friend requests:', requests);
-        setRequestfriendPeding(requests);
+      (payload) => {
+        if (payload.type === 'DELETE') {
+          fetchPendingRequests();
+          fetchPendingSendRequests();
+        } else {
+          setRequestfriendPeding(payload);
+        }
       }
     );
     return () => unsubscribeReceived();
-  }, [subscribe]);
+  }, [subscribe, userId, fetchPendingRequests, fetchPendingSendRequests]);
+
+  useEffect(() => {
+    const unsubscribeReceived = subscribe(
+      `/user/${userId}/topic/friend-requests/sent`,
+      (payload) => {
+        setFriendPeding(payload);
+      }
+    );
+    return () => unsubscribeReceived();
+  }, [subscribe, userId, fetchPendingSendRequests]);
 
   const onAceept = useCallback(
     async (friendId) => {
@@ -58,7 +85,7 @@ const FriendRequests = ({ sendFriendPeding }) => {
     async (friendId) => {
       setIsLoading(true);
       try {
-        await ApiService.rejectFriend(friendId);
+        await ApiService.unFriend(friendId);
         message.success('Đã từ chối lời mời kết bạn');
         fetchPendingRequests();
       } catch (error) {
@@ -70,17 +97,21 @@ const FriendRequests = ({ sendFriendPeding }) => {
     [fetchPendingRequests]
   );
 
-  const onRecall = useCallback(async (friendId) => {
-    setIsLoading(true);
-    try {
-      await ApiService.recallFriend(friendId);
-      message.success('Đã thu hồi lời mời kết bạn');
-    } catch (error) {
-      message.error(error.response?.message || 'Có lỗi xảy ra');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const onRecall = useCallback(
+    async (friendId) => {
+      setIsLoading(true);
+      try {
+        await ApiService.unFriend(friendId);
+        message.success('Đã thu hồi lời mời kết bạn');
+        fetchPendingSendRequests();
+      } catch (error) {
+        message.error(error.response?.message || 'Có lỗi xảy ra');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchPendingSendRequests]
+  );
 
   return (
     <div className='flex-1 overflow-y-auto bg-gray-100'>
@@ -168,7 +199,7 @@ const FriendRequests = ({ sendFriendPeding }) => {
                     onClick={() => onRecall(friend.friendId)}
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Đang xử lý...' : 'Thu hồi lời mời'}
+                    Thu hồi lời mời
                   </CustomButton>
                 </div>
               </div>

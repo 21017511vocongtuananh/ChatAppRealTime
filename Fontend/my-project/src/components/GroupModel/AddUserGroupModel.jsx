@@ -23,8 +23,8 @@ const AddUserGroupModal = ({ isOpen, onClose, data }) => {
   }, []);
 
   useEffect(() => {
-    if (data.data?.users) {
-      const idsFromData = data.data.users.map((u) => u.id);
+    if (data.users) {
+      const idsFromData = data.users.map((u) => u.id);
       setGroupUserIds(idsFromData);
       setSelectedUsers(idsFromData);
     }
@@ -44,7 +44,7 @@ const AddUserGroupModal = ({ isOpen, onClose, data }) => {
     e.preventDefault();
     const userRequestData = selectedUsers.map((userId) => ({ id: userId }));
     try {
-      await ApiService.addUserConversation(data.data?.id, userRequestData);
+      await ApiService.addUserConversation(data.id, userRequestData);
       message.success('Thêm người dùng thành công!');
       onClose();
     } catch (error) {

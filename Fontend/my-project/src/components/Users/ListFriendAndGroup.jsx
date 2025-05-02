@@ -11,21 +11,18 @@ const ListFriendAndGroup = () => {
   const [activeSection, setActiveSection] = useState('friends');
   const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [sendFriendPeding, setFriendPeding] = useState([]);
   const [loading, setLoading] = useState(true);
+  const userId = sessionStorage.getItem('userId');
 
   const fetchData = useCallback(async () => {
     try {
-      const [friendsResponse, groupsResponse, sendfriendPendingResponse] =
-        await Promise.all([
-          ApiService.getConversationIsGroupFalse(),
-          ApiService.getConversationisGroupTrue(),
-          ApiService.getPendingFriendRequestsSentByUser()
-        ]);
+      const [friendsResponse, groupsResponse] = await Promise.all([
+        ApiService.getFriendUserAccept(),
+        ApiService.getConversationisGroupTrue()
+      ]);
 
       setFriends(friendsResponse.data || []);
       setGroups(groupsResponse.data || []);
-      setFriendPeding(sendfriendPendingResponse.data || []);
     } catch (error) {
       message.error('Lỗi khi lấy dữ liệu: ' + error.message);
     } finally {
@@ -38,16 +35,28 @@ const ListFriendAndGroup = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
-    const unsubscribeSent = subscribe(
-      `/user/${userId}/topic/friend-requests/sent`,
-      (requests) => {
-        console.log('Received sent friend requests:', requests);
-        setFriendPeding(requests);
+    const unsubscribeReceived = subscribe(
+      `/user/${userId}/topic/friend-requests/received`,
+      async (payload) => {
+        if (payload.type === 'DELETE') {
+          const friendsResponse = await ApiService.getFriendUserAccept();
+          setFriends(friendsResponse.data);
+        }
       }
     );
-    return () => unsubscribeSent();
-  }, [subscribe]);
+    return () => unsubscribeReceived();
+  }, [subscribe, userId]);
+
+  useEffect(() => {
+    const unsubscribeReceived = subscribe(
+      `/user/${userId}/topic/friend-requests/sent`,
+      async (payload) => {
+        const friendsResponse = await ApiService.getFriendUserAccept();
+        setFriends(friendsResponse.data);
+      }
+    );
+    return () => unsubscribeReceived();
+  }, [subscribe, userId]);
 
   if (loading) {
     return (
@@ -65,7 +74,6 @@ const ListFriendAndGroup = () => {
         <BodyUser
           friends={friends}
           groups={groups}
-          sendFriendPeding={sendFriendPeding}
           activeSection={activeSection}
         />
       </div>

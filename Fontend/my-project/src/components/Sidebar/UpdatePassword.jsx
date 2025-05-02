@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Input, message } from 'antd';
 import Modal from '@components/Modal';
 import ApiService from '../../services/apis';
+import { useNavigate } from 'react-router-dom';
 
 const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
     newPassword: '',
     confirmPassword: ''
   });
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +34,7 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
         confirmPassword
       });
       message.success('Cập nhật mật khẩu thành công!');
+      navigate('/');
       onClose();
     } catch (error) {
       console.error(error);

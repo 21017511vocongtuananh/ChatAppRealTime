@@ -6,9 +6,11 @@ import useConversation from '../hooks/useConversation.js';
 import withAuth from '../hoc/withAuth';
 import ConversationLayout from '../components/Convertion/ConversationLayout.jsx';
 import { useWebSocket } from '../components/Message/WebSocketContext.jsx';
+import ApiService from '../services/apis.js';
+import { message } from 'antd';
 
 // Load các component động
-const User = lazy(() => import('../components/users/User.jsx'));
+const User = lazy(() => import('../components/Users/User.jsx'));
 const Login = lazy(() => import('../components/Auth/Login.jsx'));
 const Register = lazy(() => import('../components/Register.jsx'));
 const RegisProfile = lazy(() => import('../components/Auth/RegisProfile.jsx'));
@@ -32,11 +34,21 @@ const useRoutes = () => {
   const { conversationId } = useConversation();
   const { disconnect } = useWebSocket();
 
-  const handleLogout = () => {
-    disconnect();
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('refreshToken');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (token) {
+        disconnect();
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
+        navigate('/');
+        await ApiService.loggout(token);
+      }
+      message.success('Đăng xuất thành công');
+    } catch (error) {
+      console.error('Logout failed:', error.message);
+      message.error('Đăng xuất thất bại. Vui lòng thử lại.');
+    }
   };
 
   const routes = useMemo(

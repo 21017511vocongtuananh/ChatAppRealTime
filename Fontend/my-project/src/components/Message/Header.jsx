@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import useOtherUser from '../../hooks/useOtherUser';
 import { Link } from 'react-router-dom';
 import {
@@ -13,37 +13,85 @@ import useActiveList from '../../hooks/useActiveList';
 import VideoCall from './VideoCall';
 import useConversation from '../../hooks/useConversation';
 import TitleGroupModel from '../GroupModel/TitleGroupModel';
+import { useWebSocket } from './WebSocketContext';
+import { Tooltip } from 'antd';
 
 const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
-  const otherUser = useOtherUser(conversation.data || []);
+  const otherUser = useOtherUser(conversation || []);
   const { conversationId } = useConversation();
-  const [user, setUser] = useState(() => sessionStorage.getItem('userId'));
   const { members } = useActiveList();
   const [titleModeGroup, setTitleModeGroup] = useState(false);
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
+  const {
+    sendMessage,
+    subscribe,
+    isConnected: isWebSocketConnected
+  } = useWebSocket();
+  const user = sessionStorage.getItem('userId');
+
   const isActive = members.some(
     (member) => member.phoneNumber === otherUser.phoneNumber
   );
 
   const statusText = useMemo(() => {
-    if (conversation?.data.isGroup) {
-      return `${conversation?.data?.users?.length || 0} thành viên`;
+    if (conversation?.isGroup) {
+      return `${conversation?.users?.length || 0} thành viên`;
     }
-    return isActive ? `Online` : `Offline`;
+    return isActive ? 'Online' : 'Offline';
   }, [conversation, isActive]);
 
   const toggleDrawer = () => {
     setDrawerOpen((prev) => !prev);
   };
 
-  const startVideoCall = () => {
-    setIsVideoCallOpen(true);
-  };
-
-  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
-
   const handleOpenTitleGroupModel = () => {
     setTitleModeGroup(true);
   };
+
+  const startVideoCall = () => {
+    if (!conversationId || !user || !otherUser.id || !isWebSocketConnected) {
+      console.error('Thiếu thông tin để bắt đầu cuộc gọi:', {
+        conversationId,
+        user,
+        receiverId: otherUser.id,
+        isWebSocketConnected
+      });
+      return;
+    }
+
+    const signalMessage = {
+      type: 'CALL',
+      conversationId,
+      senderId: user,
+      receiverId: otherUser.id,
+      roomID: conversationId
+    };
+
+    sendMessage(`/app/call/${conversationId}`, signalMessage);
+    setIsVideoCallOpen(true);
+  };
+
+  useEffect(() => {
+    if (!conversationId || !user) return;
+
+    const unsubscribe = subscribe(
+      `/topic/conversation/${conversationId}`,
+      (signal) => {
+        if (signal.type === 'CALL' && signal.receiverId === user) {
+          setIsVideoCallOpen(true);
+        } else if (
+          signal.type === 'CANCEL_CALL' &&
+          signal.receiverId === user
+        ) {
+          setIsVideoCallOpen(false);
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [conversationId, user, subscribe]);
 
   return (
     <>
@@ -55,36 +103,46 @@ const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
           >
             <HiChevronLeft size={25} />
           </Link>
-          {conversation?.data.isGroup ? (
+          {conversation?.isGroup ? (
             <div onClick={handleOpenTitleGroupModel} className='cursor-pointer'>
-              <AvatarGroup users={conversation?.data?.users} />
+              <AvatarGroup users={conversation?.users} />
             </div>
           ) : (
             <Avatar user={otherUser} />
           )}
           <div className='flex flex-col'>
-            <div>{conversation.data.name || otherUser.name}</div>
+            <div>{conversation.name || otherUser.name}</div>
             <div className='text-sm font-light text-neutral-500'>
               {statusText}
             </div>
           </div>
         </div>
         <div className='flex gap-2'>
-          <MdOutlineGroupAdd
-            size={40}
-            onClick={() => {}}
-            className='cursor-pointer rounded-md hover:bg-gray-300 p-2'
-          />
-          <HiMiniVideoCamera
-            size={40}
-            onClick={startVideoCall}
-            className='cursor-pointer rounded-md hover:bg-gray-300 p-2'
-          />
-          <HiMiniListBullet
-            size={40}
-            onClick={toggleDrawer}
-            className='cursor-pointer rounded-md hover:bg-gray-300 p-2'
-          />
+          <Tooltip title='Thêm thành viên nhóm'>
+            <MdOutlineGroupAdd
+              size={40}
+              onClick={() => {}}
+              className='cursor-pointer rounded-md hover:bg-gray-300 p-2'
+            />
+          </Tooltip>
+          <Tooltip
+            title={isWebSocketConnected ? 'Gọi video' : 'Kết nối đang ngắt'}
+          >
+            <HiMiniVideoCamera
+              size={40}
+              onClick={startVideoCall}
+              className={`cursor-pointer rounded-md hover:bg-gray-300 p-2 ${
+                !isWebSocketConnected ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            />
+          </Tooltip>
+          <Tooltip title='Thông tin cuộc trò chuyện'>
+            <HiMiniListBullet
+              size={40}
+              onClick={toggleDrawer}
+              className='cursor-pointer rounded-md hover:bg-gray-300 p-2'
+            />
+          </Tooltip>
         </div>
       </div>
       {isVideoCallOpen && (
@@ -98,7 +156,7 @@ const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
       <TitleGroupModel
         isOpen={titleModeGroup}
         onClose={() => setTitleModeGroup(false)}
-        data={conversation.data}
+        data={conversation}
       />
     </>
   );

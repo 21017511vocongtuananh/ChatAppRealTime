@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import AddUserGroupModal from '../GroupModel/AddUserGroupModel';
 
 const ProfileDrawer = ({ isOpen, onClose, datas }) => {
-  const otherUser = useOtherUser(datas.data || []);
+  const otherUser = useOtherUser(datas || []);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [exitfirmOpen, setExitfirmOpen] = useState(false);
   const navigate = useNavigate();
@@ -31,21 +31,21 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
   }, [otherUser.createdAt]);
 
   const title = useMemo(() => {
-    return datas.data.name || otherUser.name;
-  }, [datas.data.name, otherUser.name]);
+    return datas.name || otherUser.name;
+  }, [datas.name, otherUser.name]);
 
   const statusText = useMemo(() => {
-    if (datas.data.isGroup) {
-      return `${datas.data.users.length} thành viên`;
+    if (datas.isGroup) {
+      return `${datas.users.length} thành viên`;
     }
     return isActive ? 'Online' : 'Offline';
   }, [datas, isActive]);
 
   const isAdmin = useMemo(() => {
-    return datas.data.groupMembers?.some(
+    return datas.groupMembers?.some(
       (member) => member.userId === data?.id && member.role === 'ADMIN'
     );
-  }, [datas.data.groupMembers, data?.id]);
+  }, [datas.groupMembers, data?.id]);
 
   const handleLeaveGroup = async () => {
     if (isAdmin) {
@@ -53,7 +53,7 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
     } else {
       try {
         setIsLoading(true);
-        await ApiService.exitConversation(datas.data.id, null);
+        await ApiService.exitConversation(datas.id, null);
         message.success('Rời nhóm thành công');
         navigate('/conversations');
         onClose();
@@ -81,8 +81,8 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
           <div className='relative mt-6 flex-1 px-4 sm:px-6'>
             <div className='flex flex-col items-center'>
               <div className='mb-4'>
-                {datas.data.isGroup ? (
-                  <AvatarGroup users={datas.data.users} />
+                {datas.isGroup ? (
+                  <AvatarGroup users={datas.users} />
                 ) : (
                   <Avatar user={otherUser} />
                 )}
@@ -110,7 +110,7 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
                     </button>
                   </div>
                   <div className='grid grid-cols-3 gap-2'>
-                    {datas.data.messages
+                    {datas.messages
                       .filter((message) => message.image)
                       .map((message) => {
                         const isImage = /\.(jpe?g|png|gif|webp)$/i.test(
@@ -150,7 +150,7 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
                     </button>
                   </div>
                   <div className='space-y-2'>
-                    {datas.data.messages
+                    {datas.messages
                       .filter(
                         (message) =>
                           message.image &&
@@ -193,7 +193,7 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
                     </button>
                   </div>
                   <div className='space-y-2'>
-                    {datas.data.messages
+                    {datas.messages
                       .filter((message) =>
                         /https?:\/\/[^\s]+/.test(message.body)
                       )
@@ -266,7 +266,7 @@ const ProfileDrawer = ({ isOpen, onClose, datas }) => {
                     </CustomButton>
                   </div>
                   <div className='flex items-center mt-2'>
-                    {datas.data.isGroup && (
+                    {datas.isGroup && (
                       <CustomButton
                         type='button'
                         isLoading={isLoading}

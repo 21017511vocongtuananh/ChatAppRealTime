@@ -52,7 +52,7 @@ const RegisProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({});
+    setErrors({}); // Xóa tất cả lỗi cũ trước khi gửi lại form
     try {
       const apiUrl = import.meta.env.VITE_BACKEND_URL + '/api/auth/register';
       const formDataToSend = new FormData();
@@ -67,23 +67,24 @@ const RegisProfile = () => {
       if (selectedFile) {
         formDataToSend.append('image', selectedFile);
       }
-
-      console.log('🔹 API URL:', apiUrl);
       const response = await axios.post(apiUrl, formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-
       if (response.status === 201 || response.status === 200) {
         message.success('Hồ sơ đã được lưu thành công!');
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
         navigate('/');
       }
     } catch (error) {
-      console.error(
-        '❌ Error saving profile:',
-        error.response?.data || error.message
-      );
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors);
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        if (errorData.message) {
+          message.error(errorData.message);
+        }
+        if (errorData.errors) {
+          setErrors(errorData.errors);
+        }
       }
     }
   };

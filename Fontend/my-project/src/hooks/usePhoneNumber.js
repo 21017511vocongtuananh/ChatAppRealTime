@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import ApiService from '../services/apis';
-import { message } from 'antd';
 
 const usePhoneNumber = () => {
   const [phone, setPhone] = useState('');

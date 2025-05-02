@@ -7,11 +7,16 @@ import Header from '../Message/Header';
 import Body from '../Message/Body';
 import Form from '../Message/Form';
 import ProfileDrawer from '@components/Message/ProfileDrawer';
+import { useWebSocket } from '../Message/WebSocketContext';
+
 const ConversationId = () => {
   const { conversationId } = useParams();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { subscribe } = useWebSocket();
+  const [block, setBlock] = useState(null);
+  const userId = sessionStorage.getItem('userId');
 
   const fetchMessages = async () => {
     try {
@@ -28,7 +33,7 @@ const ConversationId = () => {
         const conversationResponse = await ApiService.getConversationId(
           conversationId
         );
-        setConversation(conversationResponse);
+        setConversation(conversationResponse.data);
         await fetchMessages();
       } catch (error) {
         message.error('Lỗi khi lấy dữ liệu: ' + error.message);
@@ -36,6 +41,55 @@ const ConversationId = () => {
     };
     fetchData();
   }, [conversationId]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await ApiService.getFriendBlock();
+        setBlock(response.data);
+      } catch (error) {
+        console.error('Lỗi khi lấy thông tin Block:', error);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    const unsubscribe = subscribe(
+      `/user/${userId}/queue/conversations`,
+      (newConversation) => {
+        setConversation((prevConversation) => {
+          if (!prevConversation) {
+            return newConversation;
+          }
+
+          if (prevConversation.id === newConversation.id) {
+            return {
+              ...prevConversation,
+              users: newConversation.users,
+              groupMembers: newConversation.groupMembers,
+              name: newConversation.name,
+              isGroup: newConversation.isGroup,
+              lastMessageAt: newConversation.lastMessageAt
+            };
+          }
+          return prevConversation;
+        });
+      }
+    );
+    return unsubscribe;
+  }, [subscribe, userId]);
+
+  useEffect(() => {
+    const unsubscribeReceived = subscribe(
+      `/user/${userId}/topic/friend-requests/sent`,
+      (payload) => {
+        setBlock(payload);
+      }
+    );
+    return () => unsubscribeReceived();
+  }, [subscribe, userId]);
 
   if (!conversation) {
     return (
@@ -60,7 +114,7 @@ const ConversationId = () => {
           drawerOpen={drawerOpen}
         />
         <Body messages={messages} fetchMessages={fetchMessages} />
-        <Form messages={messages} setMessages={setMessages} />
+        <Form messages={messages} setMessages={setMessages} block={block} />
       </div>
       {drawerOpen && (
         <div className='w-[30%] h-full'>

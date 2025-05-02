@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Input, Button, message } from 'antd';
 import ApiService from '../../services/apis';
@@ -8,21 +8,27 @@ const SendOTP = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const mode = queryParams.get('mode');
-  const [serverOtp, setServerOtp] = useState('');
+  const [timer, setTimer] = useState(0);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [confirmation, setConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Hàm gửi OTP
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
+
   const handleSendOTP = async () => {
     localStorage.setItem('email', email);
     setIsLoading(true);
     try {
       const response = await ApiService.sendOTP(email, mode);
       if (response?.code === 200) {
-        message.success(response.message);
-        setServerOtp(response.data.otp);
+        message.success(response.data.message);
+        setTimer(60);
         setConfirmation(true);
       }
     } finally {
@@ -30,21 +36,24 @@ const SendOTP = () => {
     }
   };
 
-  // Hàm xác thực OTP
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     if (otp.trim() === '') {
       message.error('Vui lòng nhập mã OTP!');
       return;
     }
-    if (otp === serverOtp) {
-      message.success('Xác thực OTP thành công!');
-      if (mode === 'register') {
-        navigate('/set-password');
-      } else if (mode === 'reset') {
-        navigate('/reset-password');
+
+    try {
+      const response = await ApiService.verifyOtp(email, otp);
+      if (response?.code === 200 && response.data.status === 'OK') {
+        message.success('Xác thực OTP thành công');
+        if (mode === 'register') {
+          navigate('/set-password');
+        } else if (mode === 'reset') {
+          navigate('/reset-password');
+        }
       }
-    } else {
-      message.error('Mã OTP không đúng!');
+    } catch (err) {
+      message.error(err?.message || 'Xác thực OTP thất bại!');
     }
   };
 
@@ -71,11 +80,15 @@ const SendOTP = () => {
           </label>
           <span
             className={`text-blue-500 cursor-pointer hover:underline ${
-              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              isLoading || timer > 0 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
-            onClick={!isLoading ? handleSendOTP : undefined}
+            onClick={!isLoading && timer === 0 ? handleSendOTP : undefined}
           >
-            {isLoading ? 'Đang gửi...' : 'Gửi OTP'}
+            {isLoading
+              ? 'Đang gửi...'
+              : timer > 0
+              ? `Gửi lại OTP (${timer}s)`
+              : 'Gửi OTP'}
           </span>
         </div>
 

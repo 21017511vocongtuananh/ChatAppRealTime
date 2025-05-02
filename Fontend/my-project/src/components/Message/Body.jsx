@@ -43,7 +43,6 @@ const Body = ({ messages: initialMessages, fetchMessages }) => {
         }
       }
     );
-
     subscribed.current = true;
     return () => {
       subscribed.current = false;
@@ -104,7 +103,7 @@ const Body = ({ messages: initialMessages, fetchMessages }) => {
   };
 
   if (!messages) {
-    return <div>Loading...</div>; // Ngăn trắng màn hình
+    return <div>Loading...</div>;
   }
 
   return (

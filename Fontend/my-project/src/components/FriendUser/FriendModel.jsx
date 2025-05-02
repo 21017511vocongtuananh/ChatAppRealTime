@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import ReactCountryFlag from 'react-country-flag';
 import ApiService from '../../services/apis';
-import { Input } from 'antd';
+import { Input, message } from 'antd';
 import CustomButton from '../Button/Button';
 import Avatar from '../Avartar/Avatar';
 import Modal from '../Modal';
-import { message } from 'antd';
 
 const FriendModel = ({ isOpen, onClose, users }) => {
   const [isSearching, setIsSearching] = useState(false);
@@ -14,23 +13,47 @@ const FriendModel = ({ isOpen, onClose, users }) => {
   const [foundUser, setFoundUser] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [friendIds, setFriendIds] = useState([]);
+  const [acceptedFriendIds, setAcceptedFriendIds] = useState([]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setPhoneNumber('');
+      setFoundUser(null);
+      setIsSearching(false);
+      setIsAdding(false);
+      setFriendIds([]);
+      setAcceptedFriendIds([]);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!phoneNumber.trim()) {
       setFoundUser(null);
     }
-    const fetchFriendIds = async () => {
+  }, [phoneNumber]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchFriendData = async () => {
       try {
-        const response = await ApiService.getPendingFriendRequestsSentByUser();
-        const friendIdsList = response.data.map((friend) => friend.friendId);
-        setFriendIds(friendIdsList);
+        const pendingResponse =
+          await ApiService.getPendingFriendRequestsSentByUser();
+        const pendingFriendIdsList = pendingResponse.data.map(
+          (friend) => friend.friendId
+        );
+        setFriendIds(pendingFriendIdsList);
+        const acceptedResponse = await ApiService.getFriendUserAccept();
+        const acceptedFriendIdsList = acceptedResponse.data.map(
+          (friend) => friend.friendId
+        );
+        setAcceptedFriendIds(acceptedFriendIdsList);
       } catch (error) {
-        console.error('Lỗi khi lấy danh sách bạn bè:', error);
+        console.error('Lỗi khi lấy dữ liệu bạn bè:', error);
+        message.error('Không thể lấy dữ liệu bạn bè');
       }
     };
-
-    fetchFriendIds();
-  }, [phoneNumber, friendIds]);
+    fetchFriendData();
+  }, [isOpen]);
 
   const handlePhoneNumberChange = (e) => {
     let value = e.target.value;
@@ -45,7 +68,17 @@ const FriendModel = ({ isOpen, onClose, users }) => {
     setIsSearching(true);
     try {
       const response = await ApiService.getPhoneFriend(phoneNumber);
-      setFoundUser(response.data);
+      const user = response.data;
+      if (
+        user &&
+        !friendIds.includes(user.id) &&
+        !acceptedFriendIds.includes(user.id)
+      ) {
+        setFoundUser(user);
+      } else {
+        setFoundUser(null);
+        message.info('Người dùng đã là bạn bè hoặc đã có lời mời kết bạn');
+      }
     } catch (error) {
       console.error('Lỗi khi tìm kiếm người dùng:', error);
       message.error('Không tìm thấy người dùng');
@@ -73,6 +106,9 @@ const FriendModel = ({ isOpen, onClose, users }) => {
     try {
       await ApiService.sendFriend(userId);
       message.success('Đã gửi lời mời kết bạn');
+      const response = await ApiService.getPendingFriendRequestsSentByUser();
+      const friendIdsList = response.data.map((friend) => friend.friendId);
+      setFriendIds(friendIdsList);
       onClose();
     } catch (error) {
       message.error(error.response?.data?.message || 'Gửi lời mời thất bại');
@@ -81,9 +117,16 @@ const FriendModel = ({ isOpen, onClose, users }) => {
     }
   };
 
-  const filteredUsers =
-    users?.filter((user) => !friendIds.includes(user.id)) || [];
+  const handleCancel = (e) => {
+    e.preventDefault();
+    onClose();
+  };
 
+  const filteredUsers =
+    users?.filter(
+      (user) =>
+        !friendIds.includes(user.id) && !acceptedFriendIds.includes(user.id)
+    ) || [];
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={onSubmit}>
@@ -197,7 +240,7 @@ const FriendModel = ({ isOpen, onClose, users }) => {
         <div className='mt-6 flex items-center justify-end gap-x-4'>
           <CustomButton
             disabled={isSearching || isAdding}
-            onClick={onClose}
+            onClick={handleCancel}
             type='button'
             color='red'
             className='text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200'

@@ -64,6 +64,36 @@ export default class ApiService {
     }
   }
 
+  static async verifyOtp(email, otp) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/otp/verifyOTP?Email=${email}&otp=${otp}`
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async loggout(token) {
+    try {
+      const response = await axios.post(
+        `${this.BASE_URL}/auth/loggout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
   // USER
   static async getAllUser() {
     try {
@@ -119,7 +149,8 @@ export default class ApiService {
 
       const response = await axios.post(
         `${this.BASE_URL}/users/update/${userId}`,
-        formData
+        formData,
+        { headers: this.getHeader() }
       );
 
       return response.data;
@@ -136,7 +167,8 @@ export default class ApiService {
 
     const response = await axios.post(
       `${this.BASE_URL}/users/updatePassword/${userId}`,
-      formData
+      formData,
+      { headers: this.getHeader() }
     );
     return response.data;
   }
@@ -184,7 +216,7 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error('Lỗi khi tạo cuộc trò chuyện:', error);
+      throw error.response?.data?.errors;
     }
   }
 
@@ -271,8 +303,8 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error('Error exiting conversation:', error);
-      throw error;
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
     }
   }
 
@@ -284,8 +316,8 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error('Error exiting conversation:', error);
-      throw error;
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
     }
   }
 
@@ -298,8 +330,21 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      console.error('Error exiting conversation:', error);
-      throw error;
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async removeMeber(conversationId, member) {
+    try {
+      const response = await axios.delete(
+        `${this.BASE_URL}/conversation/removeMember/${conversationId}?memberId=${member}`,
+        { headers: this.getHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.message;
+      throw new Error(errorMessage);
     }
   }
 
@@ -455,6 +500,61 @@ export default class ApiService {
     try {
       const reponse = await axios.get(
         `${this.BASE_URL}/friend/getFriendUserAccept`,
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async unFriend(friendId) {
+    try {
+      const reponse = await axios.post(
+        `${this.BASE_URL}/friend/unfriend?friendId=${friendId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async block(friendId) {
+    try {
+      const reponse = await axios.post(
+        `${this.BASE_URL}/friend/block?friendId=${friendId}`,
+        {},
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async getFriendBlock() {
+    try {
+      const reponse = await axios.get(
+        `${this.BASE_URL}/friend/getFriendBlock`,
+        { headers: this.getHeader() }
+      );
+      return reponse.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message;
+      throw new Error(errorMessage);
+    }
+  }
+
+  static async deleteBlock(friendId) {
+    try {
+      const reponse = await axios.post(
+        `${this.BASE_URL}/friend/delete/block?friendId=${friendId}`,
+        {},
         { headers: this.getHeader() }
       );
       return reponse.data;

@@ -4,11 +4,11 @@ import GroupList from './GroupList';
 import FriendRequests from './FriendRequest';
 import GroupInvitations from './GroupInvitations';
 
-const BodyUser = ({ activeSection, friends, groups, sendFriendPeding }) => {
+const BodyUser = ({ activeSection, friends, groups }) => {
   const content = {
     friends: <FriendList friends={friends} />,
     groups: <GroupList groups={groups} />,
-    friendRequests: <FriendRequests sendFriendPeding={sendFriendPeding} />,
+    friendRequests: <FriendRequests />,
     groupInvitations: <GroupInvitations />
   };
 

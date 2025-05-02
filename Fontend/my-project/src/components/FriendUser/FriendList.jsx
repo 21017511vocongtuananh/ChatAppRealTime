@@ -35,7 +35,7 @@ const FriendList = ({ friends }) => {
           </div>
           <div className='divide-y divide-gray-200 w-full'>
             {friends.map((friend) => {
-              return <FriendItem key={friend.id} friend={friend} />;
+              return <FriendItem key={friend.friendId} friend={friend} />;
             })}
           </div>
         </div>
