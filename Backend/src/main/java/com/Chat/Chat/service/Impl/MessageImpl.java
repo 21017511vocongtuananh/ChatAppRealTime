@@ -63,7 +63,7 @@ public class MessageImpl implements MessageService {
 		Message savedMessage = messageRepo.save(message);
 
 		Conversation conversation = conversationRepo.findById(conversationId)
-				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Conversation not found"));
+				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND,"Không tìm thấy cuộc trò chuyện"));
 		List<String> messageIds = new ArrayList<>(conversation.getMessagesIds());
 		messageIds.add(savedMessage.getId());
 		conversation.setMessagesIds(messageIds);
@@ -72,24 +72,25 @@ public class MessageImpl implements MessageService {
 	}
 
 	@Override
-	public MessageResponse updateMessage(String conversationId) {
-		User login = userService.getLoginUser();
-		Conversation conversation = conversationRepo.findById(conversationId)
-				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Conversation not found"));
-		List<String> messageIds = conversation.getMessagesIds();
-		if (messageIds.isEmpty()) {
-			throw new ErrorException(ErrorCode.NOT_FOUND, "No messages found in this conversation.");
-		}
-		String lastMessageId = messageIds.get(messageIds.size() - 1);
-		Message lastMessage = messageRepo.findById(lastMessageId)
-				.orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Message not found"));
-		if (lastMessage.getSeenIds().contains(login.getId())) {
-			return messageMapper.toMessageResponse(lastMessage);
-		}
-		lastMessage.getSeenIds().add(login.getId());
-		messageRepo.save(lastMessage);
-		return messageMapper.toMessageResponse(lastMessage);
-	}
+public MessageResponse updateMessage(String conversationId) {
+    User login = userService.getLoginUser();
+    Conversation conversation = conversationRepo.findById(conversationId)
+            .orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy cuộc trò chuyện"));
+    List<String> messageIds = conversation.getMessagesIds();
+    if (messageIds.isEmpty()) {
+        throw new ErrorException(ErrorCode.NOT_FOUND, "Không có tin nhắn nào trong cuộc trò chuyện này.");
+    }
+    String lastMessageId = messageIds.get(messageIds.size() - 1);
+    Message lastMessage = messageRepo.findById(lastMessageId)
+            .orElseThrow(() -> new ErrorException(ErrorCode.NOT_FOUND, "Không tìm thấy tin nhắn"));
+    if (lastMessage.getSeenIds().contains(login.getId())) {
+        return messageMapper.toMessageResponse(lastMessage);
+    }
+    lastMessage.getSeenIds().add(login.getId());
+    messageRepo.save(lastMessage);
+    return messageMapper.toMessageResponse(lastMessage);
+}
+
 
 
 	@Override

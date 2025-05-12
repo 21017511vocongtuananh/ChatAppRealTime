@@ -1,0 +1,24 @@
+name: deploy-springboot-reactjs-app
+on:
+  push:
+    branches: [production]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: appleboy/checkout@v2
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            # Di chuyển đến thư mục dự án
+            cd /services/Zalo-CNM
+            git checkout production
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
+            docker image prune -f
