@@ -54,7 +54,7 @@ const Login = () => {
       <div className='bg-white p-8 rounded-lg shadow-lg w-96'>
         <div className='text-center mb-6'>
           <h1 className='text-3xl font-bold text-blue-600'>Zalo</h1>
-          <p className='text-gray-600'>Đăng nhập với mật khẩu</p>
+          <p className='text-gray-600'>Đăng nhập với Mật khẩu</p>
         </div>
         {error && <p className='text-red-500 text-center mb-4'>{error}</p>}
         <form onSubmit={handleLogin}>
