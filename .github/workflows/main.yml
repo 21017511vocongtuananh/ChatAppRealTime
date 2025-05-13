@@ -16,7 +16,7 @@ jobs:
           port: 22
           script: |
             # Di chuyển đến thư mục dự án
-            cd /services/Zalo-CNM
+            cd /root/services/Zalo-CNM
             git checkout production
             git pull origin main
             docker-compose down
