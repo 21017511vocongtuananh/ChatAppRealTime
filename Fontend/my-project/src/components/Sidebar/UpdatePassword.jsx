@@ -10,7 +10,23 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
     newPassword: '',
     confirmPassword: ''
   });
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const validateField = (name, value, formData) => {
+    const newErrors = {};
+    if (!value) {
+      newErrors[name] = 'Trường này không được để trống.';
+    }
+    if (name === 'newPassword' && value && value.length < 6) {
+      newErrors[name] = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+    }
+    if (name === 'confirmPassword' && value && value !== formData.newPassword) {
+      newErrors[name] = 'Mật khẩu xác nhận không khớp.';
+    }
+
+    return newErrors;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,13 +34,28 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
       ...prev,
       [name]: value
     }));
+    const fieldErrors = validateField(name, value, {
+      ...formData,
+      [name]: value
+    });
+    setErrors((prev) => ({
+      ...prev,
+      [name]: fieldErrors[name] || ''
+    }));
   };
 
   const handleSaveChanges = async () => {
     const { currentPassword, newPassword, confirmPassword } = formData;
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      return message.warning('Vui lòng nhập đầy đủ thông tin.');
+    const validationErrors = {
+      ...validateField('currentPassword', currentPassword, formData),
+      ...validateField('newPassword', newPassword, formData),
+      ...validateField('confirmPassword', confirmPassword, formData)
+    };
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
 
     try {
@@ -37,7 +68,7 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
       navigate('/');
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error('API Error:', error.response);
       message.error(
         error.response?.data?.message || 'Cập nhật mật khẩu thất bại!'
       );
@@ -57,6 +88,11 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
             onChange={handleInputChange}
             placeholder='Nhập mật khẩu cũ'
           />
+          {errors.currentPassword && (
+            <p className='text-red-500 text-sm mt-1'>
+              {errors.currentPassword}
+            </p>
+          )}
 
           <label className='block mt-4 mb-2 font-medium'>Mật khẩu mới</label>
           <Input.Password
@@ -65,6 +101,9 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
             onChange={handleInputChange}
             placeholder='Nhập mật khẩu mới'
           />
+          {errors.newPassword && (
+            <p className='text-red-500 text-sm mt-1'>{errors.newPassword}</p>
+          )}
 
           <label className='block mt-4 mb-2 font-medium'>
             Xác nhận mật khẩu mới
@@ -75,6 +114,11 @@ const UpdatePassword = ({ currentUser, isOpen, onClose }) => {
             onChange={handleInputChange}
             placeholder='Nhập lại mật khẩu mới'
           />
+          {errors.confirmPassword && (
+            <p className='text-red-500 text-sm mt-1'>
+              {errors.confirmPassword}
+            </p>
+          )}
 
           <Button
             type='primary'

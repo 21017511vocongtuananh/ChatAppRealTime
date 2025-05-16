@@ -14,6 +14,6 @@ export default defineConfig({
     global: 'window'
   },
   server: {
-    port: 3000 // Đổi thành 3000
+    port: 3000
   }
 });

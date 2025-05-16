@@ -139,7 +139,7 @@ const SettingsModal = ({ currentUser, isOpen, onClose }) => {
               size={80}
               src={
                 previewAvatar ||
-                currentUser?.image ||
+                currentUser.image ||
                 'https://via.placeholder.com/80'
               }
               className='border-4 border-white mb-2'

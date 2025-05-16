@@ -100,8 +100,10 @@ public class UserImpl implements UserService {
 	public UserResponse updateUser(String userId, MultipartFile imageFile, UpdateUserRequest userRequest) {
 		User user = userRepo.findById(userId).orElseThrow(() -> new ErrorException(ErrorCode.USER_NOT_FOUND));
 		user.setName(userRequest.getName());
-		String imageUrl = s3Service.saveImageToS3(imageFile);
-		user.setImage(imageUrl);
+		if(imageFile != null) {
+			String imageUrl = s3Service.saveImageToS3(imageFile);
+			user.setImage(imageUrl);
+		}
 		user.setGender(userRequest.getGender());
 		user.setDateOfBirth(userRequest.getDateOfBirth());
 		userRepo.save(user);

@@ -149,8 +149,7 @@ export default class ApiService {
 
       const response = await axios.post(
         `${this.BASE_URL}/users/update/${userId}`,
-        formData,
-        { headers: this.getHeader() }
+        formData
       );
 
       return response.data;

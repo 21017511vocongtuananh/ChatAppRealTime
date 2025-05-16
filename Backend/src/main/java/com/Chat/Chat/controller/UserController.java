@@ -10,6 +10,7 @@ import com.Chat.Chat.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,7 @@ public class UserController {
 	public ApiResource<UserResponse> getPhoneFriend(@RequestParam String phoneNumber){
 		return ApiResource.ok(userService.getPhoneUserFriend(phoneNumber),"SUCCESS");
 	}
-	@PostMapping("/update/{userId}")
+	@PostMapping(value = "/update/{userId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ApiResource<UserResponse> updateUser(@PathVariable String userId,@ModelAttribute @Valid UpdateUserRequest userRequest,
 												@RequestParam(value = "image", required = false) MultipartFile imageFile)
 	{
