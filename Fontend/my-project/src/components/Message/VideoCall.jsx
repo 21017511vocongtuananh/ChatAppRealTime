@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useWebSocket } from './WebSocketContext';
 
-const getUrlParams = (url) => {
-  const urlStr = url.split('?')[1];
-  if (!urlStr) return {};
-  const urlSearchParams = new URLSearchParams(urlStr);
-  return Object.fromEntries(urlSearchParams.entries());
-};
-
-const VideoCall = ({ conversationId, userId, receiverId, onClose }) => {
+const VideoCall = ({
+  conversationId,
+  userId,
+  receiverId,
+  onClose,
+  uername
+}) => {
   const containerRef = useRef(null);
   const { subscribe } = useWebSocket();
   const zpRef = useRef(null);
@@ -24,9 +23,7 @@ const VideoCall = ({ conversationId, userId, receiverId, onClose }) => {
     String(userId)
       .trim()
       .replace(/[^a-zA-Z0-9]/g, '') || Math.floor(Math.random() * 10000) + '';
-  const userName =
-    getUrlParams(window.location.href)['username'] ||
-    `userName${sanitizedUserId}`;
+  const userName = uername;
 
   useEffect(() => {
     if (!userId || !conversationId || !receiverId) {

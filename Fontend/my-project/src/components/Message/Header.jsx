@@ -149,6 +149,7 @@ const Header = ({ conversation, setDrawerOpen, drawerOpen }) => {
         <VideoCall
           conversationId={conversationId}
           userId={user}
+          uername={otherUser.name}
           receiverId={otherUser.id}
           onClose={() => setIsVideoCallOpen(false)}
         />
