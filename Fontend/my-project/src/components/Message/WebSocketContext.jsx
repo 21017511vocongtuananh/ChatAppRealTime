@@ -14,7 +14,7 @@ export const WebSocketProvider = ({ children }) => {
       return;
     }
 
-    const socket = new SockJS('http://103.90.226.183:8080/ws');
+    const socket = new SockJS('https://nhom10iuh.id.vn:8080/ws');
     const client = Stomp.over(socket);
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       stompClientRef.current = client;
