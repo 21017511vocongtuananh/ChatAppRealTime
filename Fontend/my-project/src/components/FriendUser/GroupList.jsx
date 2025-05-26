@@ -30,9 +30,21 @@ const GroupList = ({ groups }) => {
           </div>
         </div>
         <div className='divide-y divide-gray-200 w-full'>
-          {groups.map((group) => {
-            return <FriendItem key={group.id} friend={group} />;
-          })}
+          {groups.map((group) => (
+            <div
+              key={group.id}
+              className='flex items-center w-full hover:bg-gray-100'
+            >
+              <div className='flex justify-between items-center p-4 w-full'>
+                <div className='flex items-center space-x-2'>
+                  <AvatarGroup users={group.users} />
+                  <div className='flex flex-col pl-2'>
+                    <div>{group.name}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

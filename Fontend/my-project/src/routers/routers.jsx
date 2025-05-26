@@ -12,7 +12,6 @@ import { message } from 'antd';
 // Load các component động
 const User = lazy(() => import('../components/Users/User.jsx'));
 const Login = lazy(() => import('../components/Auth/Login.jsx'));
-const Register = lazy(() => import('../components/Register.jsx'));
 const RegisProfile = lazy(() => import('../components/Auth/RegisProfile.jsx'));
 const SendOTP = lazy(() => import('../components/Auth/SendOTP.jsx'));
 const ResetPassword = lazy(() =>
@@ -81,7 +80,6 @@ const useRoutes = () => {
 // ✅ Định nghĩa danh sách route
 const routers = [
   { path: '/', component: Login },
-  { path: '/auth/register', component: Register },
   { path: '/auth/sendOTP', component: SendOTP },
   {
     path: '/conversations',

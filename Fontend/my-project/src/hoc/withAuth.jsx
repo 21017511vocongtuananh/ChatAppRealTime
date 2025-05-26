@@ -16,7 +16,6 @@ const withAuth = (Component) => {
     return isAuthenticated ? <Component {...props} /> : null;
   };
 
-  // Đặt tên hiển thị cho component (để dễ debug)
   AuthenticatedComponent.displayName = `withAuth(${
     Component.displayName || Component.name || 'Component'
   })`;
