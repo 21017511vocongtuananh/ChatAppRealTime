@@ -31,6 +31,8 @@ const SendOTP = () => {
         setTimer(60);
         setConfirmation(true);
       }
+    } catch (err) {
+      message.error(err.message || 'Gửi OTP thất bại');
     } finally {
       setIsLoading(false);
     }

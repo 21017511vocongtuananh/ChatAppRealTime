@@ -53,14 +53,8 @@ export default class ApiService {
       );
       return response.data;
     } catch (error) {
-      const errorData = error.response.data;
-      if (errorData?.errors) {
-        Object.values(errorData.errors).forEach((err) => {
-          message.error(err);
-        });
-      } else {
-        console.error(errorData.message);
-      }
+      const errorData = error.response.data.message;
+      throw new Error(errorData);
     }
   }
 
