@@ -1,33 +1,33 @@
-# 💬 ChatAppRealTime
+#ChatAppRealTime
 
 A **real-time chat application** built with **ReactJS, TypeScript, Redux Toolkit, Tailwind CSS, Ant Design, MUI** (frontend) and **Spring Boot, WebSocket (STOMP), NoSQL, Docker** (backend).  
 It supports **real-time messaging, media sharing, authentication, group chat, and video calling**.
 
 ---
 
-## ✨ Features
+##Features
 
-- 🔐 **Authentication & Security**
+- **Authentication & Security**
   - User authentication with **JWT** & **OAuth2**
   - **OTP email verification**
 
-- 💬 **Real-time Messaging**
+- **Real-time Messaging**
   - 1-on-1 chat & group chat using **WebSocket (STOMP)**
   - Pin important messages in personal & group conversations
 
-- 📂 **Media Sharing**
+- **Media Sharing**
   - Send & receive **images, videos, files**
   - Integration with **AWS S3** for storage
 
-- 📹 **Video Call**
+- **Video Call**
   - One-on-one video calling with **ZegoCloud SDK**
 
-- 🎨 **Modern UI/UX**
+- **Modern UI/UX**
   - Built with **React, TypeScript, Redux Toolkit, TailwindCSS, Ant Design, MUI**
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend**
 - ReactJS, TypeScript  
@@ -47,7 +47,7 @@ It supports **real-time messaging, media sharing, authentication, group chat, an
 
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 - Node.js **>= 18**  
 - Java **>= 21**  
@@ -59,9 +59,9 @@ It supports **real-time messaging, media sharing, authentication, group chat, an
 
 ---
 
-## 📥 Installation & Setup
+## Installation & Setup
 
-### 1️⃣ Clone repository
+### Clone repository
 ```bash
 git clone https://github.com/21017511vocongtuananh/ChatAppRealTime.git
 cd ChatAppRealTime
