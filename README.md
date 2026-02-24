@@ -1,11 +1,11 @@
-#ChatAppRealTime
+ChatAppRealTime
 
 A **real-time chat application** built with **ReactJS, TypeScript, Redux Toolkit, Tailwind CSS, Ant Design, MUI** (frontend) and **Spring Boot, WebSocket (STOMP), NoSQL, Docker** (backend).  
 It supports **real-time messaging, media sharing, authentication, group chat, and video calling**.
 
 ---
 
-##Features
+## Features
 
 - **Authentication & Security**
   - User authentication with **JWT** & **OAuth2**
